@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "190805897823",
+    "project_id": "check-mate-ecd17",
+    "storage_bucket": "check-mate-ecd17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190805897823:android:73b95a45d24214762ae1ea",
+        "android_client_info": {
+          "package_name": "com.oukschub.checkmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvLJ2ohUJh5Db9lG81pcug9Q4UA5OAeHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
