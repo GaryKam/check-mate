@@ -58,9 +58,12 @@ android {
 }
 
 dependencies {
+    // Android
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.2")
+
+    // Compose
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -73,6 +76,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.gms:play-services-auth")
+
+    // Lint
+    lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
