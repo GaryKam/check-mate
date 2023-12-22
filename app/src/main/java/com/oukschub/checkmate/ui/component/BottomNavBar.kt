@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.component
+package com.oukschub.checkmate.ui.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

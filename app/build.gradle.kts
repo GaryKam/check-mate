@@ -79,7 +79,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.6")
 
     // Lint
-    //lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
+    lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
