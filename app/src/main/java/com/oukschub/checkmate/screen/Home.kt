@@ -1,25 +1,19 @@
 package com.oukschub.checkmate.screen
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.oukschub.checkmate.component.BottomNavBar
 
 @Composable
 fun Home(onNavigateToProfile: () -> Unit, onNavigateToChecklists: () -> Unit) {
-    Column {
-        Text(text = "Home")
-
-        Button(onClick = {
-            onNavigateToProfile()
-        }) {
-            Text(text = "To Profile")
-        }
-
-        Button(onClick = {
-            onNavigateToChecklists()
-        }) {
-            Text(text = "To Checklists")
+    BottomNavBar(
+        onNavigateToHome = { /*TO-DO*/ },
+        onNavigateToProfile = { onNavigateToProfile() },
+        onNavigateToChecklists = { onNavigateToChecklists() }
+    ) {
+        Column {
+            Text(text = "Home")
         }
     }
 }
