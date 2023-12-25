@@ -1,6 +1,11 @@
 package com.oukschub.checkmate.ui.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,15 +26,40 @@ fun Profile(
         onNavigateToHome = { onNavigateToHome() },
         onNavigateToProfile = { /*TO-DO*/ }
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize()
+        ) {
             val context = LocalContext.current
             Text(text = "Profile")
-            Button(onClick = {
-                FirebaseAuth.getInstance().signOut()
-                context.startActivity(SignInActivity.createIntent(context))
-            }) {
-                Text(text = "Sign Out")
+            Column(
+                modifier = Modifier.width(intrinsicSize = IntrinsicSize.Max)
+            ) {
+                Button(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                {
+                    Text(text = "Change Password")
+                }
+                Button(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Settings")
+                }
+                Button(
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        context.startActivity(SignInActivity.createIntent(context))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Sign Out")
+                }
             }
+
         }
     }
 }
