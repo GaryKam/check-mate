@@ -1,5 +1,7 @@
 package com.oukschub.checkmate
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.firebase.ui.auth.AuthUI
@@ -47,6 +49,12 @@ class SignInActivity : ComponentActivity() {
         if (result.resultCode == RESULT_OK) {
             startActivity(MainActivity.createIntent(this))
             finish()
+        }
+    }
+
+    companion object {
+        fun createIntent(context: Context): Intent {
+            return Intent(context, SignInActivity::class.java)
         }
     }
 }
