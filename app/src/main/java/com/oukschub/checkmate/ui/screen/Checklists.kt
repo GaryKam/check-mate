@@ -13,9 +13,9 @@ fun Checklists(
     modifier: Modifier = Modifier
 ) {
     BottomNavBar(
-        onNavigateToChecklists = { /*TO-DO*/ },
-        onNavigateToHome = { onNavigateToHome() },
-        onNavigateToProfile = { onNavigateToProfile() }
+        onClickChecklists = { /*TO-DO*/ },
+        onClickHome = { onNavigateToHome() },
+        onClickProfile = { onNavigateToProfile() }
     ) {
         Column {
             Text(text = "Checklists")
