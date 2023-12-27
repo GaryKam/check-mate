@@ -1,43 +1,61 @@
 package com.oukschub.checkmate.navigation
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.ui.screen.Checklists
 import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 
-object Destinations {
-    const val CHECKLISTS_ROUTE = "checklists"
-    const val HOME_ROUTE = "home"
-    const val PROFILE_ROUTE = "profile"
-}
-
 @Composable
-fun AppNavigation() {
+fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val items = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
 
-    NavHost(navController = navController, startDestination = Destinations.HOME_ROUTE) {
-        composable(Destinations.CHECKLISTS_ROUTE) {
-            Checklists(
-                onNavigateToHome = { navController.navigate(Destinations.HOME_ROUTE) },
-                onNavigateToProfile = { navController.navigate(Destinations.PROFILE_ROUTE) }
-            )
+    Scaffold(
+        bottomBar = {
+            BottomAppBar(actions = {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+
+                items.forEach { screen ->
+                    NavigationBarItem(
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        onClick = { navController.navigate(screen.route) },
+                        icon = {
+                            Icon(
+                                screen.icon,
+                                contentDescription = stringResource(screen.resourceId)
+                            )
+                        },
+                        label = { Text(text = stringResource(screen.resourceId)) }
+                    )
+                }
+            })
         }
-
-        composable(Destinations.HOME_ROUTE) {
-            Home(
-                onNavigateToChecklists = { navController.navigate(Destinations.CHECKLISTS_ROUTE) },
-                onNavigateToProfile = { navController.navigate(Destinations.PROFILE_ROUTE) }
-            )
-        }
-
-        composable(Destinations.PROFILE_ROUTE) {
-            Profile(
-                onNavigateToChecklists = { navController.navigate(Destinations.CHECKLISTS_ROUTE) },
-                onNavigateToHome = { navController.navigate(Destinations.HOME_ROUTE) }
-            )
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            composable(Screen.Checklists.route) { Checklists() }
+            composable(Screen.Home.route) { Home() }
+            composable(Screen.Profile.route) { Profile() }
         }
     }
 }

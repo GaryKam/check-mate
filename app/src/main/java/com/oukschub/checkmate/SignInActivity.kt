@@ -13,7 +13,7 @@ class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        FirebaseAuth.getInstance().signOut()
+        //FirebaseAuth.getInstance().signOut()
 
         if (FirebaseAuth.getInstance().currentUser == null) {
             launchSignIn()
