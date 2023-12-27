@@ -3,13 +3,10 @@ package com.oukschub.checkmate.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
@@ -22,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.SignInActivity
@@ -38,56 +34,6 @@ fun Profile(
         onClickChecklists = { onNavigateToChecklists() },
         onClickHome = { onNavigateToHome() },
         onClickProfile = { /*TO-DO*/ }
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val context = LocalContext.current
-
-            Text(text = "Profile")
-
-            Column(
-                modifier = Modifier
-                    .width(intrinsicSize = IntrinsicSize.Max)
-                    .wrapContentSize()
-            ) {
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "Change Password")
-                }
-
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "Settings")
-                }
-
-                Button(
-                    onClick = {
-                        FirebaseAuth.getInstance().signOut()
-                        context.startActivity(SignInActivity.createIntent(context))
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "Sign Out")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-@Preview
-fun Test() {
-    BottomNavBar(
-        onClickChecklists = {},
-        onClickHome = {},
-        onClickProfile = {}
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

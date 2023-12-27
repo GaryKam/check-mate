@@ -7,14 +7,11 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -28,26 +25,26 @@ fun BottomNavBar(
     Scaffold(
         bottomBar = {
             BottomAppBar(actions = {
-                IconButton(onClick = { onClickChecklists() }) {
-                    Icon(
-                        Icons.Default.List,
-                        contentDescription = "Checklists"
-                    )
-                }
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { onClickChecklists() },
+                    icon = { Icon(Icons.Default.List, contentDescription = "Checklists") },
+                    label = { Text(text = "Checklists") }
+                )
 
-                IconButton(onClick = { onClickHome() }) {
-                    Icon(
-                        Icons.Default.Home,
-                        contentDescription = "Home"
-                    )
-                }
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { onClickHome() },
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text(text = "Home") }
+                )
 
-                IconButton(onClick = { onClickProfile() }) {
-                    Icon(
-                        Icons.Default.Person,
-                        contentDescription = "Profile"
-                    )
-                }
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { onClickProfile() },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                    label = { Text(text = "Profile") }
+                )
             })
         }
     ) { paddingValues ->
