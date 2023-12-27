@@ -13,9 +13,9 @@ fun Home(
     modifier: Modifier = Modifier
 ) {
     BottomNavBar(
-        onNavigateToChecklists = { onNavigateToChecklists() },
-        onNavigateToHome = { /*TO-DO*/ },
-        onNavigateToProfile = { onNavigateToProfile() }
+        onClickChecklists = { onNavigateToChecklists() },
+        onClickHome = { /*TO-DO*/ },
+        onClickProfile = { onNavigateToProfile() }
 
     ) {
         Column {

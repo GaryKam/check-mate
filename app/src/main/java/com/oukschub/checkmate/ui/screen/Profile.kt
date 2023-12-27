@@ -24,9 +24,9 @@ fun Profile(
     modifier: Modifier = Modifier
 ) {
     BottomNavBar(
-        onNavigateToChecklists = { onNavigateToChecklists() },
-        onNavigateToHome = { onNavigateToHome() },
-        onNavigateToProfile = { /*TO-DO*/ }
+        onClickChecklists = { onNavigateToChecklists() },
+        onClickHome = { onNavigateToHome() },
+        onClickProfile = { /*TO-DO*/ }
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
