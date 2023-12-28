@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,9 +22,13 @@ import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.ui.screen.Checklists
 import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
+import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
+fun AppNavigation(
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel = viewModel()
+) {
     val navController = rememberNavController()
     val items = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
 
@@ -54,7 +60,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.Checklists.route) { Checklists() }
-            composable(Screen.Home.route) { Home() }
+            composable(Screen.Home.route) { Home(homeViewModel) }
             composable(Screen.Profile.route) { Profile() }
         }
     }
