@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun Checklists(modifier: Modifier = Modifier) {
-    Column {
+    Column(modifier = modifier) {
         Text(text = "Checklists")
     }
 }

@@ -2,8 +2,9 @@ package com.oukschub.checkmate.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -13,32 +14,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.screen.Checklists
+import com.oukschub.checkmate.ui.screen.CreateChecklist
 import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
-    val navController = rememberNavController()
-    val items = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
+fun AppNavigation(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController()
+) {
+    val navBarItems = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     Scaffold(
+        modifier = modifier,
         bottomBar = {
             BottomAppBar(actions = {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                items.forEach { screen ->
+                for (screen in navBarItems) {
                     NavigationBarItem(
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = { navController.navigate(screen.route) },
                         icon = {
                             Icon(
-                                screen.icon,
+                                imageVector = screen.icon!!,
                                 contentDescription = stringResource(screen.resourceId)
                             )
                         },
@@ -46,6 +52,16 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     )
                 }
             })
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.CreateChecklist.route) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.desc_create_checklist)
+                )
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -56,6 +72,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             composable(Screen.Checklists.route) { Checklists() }
             composable(Screen.Home.route) { Home() }
             composable(Screen.Profile.route) { Profile() }
+            composable(Screen.CreateChecklist.route) { CreateChecklist() }
         }
     }
 }

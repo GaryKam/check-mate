@@ -1,6 +1,13 @@
 <resources>
+    // Visible Text
     <string name="app_name">Check Mate</string>
     <string name="checklists">Checklists</string>
     <string name="home">Home</string>
     <string name="profile">Profile</string>
+    <string name="type_placeholder">Type here…</string>
+
+    // Content Description
+    <string name="desc_options">Options</string>
+    <string name="desc_done">Done</string>
+    <string name="desc_create_checklist">Create new checklist</string>
 </resources>

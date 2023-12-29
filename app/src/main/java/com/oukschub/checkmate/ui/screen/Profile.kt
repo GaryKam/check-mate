@@ -26,7 +26,7 @@ import com.oukschub.checkmate.SignInActivity
 @Composable
 fun Profile(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
