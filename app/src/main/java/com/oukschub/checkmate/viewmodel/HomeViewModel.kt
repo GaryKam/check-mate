@@ -2,21 +2,19 @@ package com.oukschub.checkmate.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.data.database.Database
-import com.oukschub.checkmate.data.model.ChecklistItem
+import com.oukschub.checkmate.data.model.Checklist
 
 class HomeViewModel(
-    private val database: Database = Database()
+    database: Database = Database()
 ) : ViewModel() {
-    /*val itemList = mutableStateListOf<ChecklistItem>()
+    private val _checklists = mutableStateListOf<Checklist>()
+    val checklists: List<Checklist> = _checklists
 
-    fun addItem(text: String) {
-        if (text.isNotBlank()) {
-            itemList.add(ChecklistItem(text, false))
+    init {
+        database.loadChecklists(FirebaseAuth.getInstance().currentUser!!.uid) {
+            _checklists.add(it)
         }
     }
-
-    fun updateItem(index: Int, newName: String, newIsChecked: Boolean) {
-        itemList[index] = itemList[index].copy(name = newName, isChecked = newIsChecked)
-    }*/
 }

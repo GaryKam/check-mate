@@ -1,37 +1,38 @@
 package com.oukschub.checkmate.data.database
 
-import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
-import com.oukschub.checkmate.data.model.ChecklistItem
 
 class Database {
     private val firestore = Firebase.firestore
-    private val checklistIds = mutableListOf<String>()
-
-    init {
-        firestore.collection(USERS_COLLECTION)
-            .document("admin")
-            .get()
-            .addOnSuccessListener {
-                Log.d("fiefie", it.data.toString())
-            }
-    }
 
     fun createChecklist(checklist: Checklist, userId: String) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .add(checklist)
             .addOnSuccessListener { checklistId ->
-                val userChecklistRef = firestore.collection(USERS_COLLECTION)
+                firestore.collection(USERS_COLLECTION)
                     .document(userId)
                     .collection(CHECKLISTS_COLLECTION)
-                userChecklistRef.add(mapOf(checklist.title to checklistId))
+                    .add(mapOf("id" to checklistId))
             }
     }
 
-    fun addToChecklist(checklist: String, item: ChecklistItem) {
-        firestore.collection(CHECKLISTS_COLLECTION).add(item)
+    fun loadChecklists(userId: String, onSuccess: (Checklist) -> Unit) {
+        firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .collection(CHECKLISTS_COLLECTION)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                for (document in snapshot.documents) {
+                    val documentRef = document.data?.get("id") as DocumentReference
+                    documentRef.get().addOnSuccessListener {
+                        onSuccess(it.toObject<Checklist>()!!)
+                    }
+                }
+            }
     }
 
     companion object {

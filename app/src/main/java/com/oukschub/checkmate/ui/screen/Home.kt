@@ -15,17 +15,19 @@ fun Home(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel()
 ) {
-    /*Column(
+    Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Checklist(
-            itemList = viewModel.itemList,
-            onUpdateItem = { index, newName, newIsChecked ->
-                viewModel.updateItem(index, newName, newIsChecked)
-            },
-            onAddItem = { text -> viewModel.addItem(text) }
-        )
-    }*/
+        for (checklist in viewModel.checklists) {
+            Checklist(
+                title = checklist.title,
+                itemList = checklist.items,
+                onUpdateTitle = {},
+                onUpdateItem = { _, _, _ -> },
+                onAddItem = {}
+            )
+        }
+    }
 }
