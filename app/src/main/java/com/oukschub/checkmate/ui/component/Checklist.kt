@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +36,7 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 @Composable
 fun Checklist(
     title: String,
-    itemList: SnapshotStateList<ChecklistItem>,
+    itemList: List<ChecklistItem>,
     onUpdateTitle: (String) -> Unit,
     onUpdateItem: (Int, String, Boolean) -> Unit,
     onAddItem: (String) -> Unit,
@@ -80,7 +79,7 @@ private fun Header(title: String, onUpdateTitle: (String) -> Unit) {
 
 @Composable
 private fun Checkboxes(
-    itemList: SnapshotStateList<ChecklistItem>,
+    itemList: List<ChecklistItem>,
     onUpdateItem: (Int, String, Boolean) -> Unit
 ) {
     Column(

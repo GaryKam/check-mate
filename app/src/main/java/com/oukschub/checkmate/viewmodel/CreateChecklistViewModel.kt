@@ -12,7 +12,8 @@ class CreateChecklistViewModel(
     private val database: Database = Database()
 ) : ViewModel() {
     var title = mutableStateOf("")
-    val itemList = mutableStateListOf<ChecklistItem>()
+    private val _itemList = mutableStateListOf<ChecklistItem>()
+    val itemList: List<ChecklistItem> = _itemList
 
     fun updateTitle(text: String) {
         if (text.isNotBlank()) {
@@ -21,12 +22,12 @@ class CreateChecklistViewModel(
     }
 
     fun updateItem(index: Int, newName: String, newIsChecked: Boolean) {
-        itemList[index] = itemList[index].copy(name = newName, isChecked = newIsChecked)
+        _itemList[index] = _itemList[index].copy(name = newName, isChecked = newIsChecked)
     }
 
     fun addItem(text: String) {
         if (text.isNotBlank()) {
-            itemList.add(ChecklistItem(text, false))
+            _itemList.add(ChecklistItem(text, false))
         }
     }
 
