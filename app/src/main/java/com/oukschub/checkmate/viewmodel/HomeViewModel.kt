@@ -2,7 +2,6 @@ package com.oukschub.checkmate.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 
@@ -13,7 +12,7 @@ class HomeViewModel(
     val checklists: List<Checklist> = _checklists
 
     init {
-        database.loadChecklists(FirebaseAuth.getInstance().currentUser!!.uid) {
+        database.loadChecklists {
             _checklists.add(it)
         }
     }

@@ -5,24 +5,25 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
+import com.oukschub.checkmate.util.FirebaseUtil
 
 class Database {
     private val firestore = Firebase.firestore
 
-    fun createChecklist(checklist: Checklist, userId: String) {
+    fun createChecklist(checklist: Checklist) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .add(checklist)
             .addOnSuccessListener { checklistId ->
                 firestore.collection(USERS_COLLECTION)
-                    .document(userId)
+                    .document(FirebaseUtil.getUserId())
                     .collection(CHECKLISTS_COLLECTION)
                     .add(mapOf("id" to checklistId))
             }
     }
 
-    fun loadChecklists(userId: String, onSuccess: (Checklist) -> Unit) {
+    fun loadChecklists(onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
-            .document(userId)
+            .document(FirebaseUtil.getUserId())
             .collection(CHECKLISTS_COLLECTION)
             .get()
             .addOnSuccessListener { snapshot ->
