@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.component
+package com.oukschub.checkmate.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,12 +30,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.data.ChecklistItem
+import com.oukschub.checkmate.data.model.ChecklistItem
 
 @Composable
 fun Checklist(
+    title: String,
     itemList: SnapshotStateList<ChecklistItem>,
+    onUpdateTitle: (String) -> Unit,
     onUpdateItem: (Int, String, Boolean) -> Unit,
     onAddItem: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -45,14 +48,14 @@ fun Checklist(
             .fillMaxWidth()
             .padding(start = 10.dp, top = 50.dp, end = 10.dp)
     ) {
-        Header()
+        Header(title = title, onUpdateTitle = onUpdateTitle)
         Checkboxes(itemList = itemList, onUpdateItem = onUpdateItem)
         InputField(onAddItem = onAddItem)
     }
 }
 
 @Composable
-private fun Header() {
+private fun Header(title: String, onUpdateTitle: (String) -> Unit) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -60,7 +63,11 @@ private fun Header() {
             .fillMaxWidth()
             .padding(start = 20.dp, top = 5.dp, end = 5.dp)
     ) {
-        Text(text = "Checklist Title", style = MaterialTheme.typography.headlineSmall)
+        TextField(
+            value = title,
+            onValueChange = { onUpdateTitle(it) },
+            textStyle = TextStyle(fontSize = 18.sp)
+        )
 
         IconButton(onClick = { /*TODO*/ }) {
             Icon(

@@ -9,4 +9,5 @@
     // Content Description
     <string name="desc_options">Options</string>
     <string name="desc_done">Done</string>
+    <string name="desc_create_checklist">Create new checklist</string>
 </resources>
