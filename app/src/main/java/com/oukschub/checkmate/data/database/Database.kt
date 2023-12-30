@@ -9,7 +9,10 @@ import com.oukschub.checkmate.data.model.Checklist
 class Database {
     private val firestore = Firebase.firestore
 
-    fun createChecklist(checklist: Checklist, userId: String) {
+    fun createChecklist(
+        checklist: Checklist,
+        userId: String
+    ) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .add(checklist)
             .addOnSuccessListener { checklistId ->
@@ -20,7 +23,10 @@ class Database {
             }
     }
 
-    fun loadChecklists(userId: String, onSuccess: (Checklist) -> Unit) {
+    fun loadChecklists(
+        userId: String,
+        onSuccess: (Checklist) -> Unit
+    ) {
         firestore.collection(USERS_COLLECTION)
             .document(userId)
             .collection(CHECKLISTS_COLLECTION)

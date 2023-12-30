@@ -23,7 +23,7 @@ class SignInActivity : ComponentActivity() {
 
     private fun launchSignIn() {
         val signInLauncher = registerForActivityResult(
-            FirebaseAuthUIActivityResultContract(),
+            FirebaseAuthUIActivityResultContract()
         ) { result ->
             onSignInResult(result)
         }
