@@ -96,7 +96,7 @@ ktlint {
     debug = true
     verbose = true
     android = true
-    outputToConsole = false
+    outputToConsole = true
     outputColorName = "RED"
     ignoreFailures = false
 }
