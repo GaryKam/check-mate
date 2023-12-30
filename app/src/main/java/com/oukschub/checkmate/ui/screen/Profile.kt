@@ -17,14 +17,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.FirebaseAuth
-import com.oukschub.checkmate.SignInActivity
+import com.oukschub.checkmate.util.FirebaseUtil
 
 @Composable
-fun Profile(modifier: Modifier = Modifier) {
+fun Profile(
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -69,11 +70,10 @@ fun Profile(modifier: Modifier = Modifier) {
                     Text(text = "Settings")
                 }
 
-                val context = LocalContext.current
                 Button(
                     onClick = {
-                        FirebaseAuth.getInstance().signOut()
-                        context.startActivity(SignInActivity.createIntent(context))
+                        FirebaseUtil.signOut()
+                        onSignOut()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

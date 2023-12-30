@@ -24,9 +24,11 @@ import com.oukschub.checkmate.ui.screen.Checklists
 import com.oukschub.checkmate.ui.screen.CreateChecklist
 import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
+import com.oukschub.checkmate.ui.screen.SignIn
+import com.oukschub.checkmate.util.FirebaseUtil
 
 @Composable
-fun AppNavigation(
+fun CheckMateApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
@@ -66,12 +68,17 @@ fun AppNavigation(
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = if (FirebaseUtil.isLoggedIn()) Screen.Home.route else Screen.SignIn.route,
             modifier = Modifier.padding(paddingValues)
         ) {
+            composable(Screen.SignIn.route) {
+                SignIn(onSignIn = { navController.navigate(Screen.Home.route) })
+            }
             composable(Screen.Checklists.route) { Checklists() }
             composable(Screen.Home.route) { Home() }
-            composable(Screen.Profile.route) { Profile() }
+            composable(Screen.Profile.route) {
+                Profile(onSignOut = { navController.navigate(Screen.SignIn.route) })
+            }
             composable(Screen.CreateChecklist.route) { CreateChecklist() }
         }
     }
