@@ -14,7 +14,8 @@ class Database {
 
     fun addUserToDB() {
         firestore.collection(USERS_COLLECTION)
-            .add(FirebaseAuth.getInstance().currentUser!!.uid)
+            .document(FirebaseUtil.getUserId())
+            .set(mapOf("checklistIds" to emptyList<DocumentReference>()))
     }
 
     fun createChecklist(checklist: Checklist) {
