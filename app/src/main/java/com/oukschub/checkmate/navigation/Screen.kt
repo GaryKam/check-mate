@@ -13,6 +13,7 @@ sealed class Screen(
     @StringRes val resourceId: Int = -1,
     val icon: ImageVector? = null
 ) {
+    data object SignIn : Screen("sign_in")
     data object Checklists : Screen("checklists", R.string.checklists, Icons.Default.List)
     data object Home : Screen("home", R.string.home, Icons.Default.Home)
     data object Profile : Screen("profile", R.string.profile, Icons.Default.Person)
