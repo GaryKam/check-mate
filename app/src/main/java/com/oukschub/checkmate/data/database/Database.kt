@@ -1,7 +1,9 @@
 package com.oukschub.checkmate.data.database
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
@@ -15,22 +17,25 @@ class Database {
             .addOnSuccessListener { checklistId ->
                 firestore.collection(USERS_COLLECTION)
                     .document(userId)
-                    .collection(CHECKLISTS_COLLECTION)
-                    .add(mapOf("id" to checklistId))
+                    .update("checklistIds", FieldValue.arrayUnion(checklistId))
             }
     }
 
     fun loadChecklists(userId: String, onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
             .document(userId)
-            .collection(CHECKLISTS_COLLECTION)
             .get()
             .addOnSuccessListener { snapshot ->
-                for (document in snapshot.documents) {
+/*                for (document in snapshot.documents) {
                     val documentRef = document.data?.get("id") as DocumentReference
                     documentRef.get().addOnSuccessListener {
                         onSuccess(it.toObject<Checklist>()!!)
                     }
+                }*/
+                val checklistIds = snapshot.data?.get("checklistIds")
+                Log.d("HIII", checklistIds.toString())
+                for (id in checklistIds){
+                    onSuccess(id.toObject<Checklist>()!!)
                 }
             }
     }
