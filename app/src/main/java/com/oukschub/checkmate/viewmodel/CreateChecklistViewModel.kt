@@ -20,7 +20,11 @@ class CreateChecklistViewModel(
         }
     }
 
-    fun updateItem(index: Int, newName: String, newIsChecked: Boolean) {
+    fun updateItem(
+        index: Int,
+        newName: String,
+        newIsChecked: Boolean
+    ) {
         _itemList[index] = _itemList[index].copy(name = newName, isChecked = newIsChecked)
     }
 
@@ -30,7 +34,10 @@ class CreateChecklistViewModel(
         }
     }
 
-    fun createChecklist(title: String, items: List<ChecklistItem>) {
+    fun createChecklist(
+        title: String,
+        items: List<ChecklistItem>
+    ) {
         database.createChecklist(Checklist(title, items))
     }
 }

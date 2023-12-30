@@ -54,7 +54,10 @@ fun Checklist(
 }
 
 @Composable
-private fun Header(title: String, onUpdateTitle: (String) -> Unit) {
+private fun Header(
+    title: String,
+    onUpdateTitle: (String) -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -112,9 +115,7 @@ private fun Checkboxes(
 }
 
 @Composable
-private fun InputField(
-    onAddItem: (String) -> Unit
-) {
+private fun InputField(onAddItem: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
 
     TextField(

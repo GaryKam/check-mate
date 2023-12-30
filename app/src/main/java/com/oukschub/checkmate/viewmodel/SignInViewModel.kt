@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.data.database.Database
 
-class SignInViewModel (val database: Database = Database()): ViewModel() {
+class SignInViewModel(
+    private val database: Database = Database()
+) : ViewModel() {
     fun signIn(
         email: String,
         password: String,

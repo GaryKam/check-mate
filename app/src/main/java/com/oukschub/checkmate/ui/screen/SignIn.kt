@@ -39,14 +39,28 @@ fun SignIn(
         )
 
         val context = LocalContext.current
-        Button(onClick = {
-            viewModel.signIn(
-                email = email,
-                password = password,
-                onSuccess = { onSignIn() },
-                onFailure = { Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show() },
-                onError = { Toast.makeText(context, "Please fill in empty textfields", Toast.LENGTH_SHORT).show() }
-            )}
+        Button(
+            onClick = {
+                viewModel.signIn(
+                    email = email,
+                    password = password,
+                    onSuccess = { onSignIn() },
+                    onFailure = {
+                        Toast.makeText(
+                            context,
+                            "Invalid username or password",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onError = {
+                        Toast.makeText(
+                            context,
+                            "Please fill in empty textfields",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+            }
         ) {
             Text(text = "Sign In")
         }

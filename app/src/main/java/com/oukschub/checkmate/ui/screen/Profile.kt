@@ -43,7 +43,8 @@ fun Profile(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    imageVector = Icons.Default.AccountCircle, contentDescription = null,
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
                     modifier = Modifier.size(100.dp),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
