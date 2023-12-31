@@ -106,6 +106,6 @@ private fun CreateChecklistFab(navController: NavHostController) {
     }
 }
 
-private fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
+fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
     return this?.destination?.hierarchy?.any { it.route == destination } ?: false
 }
