@@ -1,5 +1,8 @@
 package com.oukschub.checkmate.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -13,19 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.ui.screen.Checklists
-import com.oukschub.checkmate.ui.screen.CreateChecklist
-import com.oukschub.checkmate.ui.screen.Home
-import com.oukschub.checkmate.ui.screen.Profile
-import com.oukschub.checkmate.ui.screen.SignIn
-import com.oukschub.checkmate.util.FirebaseUtil
 
 @Composable
 fun CheckMateApp(
@@ -34,52 +30,60 @@ fun CheckMateApp(
 ) {
     val navBarItems = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val showFab = !navBackStackEntry.destinationEqualsTo(Screen.Profile.route)
+    val showNavBar = navBackStackEntry.destinationEqualsTo(Screen.Checklists.route)
+        || navBackStackEntry.destinationEqualsTo(Screen.Home.route)
+        || navBackStackEntry.destinationEqualsTo(Screen.Profile.route)
 
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            BottomAppBar(actions = {
-                for (screen in navBarItems) {
-                    NavigationBarItem(
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                        onClick = { navController.navigate(screen.route) },
-                        icon = {
-                            Icon(
-                                imageVector = screen.icon!!,
-                                contentDescription = stringResource(screen.resourceId)
-                            )
-                        },
-                        label = { Text(text = stringResource(screen.resourceId)) }
-                    )
-                }
-            })
+            AnimatedVisibility(
+                visible = showNavBar,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+            ) {
+                BottomAppBar(actions = {
+                    for (screen in navBarItems) {
+                        NavigationBarItem(
+                            selected = navBackStackEntry.destinationEqualsTo(screen.route),
+                            onClick = { navController.navigate(screen.route) },
+                            icon = {
+                                Icon(
+                                    imageVector = screen.icon!!,
+                                    contentDescription = stringResource(screen.resourceId)
+                                )
+                            },
+                            label = { Text(text = stringResource(screen.resourceId)) }
+                        )
+                    }
+                })
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.CreateChecklist.route) }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.desc_create_checklist)
-                )
+            if (showFab) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Screen.CreateChecklist.route) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.desc_create_checklist)
+                    )
+                }
             }
         }
     ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = if (FirebaseUtil.isLoggedIn()) Screen.Home.route else Screen.SignIn.route,
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            composable(Screen.SignIn.route) {
-                SignIn(onSignIn = { navController.navigate(Screen.Home.route) })
-            }
-            composable(Screen.Checklists.route) { Checklists() }
-            composable(Screen.Home.route) { Home() }
-            composable(Screen.Profile.route) {
-                Profile(onSignOut = { navController.navigate(Screen.SignIn.route) })
-            }
-            composable(Screen.CreateChecklist.route) { CreateChecklist() }
-        }
+        AppNavigation(
+            modifier = Modifier.padding(paddingValues),
+            navController = navController
+        )
     }
+}
+
+private fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
+    if (this == null) {
+        return false
+    }
+
+    return this.destination.hierarchy.any { it.route == destination }
 }

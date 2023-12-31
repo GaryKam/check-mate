@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CheckMateTheme(darkTheme = false) {
-                FirebaseAuth.getInstance().signOut()
+                //FirebaseAuth.getInstance().signOut()
                 CheckMateApp()
             }
         }
