@@ -11,20 +11,20 @@ import com.oukschub.checkmate.ui.screen.CreateChecklist
 import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 import com.oukschub.checkmate.ui.screen.SignIn
-import com.oukschub.checkmate.util.FirebaseUtil
 
 @Composable
-fun AppNavigation(
+fun CheckMateNavHost(
+    startDestination: String,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
         navController = navController,
-        startDestination = if (FirebaseUtil.isLoggedIn()) Screen.Home.route else Screen.SignIn.route,
+        startDestination = startDestination,
         modifier = modifier
     ) {
         composable(Screen.SignIn.route) {
-            SignIn(onSignIn = { navController.navigate(Screen.Home.route) })
+            SignIn(onSignIn = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) } })
         }
         composable(Screen.Checklists.route) { Checklists() }
         composable(Screen.Home.route) { Home() }
