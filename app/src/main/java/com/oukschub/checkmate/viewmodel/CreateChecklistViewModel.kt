@@ -38,6 +38,6 @@ class CreateChecklistViewModel(
         title: String,
         items: List<ChecklistItem>
     ) {
-        database.createChecklist(Checklist(title, items))
+        database.addChecklistToDb(Checklist(title, items))
     }
 }

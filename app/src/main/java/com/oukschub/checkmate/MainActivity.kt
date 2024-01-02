@@ -16,7 +16,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CheckMateTheme(darkTheme = false) {
-                FirebaseAuth.getInstance().signOut()
                 CheckMateApp()
             }
         }

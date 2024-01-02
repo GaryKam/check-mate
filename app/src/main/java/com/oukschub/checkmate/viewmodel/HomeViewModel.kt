@@ -12,7 +12,7 @@ class HomeViewModel(
     val checklists: List<Checklist> = _checklists
 
     init {
-        database.loadChecklists {
+        database.loadChecklistsFromDb {
             _checklists.add(it)
         }
     }
