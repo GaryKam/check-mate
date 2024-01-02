@@ -84,7 +84,8 @@ private fun NavigationBar(navController: NavHostController) {
 @Composable
 private fun CreateChecklistFab(navController: NavHostController) {
     val navBackStack by navController.currentBackStackEntryAsState()
-    val showFab = !navBackStack.destinationEqualsTo(Screen.Profile.route)
+    val showFab = navBackStack.destinationEqualsTo(Screen.Checklists.route) ||
+        navBackStack.destinationEqualsTo(Screen.Home.route)
 
     AnimatedVisibility(
         visible = showFab,

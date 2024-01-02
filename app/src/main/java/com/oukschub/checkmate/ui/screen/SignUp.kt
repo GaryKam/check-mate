@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,28 +18,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.viewmodel.SignInViewModel
+import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
-fun SignIn(
-    onSignIn: () -> Unit,
-    onClickSignUp: () -> Unit,
+fun SignUp(
+    onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SignInViewModel = viewModel()
+    viewModel: SignUpViewModel = viewModel()
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -61,35 +57,28 @@ fun SignIn(
         val context = LocalContext.current
         Button(
             onClick = {
-                viewModel.signIn(
+                viewModel.signUp(
                     email = email,
                     password = password,
-                    onSuccess = { onSignIn() },
+                    onSuccess = { onSignUp() },
                     onFailure = {
                         Toast.makeText(
                             context,
-                            R.string.sign_in_failure,
+                            R.string.sign_up_failure,
                             Toast.LENGTH_SHORT
                         ).show()
                     },
                     onError = {
                         Toast.makeText(
                             context,
-                            R.string.sign_in_error,
+                            R.string.sign_up_error,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 )
             }
         ) {
-            Text(text = stringResource(R.string.sign_in))
+            Text(text = stringResource(R.string.sign_up))
         }
-
-        Divider(Modifier.padding(vertical = 50.dp))
-
-        ClickableText(
-            text = AnnotatedString(text = stringResource(R.string.sign_in_prompt_to_sign_up)),
-            onClick = { onClickSignUp() }
-        )
     }
 }

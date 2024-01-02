@@ -15,6 +15,7 @@ import com.oukschub.checkmate.ui.screen.CreateChecklist
 import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 import com.oukschub.checkmate.ui.screen.SignIn
+import com.oukschub.checkmate.ui.screen.SignUp
 
 @Composable
 fun CheckMateNavHost(
@@ -28,7 +29,20 @@ fun CheckMateNavHost(
         modifier = modifier
     ) {
         composable(Screen.SignIn.route) {
-            SignIn(onSignIn = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) } })
+            SignIn(
+                onSignIn = {
+                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
+                },
+                onClickSignUp = { navController.navigate(Screen.SignUp.route) }
+            )
+        }
+
+        composable(Screen.SignUp.route) {
+            SignUp(
+                onSignUp = {
+                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
+                }
+            )
         }
 
         composable(
@@ -59,7 +73,8 @@ fun CheckMateNavHost(
             Home()
         }
 
-        composable(route = Screen.Profile.route,
+        composable(
+            route = Screen.Profile.route,
             enterTransition = { slideScreenIn(false) },
             exitTransition = { slideScreenOut(true) }
         ) {
