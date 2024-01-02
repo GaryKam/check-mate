@@ -11,13 +11,13 @@ import com.oukschub.checkmate.util.FirebaseUtil
 class Database {
     private val firestore = Firebase.firestore
 
-    fun addUserToDB() {
+    fun addUserToDb() {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .set(mapOf("checklistIds" to emptyList<DocumentReference>()))
     }
 
-    fun createChecklist(checklist: Checklist) {
+    fun addChecklistToDb(checklist: Checklist) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .add(checklist)
             .addOnSuccessListener { checklistId ->
@@ -27,7 +27,7 @@ class Database {
             }
     }
 
-    fun loadChecklists(onSuccess: (Checklist) -> Unit) {
+    fun loadChecklistsFromDb(onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()

@@ -18,7 +18,7 @@ class SignInViewModel(
             FirebaseAuth.getInstance()
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    database.addUserToDB()
+                    database.addUserToDb()
                     onSuccess()
                 }
                 .addOnFailureListener {
