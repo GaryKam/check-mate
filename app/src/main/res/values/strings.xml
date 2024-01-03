@@ -10,7 +10,7 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_in_failure">Invalid username or password</string>
     <string name="sign_in_error">Please fill in empty fields</string>
-    <string name="sign_in_prompt_to_sign_up">Don\'t have an account? Sign Up</string>
+    <string name="sign_in_prompt_to_sign_up">Don\'t have an account?</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_up_failure">Failed to create account</string>
     <string name="sign_up_error">Please fill in empty fields</string>
