@@ -42,7 +42,7 @@ fun CheckMateNavHost(
                 onSignUp = {
                     navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
                 },
-                onClickSignIn = {navController.navigate(Screen.SignIn.route)}
+                onClickSignIn = { navController.navigate(Screen.SignIn.route) }
             )
         }
 
