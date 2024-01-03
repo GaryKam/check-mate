@@ -11,8 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -24,13 +31,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
@@ -55,7 +68,7 @@ fun SignIn(
         Column(
             modifier = Modifier
                 .padding(20.dp)
-                .weight(.85F, true),
+                .weight(.85F),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Logo()
@@ -79,7 +92,8 @@ fun SignIn(
 
         Footer(
             onClickSignUp = onClickSignUp,
-            modifier = Modifier.weight(.15F, true)
+            modifier = Modifier
+                .weight(.15F)
         )
     }
 }
@@ -105,18 +119,50 @@ private fun InputFields(
     onChangePassword: (String) -> Unit,
 ) {
     Column {
+        val focusManager = LocalFocusManager.current
+
         OutlinedTextField(
             value = email,
             onValueChange = { onChangeEmail(it) },
-            placeholder = { Text(text = stringResource(R.string.email)) }
+            placeholder = { Text(text = stringResource(R.string.email)) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        val passwordVisualTransformation = PasswordVisualTransformation()
+
+        var isVisible by remember {
+            mutableStateOf(false)
+        }
+
         OutlinedTextField(
             value = password,
             onValueChange = { onChangePassword(it) },
-            placeholder = { Text(text = stringResource(R.string.password)) }
+            placeholder = { Text(text = stringResource(R.string.password)) },
+            visualTransformation = if (isVisible) VisualTransformation.None else passwordVisualTransformation,
+            trailingIcon = {
+                IconButton(onClick = {
+                    isVisible = !isVisible
+                },
+                    modifier = Modifier.focusProperties { canFocus = false }
+                ) {
+                    Icon(
+                        imageVector = if (isVisible) Icons.Default.Search else Icons.Default.Lock,
+                        contentDescription = null
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(
+                // sends data on press enter while focused on password text field
+                onSend = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            singleLine = true
         )
     }
 }
@@ -151,7 +197,7 @@ private fun Footer(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Divider(Modifier.padding(vertical = 30.dp))
