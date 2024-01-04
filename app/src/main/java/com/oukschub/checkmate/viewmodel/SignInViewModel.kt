@@ -1,15 +1,22 @@
 package com.oukschub.checkmate.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.oukschub.checkmate.data.database.Database
 
-class SignInViewModel(
-    private val database: Database = Database()
-) : ViewModel() {
+class SignInViewModel : ViewModel() {
+    var email by mutableStateOf("")
+        private set
+    var password by mutableStateOf("")
+        private set
+    var emailError by mutableStateOf("")
+        private set
+    var passwordError by mutableStateOf("")
+        private set
+
     fun signIn(
-        email: String,
-        password: String,
         onSuccess: () -> Unit,
         onFailure: () -> Unit,
         onError: () -> Unit
@@ -20,7 +27,23 @@ class SignInViewModel(
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { onFailure() }
         } else {
-            onError()
+            if (email.isBlank()) {
+                emailError = "Email is invalid"
+            }
+
+            if (password.isBlank()) {
+                passwordError = "Password is invalid"
+            }
         }
+    }
+
+    fun updateEmail(newEmail: String) {
+        email = newEmail
+        emailError = ""
+    }
+
+    fun updatePassword(newPassword: String) {
+        password = newPassword
+        passwordError = ""
     }
 }

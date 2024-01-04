@@ -3,9 +3,11 @@ package com.oukschub.checkmate.util
 import com.google.firebase.auth.FirebaseAuth
 
 object FirebaseUtil {
-    fun isLoggedIn() = FirebaseAuth.getInstance().currentUser != null
+    private val auth = FirebaseAuth.getInstance()
 
-    fun getUserId() = FirebaseAuth.getInstance().currentUser!!.uid
+    fun isLoggedIn() = auth.currentUser != null
 
-    fun signOut() = FirebaseAuth.getInstance().signOut()
+    fun getUserId() = auth.currentUser!!.uid
+
+    fun signOut() = auth.signOut()
 }
