@@ -20,7 +20,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
-import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
@@ -43,19 +42,17 @@ fun SignUp(
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
-                emailError = "",
-                passwordError = "",
-                onChangeEmail = { viewModel.email = it },
-                onChangePassword = { viewModel.password = it }
+                emailError = viewModel.emailError,
+                passwordError = viewModel.passwordError,
+                onChangeEmail = { viewModel.updateEmail(it) },
+                onChangePassword = { viewModel.updatePassword(it) }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(onClick = {
                 viewModel.signUp(
-                    onSuccess = { onSignUp() },
-                    onFailure = { MessageUtil.displayToast(R.string.sign_up_failure) },
-                    onError = { MessageUtil.displayToast(R.string.sign_up_error) }
+                    onSuccess = { onSignUp() }
                 )
             }) {
                 Text(text = stringResource(R.string.sign_up))

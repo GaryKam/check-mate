@@ -27,7 +27,6 @@ import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.Logo
-import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.SignInViewModel
 
 @Composable
@@ -68,9 +67,7 @@ fun SignIn(
 
             Button(onClick = {
                 viewModel.signIn(
-                    onSuccess = { onSignIn() },
-                    onFailure = { MessageUtil.displayToast(R.string.sign_in_failure) },
-                    onError = { MessageUtil.displayToast(R.string.sign_in_error) }
+                    onSuccess = { onSignIn() }
                 )
             }) {
                 Text(text = stringResource(R.string.sign_in))

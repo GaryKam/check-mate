@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.oukschub.checkmate.R
+import com.oukschub.checkmate.util.MessageUtil
 
 class SignInViewModel : ViewModel() {
     var email by mutableStateOf("")
@@ -16,16 +18,12 @@ class SignInViewModel : ViewModel() {
     var passwordError by mutableStateOf("")
         private set
 
-    fun signIn(
-        onSuccess: () -> Unit,
-        onFailure: () -> Unit,
-        onError: () -> Unit
-    ) {
+    fun signIn(onSuccess: () -> Unit) {
         if (email.isNotBlank() && password.isNotBlank()) {
             FirebaseAuth.getInstance()
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener { onSuccess() }
-                .addOnFailureListener { onFailure() }
+                .addOnFailureListener { MessageUtil.displayToast(R.string.sign_in_failure) }
         } else {
             if (email.isBlank()) {
                 emailError = "Email is invalid"
@@ -37,13 +35,13 @@ class SignInViewModel : ViewModel() {
         }
     }
 
-    fun updateEmail(newEmail: String) {
-        email = newEmail
+    fun updateEmail(email: String) {
+        this.email = email
         emailError = ""
     }
 
-    fun updatePassword(newPassword: String) {
-        password = newPassword
+    fun updatePassword(password: String) {
+        this.password = password
         passwordError = ""
     }
 }
