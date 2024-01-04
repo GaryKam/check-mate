@@ -1,5 +1,8 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -18,18 +21,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.oukschub.checkmate.R
 
 @Composable
-fun PasswordTextField(
+fun InputFields(
+    email: String,
     password: String,
-    focusManager: FocusManager,
+    onChangeEmail: (String) -> Unit,
     onChangePassword: (String) -> Unit,
     modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        val focusManager = LocalFocusManager.current
+
+        EmailTextField(
+            email = email,
+            focusManager = focusManager,
+            onChangeEmail = onChangeEmail
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        PasswordTextField(
+            password = password,
+            focusManager = focusManager,
+            onChangePassword = onChangePassword
+        )
+    }
+}
+
+@Composable
+private fun EmailTextField(
+    email: String,
+    focusManager: FocusManager,
+    onChangeEmail: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = email,
+        onValueChange = { onChangeEmail(it) },
+        placeholder = { Text(text = stringResource(R.string.email)) },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+        ),
+        singleLine = true
+    )
+}
+
+@Composable
+private fun PasswordTextField(
+    password: String,
+    focusManager: FocusManager,
+    onChangePassword: (String) -> Unit
 ) {
     val passwordVisualTransformation = PasswordVisualTransformation()
 
@@ -44,9 +93,7 @@ fun PasswordTextField(
         visualTransformation = if (isVisible) VisualTransformation.None else passwordVisualTransformation,
         trailingIcon = {
             IconButton(
-                onClick = {
-                    isVisible = !isVisible
-                },
+                onClick = { isVisible = !isVisible },
                 modifier = Modifier.focusProperties { canFocus = false }
             ) {
                 Icon(

@@ -8,15 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,9 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.ui.component.EmailTextField
 import com.oukschub.checkmate.ui.component.Footer
-import com.oukschub.checkmate.ui.component.PasswordTextField
+import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
@@ -37,39 +30,38 @@ fun SignUp(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = viewModel()
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
     Column(
-        modifier = modifier
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             modifier = Modifier
                 .padding(20.dp)
-                .weight(.85F, true),
+                .weight(.85F),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             InputFields(
-                email = email,
-                password = password,
-                onChangeEmail = { email = it },
-                onChangePassword = { password = it }
+                email = viewModel.email,
+                password = viewModel.password,
+                onChangeEmail = { viewModel.email = it },
+                onChangePassword = { viewModel.password = it }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            SignUpButton(
-                viewModel = viewModel,
-                email = email,
-                password = password,
-                onSignUp = onSignUp
-            )
+            Button(onClick = {
+                viewModel.signUp(
+                    onSuccess = { onSignUp() },
+                    onFailure = { MessageUtil.displayToast(R.string.sign_up_failure) },
+                    onError = { MessageUtil.displayToast(R.string.sign_up_error) }
+                )
+            }) {
+                Text(text = stringResource(R.string.sign_up))
+            }
         }
 
         Footer(
-            annotatedString = buildAnnotatedString {
+            text = buildAnnotatedString {
                 append(stringResource(R.string.sign_up_prompt_to_sign_in))
                 append(" ")
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
@@ -78,55 +70,5 @@ fun SignUp(
             onClickText = { onClickSignIn() },
             modifier = Modifier.weight(.15F)
         )
-    }
-}
-
-@Composable
-private fun InputFields(
-    email: String,
-    password: String,
-    onChangeEmail: (String) -> Unit,
-    onChangePassword: (String) -> Unit
-) {
-    Column {
-        val focusManager = LocalFocusManager.current
-
-        EmailTextField(
-            email = email,
-            focusManager = focusManager,
-            onChangeEmail = onChangeEmail
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        PasswordTextField(
-            password = password,
-            focusManager = focusManager,
-            onChangePassword = onChangePassword
-        )
-    }
-}
-
-@Composable
-private fun SignUpButton(
-    viewModel: SignUpViewModel,
-    email: String,
-    password: String,
-    onSignUp: () -> Unit
-) {
-    val context = LocalContext.current
-
-    Button(
-        onClick = {
-            viewModel.signUp(
-                email = email,
-                password = password,
-                onSuccess = { onSignUp() },
-                onFailure = { MessageUtil.displayToast(context, R.string.sign_up_failure) },
-                onError = { MessageUtil.displayToast(context, R.string.sign_up_error) }
-            )
-        }
-    ) {
-        Text(text = stringResource(R.string.sign_up))
     }
 }
