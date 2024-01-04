@@ -9,6 +9,14 @@ import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.util.MessageUtil
 
+class PasswordCheck(password: String) {
+    val lengthMinCheck = password.length >= 8
+    val lengthMaxCheck = password.length < 30
+    val digitCheck = password.contains(Regex("\\d"))
+    val characterCheck = password.contains(Regex("[!@#\$%^&*()`~?,<.>]"))
+    val isValid = lengthMinCheck && lengthMaxCheck && digitCheck && characterCheck
+}
+
 class SignUpViewModel(
     private val database: Database = Database()
 ) : ViewModel() {
@@ -21,13 +29,13 @@ class SignUpViewModel(
     var passwordError by mutableStateOf("")
         private set
     private val emailRegex = Regex("^\\S+@\\S+\\.\\S+$")
-    private val passwordRegex = Regex("^(?=\\S+\$).{8,20}\$")
 
     fun signUp(onSuccess: () -> Unit) {
         val validEmail = emailRegex.matches(email)
-        val validPassword = passwordRegex.matches(password)
 
-        if (validEmail && validPassword) {
+        val passwordCheck = PasswordCheck(password)
+
+        if (validEmail && passwordCheck.isValid) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     database.addUserToDb()
@@ -38,11 +46,29 @@ class SignUpViewModel(
                 }
         } else {
             if (!validEmail) {
-                emailError = "Email is invalid"
+                emailError = MessageUtil.getStringFromRes(R.string.sign_up_email_invalid)
             }
 
-            if (!validPassword) {
-                passwordError = "Password is invalid"
+            var passwordErrorMessage = ""
+
+            if (!passwordCheck.lengthMinCheck) {
+                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_min_length)
+            }
+
+            if (!passwordCheck.lengthMaxCheck) {
+                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_max_length)
+            }
+
+            if (!passwordCheck.digitCheck) {
+                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_digit)
+            }
+
+            if (!passwordCheck.characterCheck) {
+                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_character)
+            }
+
+            if (!passwordCheck.isValid) {
+                passwordError = passwordErrorMessage
             }
         }
     }

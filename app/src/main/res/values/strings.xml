@@ -15,6 +15,11 @@
     <string name="sign_up_failure">Failed to create account</string>
     <string name="sign_up_error">Please fill in empty fields</string>
     <string name="sign_up_prompt_to_sign_in">Already have an account?</string>
+    <string name="sign_up_email_invalid">Email is invalid</string>
+    <string name="sign_up_pw_min_length">Password is too short\n</string>
+    <string name="sign_up_pw_max_length">Password is too long\n</string>
+    <string name="sign_up_pw_digit">Password needs at least one digit\n</string>
+    <string name="sign_up_pw_character">Password needs at least one special character\n</string>
 
     // Content Description
     <string name="desc_options">Options</string>

@@ -21,4 +21,10 @@ object MessageUtil {
             Toast.LENGTH_SHORT
         ).show()
     }
+
+    fun getStringFromRes(
+        @StringRes resId: Int
+    ): String {
+        return contextRef.get()!!.getString(resId)
+    }
 }
