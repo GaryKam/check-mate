@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
-import com.oukschub.checkmate.ui.component.InputFields
+import com.oukschub.checkmate.ui.component.SignUpInputFields
 import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
@@ -39,13 +40,18 @@ fun SignUp(
                 .weight(.85F),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            InputFields(
+            val focusManager = LocalFocusManager.current
+
+            SignUpInputFields(
                 email = viewModel.email,
                 password = viewModel.password,
+                passwordMatch = viewModel.passwordMatch,
                 emailError = viewModel.emailError,
                 passwordError = viewModel.passwordError,
+                passwordMatchError = viewModel.passwordMatchError,
                 onChangeEmail = { viewModel.updateEmail(it) },
-                onChangePassword = { viewModel.updatePassword(it) }
+                onChangePassword = { viewModel.updatePassword(it) },
+                onChangeMatchPassword = { viewModel.updateMatchPassword(it) }
             )
 
             Spacer(modifier = Modifier.height(10.dp))

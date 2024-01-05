@@ -54,8 +54,52 @@ fun InputFields(
         PasswordTextField(
             password = password,
             errorMessage = passwordError,
+            placeholder = stringResource(R.string.password),
             focusManager = focusManager,
             onChangePassword = onChangePassword
+        )
+    }
+}
+
+@Composable
+fun SignUpInputFields(
+    email: String,
+    password: String,
+    passwordMatch: String,
+    emailError: String,
+    passwordError: String,
+    passwordMatchError: String,
+    onChangeEmail: (String) -> Unit,
+    onChangePassword: (String) -> Unit,
+    onChangeMatchPassword: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        val focusManager = LocalFocusManager.current
+
+        EmailTextField(
+            email = email,
+            errorMessage = emailError,
+            focusManager = focusManager,
+            onChangeEmail = onChangeEmail
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        PasswordTextField(
+            password = password,
+            errorMessage = passwordError,
+            placeholder = stringResource(id = R.string.password),
+            focusManager = focusManager,
+            onChangePassword = onChangePassword
+        )
+
+        PasswordTextField(
+            password = passwordMatch,
+            errorMessage = passwordMatchError,
+            placeholder = stringResource(R.string.repeat_password),
+            focusManager = focusManager,
+            onChangePassword = onChangeMatchPassword
         )
     }
 }
@@ -89,6 +133,7 @@ private fun EmailTextField(
 private fun PasswordTextField(
     password: String,
     errorMessage: String,
+    placeholder: String,
     focusManager: FocusManager,
     onChangePassword: (String) -> Unit
 ) {
@@ -101,7 +146,7 @@ private fun PasswordTextField(
     OutlinedTextField(
         value = password,
         onValueChange = { onChangePassword(it) },
-        placeholder = { Text(text = stringResource(R.string.password)) },
+        placeholder = { Text(text = placeholder) },
         trailingIcon = {
             IconButton(
                 onClick = { isPasswordVisible = !isPasswordVisible },
