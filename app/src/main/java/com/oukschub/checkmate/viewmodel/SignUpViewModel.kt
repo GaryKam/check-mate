@@ -1,6 +1,7 @@
 package com.oukschub.checkmate.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -8,22 +9,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.util.MessageUtil
-
-class PasswordCheck(password: String) {
-    val lengthMinCheck = password.length >= 8
-    val lengthMaxCheck = password.length < 30
-    val lowercaseCheck = password.contains(Regex("[a-z]"))
-    val uppercaseCheck = password.contains(Regex("[A-Z]"))
-    val digitCheck = password.contains(Regex("\\d"))
-    val characterCheck = password.contains(Regex("[!@#\$%^&*()`~?,<.>]"))
-    val isValid =
-        lengthMinCheck &&
-            lengthMaxCheck &&
-            lowercaseCheck &&
-            uppercaseCheck &&
-            digitCheck &&
-            characterCheck
-}
 
 class SignUpViewModel(
     private val database: Database = Database()
@@ -36,18 +21,19 @@ class SignUpViewModel(
         private set
     var emailError by mutableStateOf("")
         private set
-    var passwordError by mutableStateOf("")
-        private set
-    var passwordMatchError by mutableStateOf("")
-        private set
+    private val _passwordChecks = mutableStateListOf<Pair<Boolean, Int>>()
+    val passwordChecks: List<Pair<Boolean, Int>> = _passwordChecks
     private val emailRegex = Regex("^\\S+@\\S+\\.\\S+$")
+    private val passwordChecker = PasswordChecker()
+
+    init {
+        _passwordChecks.addAll(passwordChecker.getChecks())
+    }
 
     fun signUp(onSuccess: () -> Unit) {
         val validEmail = emailRegex.matches(email)
-        val passwordCheck = PasswordCheck(password)
-        val matchPasswordCheck = passwordMatch == password
 
-        if (validEmail && passwordCheck.isValid && matchPasswordCheck) {
+        if (validEmail && passwordChecker.isValidated) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     database.addUserToDb()
@@ -60,40 +46,6 @@ class SignUpViewModel(
             if (!validEmail) {
                 emailError = MessageUtil.getStringFromRes(R.string.sign_up_email_invalid)
             }
-
-            var passwordErrorMessage = ""
-
-            if (!passwordCheck.lengthMinCheck) {
-                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_min_length)
-            }
-
-            if (!passwordCheck.lengthMaxCheck) {
-                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_max_length)
-            }
-
-            if (!passwordCheck.lowercaseCheck) {
-                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_lowercase)
-            }
-
-            if (!passwordCheck.uppercaseCheck) {
-                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_uppercase)
-            }
-
-            if (!passwordCheck.digitCheck) {
-                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_digit)
-            }
-
-            if (!passwordCheck.characterCheck) {
-                passwordErrorMessage += MessageUtil.getStringFromRes(R.string.sign_up_pw_character)
-            }
-
-            if (!passwordCheck.isValid) {
-                passwordError = passwordErrorMessage
-            }
-
-            if (!matchPasswordCheck) {
-                passwordMatchError = MessageUtil.getStringFromRes(R.string.sign_up_pw_match_error)
-            }
         }
     }
 
@@ -104,11 +56,65 @@ class SignUpViewModel(
 
     fun updatePassword(password: String) {
         this.password = password
-        passwordError = ""
+        passwordChecker.check(password, passwordMatch)
+        _passwordChecks.clear()
+        _passwordChecks.addAll(passwordChecker.getChecks())
     }
 
-    fun updateMatchPassword(passwordMatch: String) {
+    fun updatePasswordMatch(passwordMatch: String) {
         this.passwordMatch = passwordMatch
-        passwordMatchError = ""
+        passwordChecker.checkMatch(password, passwordMatch)
+        _passwordChecks.removeLast()
+        _passwordChecks.add(passwordChecker.getChecks().last())
+    }
+
+    private class PasswordChecker {
+        private val lowercaseRegex = Regex("[a-z]")
+        private val uppercaseRegex = Regex("[A-Z]")
+        private val characterRegex = Regex("[!@#\$%^&*()`~?,<.>]")
+        private val digitRegex = Regex("\\d")
+        private var lengthMinCheck = false
+        private var lengthMaxCheck = false
+        private var lowercaseCheck = false
+        private var uppercaseCheck = false
+        private var characterCheck = false
+        private var digitCheck = false
+        private var matchCheck = false
+
+        fun check(
+            password: String,
+            passwordMatch: String
+        ) {
+            lengthMinCheck = password.length >= 8
+            lengthMaxCheck = password.length < 30
+            lowercaseCheck = password.contains(lowercaseRegex)
+            uppercaseCheck = password.contains(uppercaseRegex)
+            characterCheck = password.contains(characterRegex)
+            digitCheck = password.contains(digitRegex)
+            checkMatch(password, passwordMatch)
+        }
+
+        fun checkMatch(
+            password: String,
+            passwordMatch: String
+        ) {
+            matchCheck = password == passwordMatch
+        }
+
+        fun getChecks(): List<Pair<Boolean, Int>> {
+            return listOf(
+                lengthMinCheck to R.string.sign_up_pw_min_length,
+                lengthMaxCheck to R.string.sign_up_pw_max_length,
+                lowercaseCheck to R.string.sign_up_pw_lowercase,
+                uppercaseCheck to R.string.sign_up_pw_uppercase,
+                characterCheck to R.string.sign_up_pw_character,
+                digitCheck to R.string.sign_up_pw_digit,
+                matchCheck to R.string.sign_up_pw_match_error
+            )
+        }
+
+        val isValidated =
+            lengthMinCheck && lengthMaxCheck && lowercaseCheck &&
+                uppercaseCheck && digitCheck && characterCheck && matchCheck
     }
 }

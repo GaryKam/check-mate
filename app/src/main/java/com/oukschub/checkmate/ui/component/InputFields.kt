@@ -5,27 +5,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.oukschub.checkmate.R
 
@@ -35,13 +22,12 @@ fun InputFields(
     password: String,
     emailError: String,
     passwordError: String,
+    focusManager: FocusManager,
     onChangeEmail: (String) -> Unit,
     onChangePassword: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        val focusManager = LocalFocusManager.current
-
         EmailTextField(
             email = email,
             errorMessage = emailError,
@@ -57,49 +43,6 @@ fun InputFields(
             placeholder = stringResource(R.string.password),
             focusManager = focusManager,
             onChangePassword = onChangePassword
-        )
-    }
-}
-
-@Composable
-fun SignUpInputFields(
-    email: String,
-    password: String,
-    passwordMatch: String,
-    emailError: String,
-    passwordError: String,
-    passwordMatchError: String,
-    onChangeEmail: (String) -> Unit,
-    onChangePassword: (String) -> Unit,
-    onChangeMatchPassword: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        val focusManager = LocalFocusManager.current
-
-        EmailTextField(
-            email = email,
-            errorMessage = emailError,
-            focusManager = focusManager,
-            onChangeEmail = onChangeEmail
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        PasswordTextField(
-            password = password,
-            errorMessage = passwordError,
-            placeholder = stringResource(id = R.string.password),
-            focusManager = focusManager,
-            onChangePassword = onChangePassword
-        )
-
-        PasswordTextField(
-            password = passwordMatch,
-            errorMessage = passwordMatchError,
-            placeholder = stringResource(R.string.repeat_password),
-            focusManager = focusManager,
-            onChangePassword = onChangeMatchPassword
         )
     }
 }
@@ -122,54 +65,7 @@ private fun EmailTextField(
         },
         isError = errorMessage.isNotBlank(),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(
-            onNext = { focusManager.moveFocus(FocusDirection.Down) }
-        ),
-        singleLine = true
-    )
-}
-
-@Composable
-private fun PasswordTextField(
-    password: String,
-    errorMessage: String,
-    placeholder: String,
-    focusManager: FocusManager,
-    onChangePassword: (String) -> Unit
-) {
-    val passwordVisualTransformation = PasswordVisualTransformation()
-
-    var isPasswordVisible by remember {
-        mutableStateOf(false)
-    }
-
-    OutlinedTextField(
-        value = password,
-        onValueChange = { onChangePassword(it) },
-        placeholder = { Text(text = placeholder) },
-        trailingIcon = {
-            IconButton(
-                onClick = { isPasswordVisible = !isPasswordVisible },
-                modifier = Modifier.focusProperties { canFocus = false }
-            ) {
-                Icon(
-                    imageVector = if (isPasswordVisible) Icons.Default.Search else Icons.Default.Lock,
-                    contentDescription = null
-                )
-            }
-        },
-        supportingText = {
-            if (errorMessage.isNotBlank()) {
-                Text(text = errorMessage)
-            }
-        },
-        isError = errorMessage.isNotBlank(),
-        visualTransformation = if (isPasswordVisible) VisualTransformation.None else passwordVisualTransformation,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-        keyboardActions = KeyboardActions(
-            // Calls next button down onClick on press enter while focused on password text field.
-            onSend = { focusManager.moveFocus(FocusDirection.Down) }
-        ),
+        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
         singleLine = true
     )
 }

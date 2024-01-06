@@ -17,10 +17,12 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
-import com.oukschub.checkmate.ui.component.SignUpInputFields
+import com.oukschub.checkmate.ui.component.InputFields
+import com.oukschub.checkmate.ui.component.PasswordTextField
 import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
@@ -42,17 +44,25 @@ fun SignUp(
         ) {
             val focusManager = LocalFocusManager.current
 
-            SignUpInputFields(
+            InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
-                passwordMatch = viewModel.passwordMatch,
                 emailError = viewModel.emailError,
-                passwordError = viewModel.passwordError,
-                passwordMatchError = viewModel.passwordMatchError,
+                passwordError = "",
+                focusManager = focusManager,
                 onChangeEmail = { viewModel.updateEmail(it) },
-                onChangePassword = { viewModel.updatePassword(it) },
-                onChangeMatchPassword = { viewModel.updateMatchPassword(it) }
+                onChangePassword = { viewModel.updatePassword(it) }
             )
+
+            PasswordTextField(
+                password = viewModel.passwordMatch,
+                errorMessage = "",
+                placeholder = stringResource(R.string.sign_up_repeat_password),
+                focusManager = focusManager,
+                onChangePassword = { viewModel.updatePasswordMatch(it) }
+            )
+
+            PasswordCheckText(passwordChecks = viewModel.passwordChecks)
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -76,4 +86,24 @@ fun SignUp(
             modifier = Modifier.weight(.15F)
         )
     }
+}
+
+@Composable
+private fun PasswordCheckText(passwordChecks: List<Pair<Boolean, Int>>) {
+    Text(
+        text = buildAnnotatedString {
+            for ((checkStatus, resId) in passwordChecks) {
+                if (checkStatus) {
+                    pushStyle(SpanStyle(color = Color.Gray))
+                    append(stringResource(resId))
+                    pop()
+                } else {
+                    append(stringResource(R.string.red_x))
+                    append(" ")
+                    append(stringResource(resId))
+                }
+            }
+        },
+        fontSize = 12.sp
+    )
 }

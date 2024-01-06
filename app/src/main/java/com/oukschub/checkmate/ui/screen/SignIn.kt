@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -59,6 +60,7 @@ fun SignIn(
                 password = viewModel.password,
                 emailError = viewModel.emailError,
                 passwordError = viewModel.passwordError,
+                focusManager = LocalFocusManager.current,
                 onChangeEmail = { viewModel.updateEmail(it) },
                 onChangePassword = { viewModel.updatePassword(it) }
             )
