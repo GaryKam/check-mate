@@ -1,10 +1,34 @@
 <resources>
-    // Visible Text
+    // General
     <string name="app_name">Check Mate</string>
     <string name="checklists">Checklists</string>
     <string name="home">Home</string>
     <string name="profile">Profile</string>
     <string name="type_placeholder">Type here…</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="red_x">\u274C</string>
+
+    // Sign In
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_prompt_to_sign_up">Don\'t have an account?</string>
+    <string name="sign_in_failure">Credentials are invalid</string>
+    <string name="sign_in_email_error">"Email is invalid"</string>
+    <string name="sign_in_password_error">"Password is invalid"</string>
+
+    // Sign Up
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_repeat_password">Repeat Password</string>
+    <string name="sign_up_prompt_to_sign_in">Already have an account?</string>
+    <string name="sign_up_failure">Failed to create account</string>
+    <string name="sign_up_email_error">Email is invalid</string>
+    <string name="sign_up_pw_min_length">Password is too short\n</string>
+    <string name="sign_up_pw_max_length">Password is too long\n</string>
+    <string name="sign_up_pw_lowercase">Password needs at least one lowercase letter\n</string>
+    <string name="sign_up_pw_uppercase">Password needs at least one uppercase letter\n</string>
+    <string name="sign_up_pw_character">Password needs at least one special character\n</string>
+    <string name="sign_up_pw_digit">Password needs at least one digit\n</string>
+    <string name="sign_up_pw_match_error">Passwords do not match</string>
 
     // Content Description
     <string name="desc_options">Options</string>
