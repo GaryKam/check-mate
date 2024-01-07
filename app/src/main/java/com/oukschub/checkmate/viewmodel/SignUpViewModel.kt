@@ -44,25 +44,25 @@ class SignUpViewModel(
                 }
         } else {
             if (!validEmail) {
-                emailError = MessageUtil.getStringFromRes(R.string.sign_up_email_invalid)
+                emailError = MessageUtil.getStringFromRes(R.string.sign_up_email_error)
             }
         }
     }
 
     fun updateEmail(email: String) {
-        this.email = email
+        this.email = email.trim()
         emailError = ""
     }
 
     fun updatePassword(password: String) {
-        this.password = password
+        this.password = password.trim()
         passwordChecker.check(password, passwordMatch)
         _passwordChecks.clear()
         _passwordChecks.addAll(passwordChecker.getChecks())
     }
 
     fun updatePasswordMatch(passwordMatch: String) {
-        this.passwordMatch = passwordMatch
+        this.passwordMatch = passwordMatch.trim()
         passwordChecker.checkMatch(password, passwordMatch)
         _passwordChecks.removeLast()
         _passwordChecks.add(passwordChecker.getChecks().last())
@@ -74,12 +74,12 @@ class SignUpViewModel(
         private val characterRegex = Regex("[!@#\$%^&*()`~?,<.>]")
         private val digitRegex = Regex("\\d")
         private var lengthMinCheck = false
-        private var lengthMaxCheck = false
+        private var lengthMaxCheck = true
         private var lowercaseCheck = false
         private var uppercaseCheck = false
         private var characterCheck = false
         private var digitCheck = false
-        private var matchCheck = false
+        private var matchCheck = true
 
         fun check(
             password: String,
@@ -98,7 +98,7 @@ class SignUpViewModel(
             password: String,
             passwordMatch: String
         ) {
-            matchCheck = password == passwordMatch
+            matchCheck = password.isNotBlank() && password == passwordMatch
         }
 
         fun getChecks(): List<Pair<Boolean, Int>> {

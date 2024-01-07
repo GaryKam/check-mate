@@ -11,17 +11,17 @@
 
     // Sign In
     <string name="sign_in">Sign In</string>
-    <string name="sign_in_failure">Invalid username or password</string>
-    <string name="sign_in_error">Please fill in empty fields</string>
     <string name="sign_in_prompt_to_sign_up">Don\'t have an account?</string>
+    <string name="sign_in_failure">Credentials are invalid</string>
+    <string name="sign_in_email_error">"Email is invalid"</string>
+    <string name="sign_in_password_error">"Password is invalid"</string>
 
     // Sign Up
     <string name="sign_up">Sign Up</string>
-    <string name="sign_up_failure">Failed to create account</string>
-    <string name="sign_up_error">Please fill in empty fields</string>
-    <string name="sign_up_prompt_to_sign_in">Already have an account?</string>
     <string name="sign_up_repeat_password">Repeat Password</string>
-    <string name="sign_up_email_invalid">Email is invalid</string>
+    <string name="sign_up_prompt_to_sign_in">Already have an account?</string>
+    <string name="sign_up_failure">Failed to create account</string>
+    <string name="sign_up_email_error">Email is invalid</string>
     <string name="sign_up_pw_min_length">Password is too short\n</string>
     <string name="sign_up_pw_max_length">Password is too long\n</string>
     <string name="sign_up_pw_lowercase">Password needs at least one lowercase letter\n</string>

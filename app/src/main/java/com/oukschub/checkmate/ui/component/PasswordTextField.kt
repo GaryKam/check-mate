@@ -2,9 +2,6 @@ package com.oukschub.checkmate.ui.component
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -18,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.firebase.ui.auth.R
 
 @Composable
 fun PasswordTextField(
@@ -47,8 +46,14 @@ fun PasswordTextField(
                 onClick = { isPasswordVisible = !isPasswordVisible },
                 modifier = Modifier.focusProperties { canFocus = false }
             ) {
+                val resId = if (isPasswordVisible) {
+                    R.drawable.design_ic_visibility
+                } else {
+                    R.drawable.design_ic_visibility_off
+                }
+
                 Icon(
-                    imageVector = if (isPasswordVisible) Icons.Default.Search else Icons.Default.Lock,
+                    painter = painterResource(resId),
                     contentDescription = null
                 )
             }

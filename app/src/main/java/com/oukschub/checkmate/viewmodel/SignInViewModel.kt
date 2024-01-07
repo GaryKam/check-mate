@@ -26,11 +26,11 @@ class SignInViewModel : ViewModel() {
                 .addOnFailureListener { MessageUtil.displayToast(R.string.sign_in_failure) }
         } else {
             if (email.isBlank()) {
-                emailError = "Email is invalid"
+                emailError = MessageUtil.getStringFromRes(R.string.sign_in_email_error)
             }
 
             if (password.isBlank()) {
-                passwordError = "Password is invalid"
+                passwordError = MessageUtil.getStringFromRes(R.string.sign_in_password_error)
             }
         }
     }
