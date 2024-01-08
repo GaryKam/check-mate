@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -19,10 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.PasswordTextField
+import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
@@ -47,7 +50,7 @@ fun SignUp(
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
-                emailError = viewModel.emailError,
+                emailError = stringResource(viewModel.emailError),
                 passwordError = "",
                 focusManager = focusManager,
                 onChangeEmail = { viewModel.updateEmail(it) },
@@ -66,9 +69,11 @@ fun SignUp(
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            val context = LocalContext.current
             Button(onClick = {
                 viewModel.signUp(
-                    onSuccess = { onSignUp() }
+                    onSuccess = { onSignUp() },
+                    onFailure = { MessageUtil.displayToast(it, context) }
                 )
             }) {
                 Text(text = stringResource(R.string.sign_up))
@@ -89,7 +94,7 @@ fun SignUp(
 }
 
 @Composable
-private fun PasswordCheckText(passwordChecks: List<Pair<Boolean, Int>>) {
+private fun PasswordCheckText(passwordChecks: ImmutableList<Pair<Boolean, Int>>) {
     Text(
         text = buildAnnotatedString {
             for ((checkStatus, resId) in passwordChecks) {

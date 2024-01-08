@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.data.database.Database
-import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 
 class CreateChecklistViewModel(
@@ -22,10 +21,10 @@ class CreateChecklistViewModel(
 
     fun updateItem(
         index: Int,
-        newName: String,
-        newIsChecked: Boolean
+        name: String,
+        isChecked: Boolean
     ) {
-        _itemList[index] = _itemList[index].copy(name = newName, isChecked = newIsChecked)
+        _itemList[index] = _itemList[index].copy(name = name, isChecked = isChecked)
     }
 
     fun addItem(text: String) {
@@ -38,6 +37,6 @@ class CreateChecklistViewModel(
         title: String,
         items: List<ChecklistItem>
     ) {
-        database.addChecklistToDb(Checklist(title, items))
+        database.addChecklistToDb(title, items)
     }
 }

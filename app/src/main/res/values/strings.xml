@@ -8,6 +8,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="red_x">\u274C</string>
+    <string name="blank" />
 
     // Sign In
     <string name="sign_in">Sign In</string>
@@ -29,6 +30,9 @@
     <string name="sign_up_pw_character">Password needs at least one special character\n</string>
     <string name="sign_up_pw_digit">Password needs at least one digit\n</string>
     <string name="sign_up_pw_match_error">Passwords do not match</string>
+
+    // Checklist
+    <string name="checklist_updated">Checklist has been updated</string>
 
     // Content Description
     <string name="desc_options">Options</string>

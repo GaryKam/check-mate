@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
+import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
@@ -20,11 +23,19 @@ fun Home(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        for (checklist in viewModel.checklists) {
+        val context = LocalContext.current
+
+        for ((index, checklist) in viewModel.checklists.withIndex()) {
             Checklist(
                 title = checklist.title,
                 itemList = checklist.items,
-                onUpdateTitle = {},
+                onUpdateTitle = { title ->
+                    viewModel.updateChecklistTitle(
+                        title = title,
+                        index = index,
+                        onUpdate = { MessageUtil.displayToast(R.string.checklist_updated, context) }
+                    )
+                },
                 onUpdateItem = { _, _, _ -> },
                 onAddItem = {}
             )

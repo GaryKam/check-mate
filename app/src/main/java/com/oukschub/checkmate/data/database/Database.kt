@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
+import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.util.FirebaseUtil
 
 class Database {
@@ -14,17 +15,38 @@ class Database {
     fun addUserToDb() {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
-            .set(mapOf("checklistIds" to emptyList<DocumentReference>()))
+            .set(mapOf(USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>()))
     }
 
-    fun addChecklistToDb(checklist: Checklist) {
+    fun addChecklistToDb(
+        title: String,
+        items: List<ChecklistItem>
+    ) {
+        val id = firestore.collection(CHECKLISTS_COLLECTION).document().id
+
+        val checklist = Checklist(
+            id = id,
+            title = title,
+            items = items
+        )
+
         firestore.collection(CHECKLISTS_COLLECTION)
-            .add(checklist)
-            .addOnSuccessListener { checklistId ->
+            .document(id).set(checklist)
+            .addOnSuccessListener { _ ->
                 firestore.collection(USERS_COLLECTION)
                     .document(FirebaseUtil.getUserId())
-                    .update("checklistIds", FieldValue.arrayUnion(checklistId))
+                    .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
             }
+    }
+
+    fun updateChecklistToDb(
+        checklist: Checklist,
+        onSuccess: () -> Unit
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(checklist.id)
+            .update(CHECKLIST_TITLE_FIELD, checklist.title)
+            .addOnSuccessListener { onSuccess() }
     }
 
     fun loadChecklistsFromDb(onSuccess: (Checklist) -> Unit) {
@@ -32,13 +54,14 @@ class Database {
             .document(FirebaseUtil.getUserId())
             .get()
             .addOnSuccessListener { snapshot ->
-                val checklistRefs =
-                    snapshot.data?.get("checklistIds") as? ArrayList<DocumentReference>
-                if (checklistRefs != null) {
-                    for (reference in checklistRefs) {
-                        reference.get().addOnSuccessListener {
-                            onSuccess(it.toObject<Checklist>()!!)
-                        }
+                val checklistIds =
+                    snapshot.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>
+                if (checklistIds != null) {
+                    for (id in checklistIds) {
+                        firestore.collection(CHECKLISTS_COLLECTION).document(id).get()
+                            .addOnSuccessListener {
+                                onSuccess(it.toObject<Checklist>()!!)
+                            }
                     }
                 }
             }
@@ -46,6 +69,9 @@ class Database {
 
     companion object {
         private const val CHECKLISTS_COLLECTION = "checklists"
+        private const val CHECKLIST_TITLE_FIELD = "title"
+
         private const val USERS_COLLECTION = "users"
+        private const val USER_CHECKLIST_IDS_FIELD = "checklistIds"
     }
 }

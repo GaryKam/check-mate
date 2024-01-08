@@ -6,7 +6,7 @@ import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 
 class HomeViewModel(
-    database: Database = Database()
+    private val database: Database = Database()
 ) : ViewModel() {
     private val _checklists = mutableStateListOf<Checklist>()
     val checklists: List<Checklist> = _checklists
@@ -15,5 +15,17 @@ class HomeViewModel(
         database.loadChecklistsFromDb {
             _checklists.add(it)
         }
+    }
+
+    fun updateChecklistTitle(
+        title: String,
+        index: Int,
+        onUpdate: () -> Unit
+    ) {
+        _checklists[index] = _checklists[index].copy(title = title)
+        database.updateChecklistToDb(
+            checklist = _checklists[index],
+            onSuccess = { onUpdate() }
+        )
     }
 }
