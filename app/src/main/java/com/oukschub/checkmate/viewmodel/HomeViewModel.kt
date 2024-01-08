@@ -18,7 +18,7 @@ class HomeViewModel(
         }
     }
 
-    fun updateChecklistTitle(
+    fun changeChecklistTitle(
         title: String,
         index: Int
     ) {
@@ -28,18 +28,18 @@ class HomeViewModel(
     fun sendChecklistTitle(
         title: String,
         index: Int,
-        onUpdate: (Int) -> Unit
+        onComplete: (Int) -> Unit
     ) {
         if (title.isNotEmpty()) {
-            database.updateChecklistToDb(
+            database.updateChecklistInDb(
                 checklist = _checklists[index],
                 onSuccess = {
                     _checklists[index] = _checklists[index].copy(title = title)
-                    onUpdate(R.string.checklist_update)
+                    onComplete(R.string.checklist_update)
                 }
             )
         } else {
-            onUpdate(R.string.checklist_update_error)
+            onComplete(R.string.checklist_update_error)
         }
     }
 }

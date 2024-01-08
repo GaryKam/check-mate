@@ -54,19 +54,19 @@ class SignUpViewModel(
         }
     }
 
-    fun updateEmail(email: String) {
+    fun changeEmail(email: String) {
         this.email = email.trim()
         emailError = R.string.blank
     }
 
-    fun updatePassword(password: String) {
+    fun changePassword(password: String) {
         this.password = password.trim()
         passwordChecker.check(password, passwordMatch)
         _passwordChecks.clear()
         _passwordChecks.addAll(passwordChecker.getChecks())
     }
 
-    fun updatePasswordMatch(passwordMatch: String) {
+    fun changePasswordMatch(passwordMatch: String) {
         this.passwordMatch = passwordMatch.trim()
         passwordChecker.checkMatch(password, passwordMatch)
         _passwordChecks[_passwordChecks.lastIndex] = passwordChecker.getChecks().last()

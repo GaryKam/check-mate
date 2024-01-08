@@ -38,12 +38,12 @@ class SignInViewModel : ViewModel() {
         }
     }
 
-    fun updateEmail(email: String) {
+    fun changeEmail(email: String) {
         this.email = email
         emailError = R.string.blank
     }
 
-    fun updatePassword(password: String) {
+    fun changePassword(password: String) {
         this.password = password
         passwordError = R.string.blank
     }

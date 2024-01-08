@@ -28,26 +28,21 @@ fun Home(
             Checklist(
                 title = checklist.title,
                 itemList = checklist.items,
-                onUpdateTitle = { title ->
-                    viewModel.updateChecklistTitle(
+                onTitleChange = { title ->
+                    viewModel.changeChecklistTitle(
                         title = title,
                         index = index,
                     )
                 },
-                onSendTitle = {
+                onTitleSend = { title ->
                     viewModel.sendChecklistTitle(
-                        title = it,
+                        title = title,
                         index = index,
-                        onUpdate = { resId ->
-                            MessageUtil.displayToast(
-                                resId,
-                                context
-                            )
-                        }
+                        onComplete = { MessageUtil.displayToast(context, it) }
                     )
                 },
-                onUpdateItem = { _, _, _ -> },
-                onAddItem = {}
+                onItemChange = { _, _, _ -> },
+                onItemCreate = {}
             )
         }
     }

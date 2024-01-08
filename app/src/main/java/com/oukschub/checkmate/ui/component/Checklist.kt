@@ -37,10 +37,10 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 fun Checklist(
     title: String,
     itemList: List<ChecklistItem>,
-    onUpdateTitle: (String) -> Unit,
-    onSendTitle: (String) -> Unit,
-    onUpdateItem: (Int, String, Boolean) -> Unit,
-    onAddItem: (String) -> Unit,
+    onTitleChange: (String) -> Unit,
+    onTitleSend: (String) -> Unit,
+    onItemChange: (Int, String, Boolean) -> Unit,
+    onItemCreate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
@@ -48,17 +48,17 @@ fun Checklist(
             .fillMaxWidth()
             .padding(start = 10.dp, top = 50.dp, end = 10.dp)
     ) {
-        Header(title = title, onUpdateTitle = onUpdateTitle, onSendTitle = onSendTitle)
-        Checkboxes(itemList = itemList, onUpdateItem = onUpdateItem)
-        InputField(onAddItem = onAddItem)
+        Header(title = title, onTitleChange = onTitleChange, onTitleSend = onTitleSend)
+        Checkboxes(itemList = itemList, onItemChange = onItemChange)
+        InputField(onItemCreate = onItemCreate)
     }
 }
 
 @Composable
 private fun Header(
     title: String,
-    onUpdateTitle: (String) -> Unit,
-    onSendTitle: (String) -> Unit
+    onTitleChange: (String) -> Unit,
+    onTitleSend: (String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,10 +69,10 @@ private fun Header(
     ) {
         TextField(
             value = title,
-            onValueChange = { onUpdateTitle(it) },
+            onValueChange = { onTitleChange(it) },
             textStyle = TextStyle(fontSize = 18.sp),
             trailingIcon = {
-                IconButton(onClick = { onSendTitle(title) }) {
+                IconButton(onClick = { onTitleSend(title) }) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = stringResource(R.string.desc_done)
@@ -93,7 +93,7 @@ private fun Header(
 @Composable
 private fun Checkboxes(
     itemList: List<ChecklistItem>,
-    onUpdateItem: (Int, String, Boolean) -> Unit
+    onItemChange: (Int, String, Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -110,12 +110,12 @@ private fun Checkboxes(
             ) {
                 Checkbox(
                     checked = item.isChecked,
-                    onCheckedChange = { onUpdateItem(index, item.name, it) }
+                    onCheckedChange = { onItemChange(index, item.name, it) }
                 )
 
                 BasicTextField(
                     value = item.name,
-                    onValueChange = { onUpdateItem(index, it, item.isChecked) },
+                    onValueChange = { onItemChange(index, it, item.isChecked) },
                     enabled = !item.isChecked,
                     textStyle = TextStyle(textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None)
                 )
@@ -125,7 +125,7 @@ private fun Checkboxes(
 }
 
 @Composable
-private fun InputField(onAddItem: (String) -> Unit) {
+private fun InputField(onItemCreate: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
 
     TextField(
@@ -135,7 +135,7 @@ private fun InputField(onAddItem: (String) -> Unit) {
         placeholder = { Text(text = stringResource(R.string.type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
-                onAddItem(text)
+                onItemCreate(text)
                 text = ""
             }) {
                 Icon(

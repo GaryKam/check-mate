@@ -30,7 +30,7 @@ import com.oukschub.checkmate.viewmodel.SignInViewModel
 @Composable
 fun SignIn(
     onSignIn: () -> Unit,
-    onClickSignUp: () -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel()
 ) {
@@ -56,8 +56,8 @@ fun SignIn(
                 emailError = stringResource(viewModel.emailError),
                 passwordError = stringResource(viewModel.passwordError),
                 focusManager = LocalFocusManager.current,
-                onChangeEmail = { viewModel.updateEmail(it) },
-                onChangePassword = { viewModel.updatePassword(it) }
+                onEmailChange = { viewModel.changeEmail(it) },
+                onPasswordChange = { viewModel.changePassword(it) }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -66,7 +66,7 @@ fun SignIn(
             Button(onClick = {
                 viewModel.signIn(
                     onSuccess = { onSignIn() },
-                    onFailure = { MessageUtil.displayToast(it, context) }
+                    onFailure = { MessageUtil.displayToast(context, it) }
                 )
             }) {
                 Text(text = stringResource(R.string.sign_in))
@@ -80,7 +80,7 @@ fun SignIn(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_up))
             },
-            onClickText = { onClickSignUp() },
+            onTextClick = { onSignUpClick() },
             modifier = Modifier.weight(.15F)
         )
     }

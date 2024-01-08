@@ -25,12 +25,12 @@ fun CreateChecklist(
         Checklist(
             title = viewModel.title.value,
             itemList = viewModel.itemList,
-            onUpdateTitle = { viewModel.updateTitle(it) },
-            onSendTitle = {},
-            onUpdateItem = { index, name, isChecked ->
-                viewModel.updateItem(index, name, isChecked)
+            onTitleChange = { viewModel.changeChecklistTitle(it) },
+            onTitleSend = {},
+            onItemChange = { index, name, isChecked ->
+                viewModel.changeChecklistItem(index, name, isChecked)
             },
-            onAddItem = { text -> viewModel.addItem(text) }
+            onItemCreate = { text -> viewModel.createChecklistItem(text) }
         )
 
         Button(

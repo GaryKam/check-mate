@@ -6,8 +6,8 @@ import androidx.annotation.StringRes
 
 object MessageUtil {
     fun displayToast(
+        context: Context,
         @StringRes resId: Int,
-        context: Context
     ) {
         Toast.makeText(
             context,

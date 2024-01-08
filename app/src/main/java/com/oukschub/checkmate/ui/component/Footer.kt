@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Footer(
     text: AnnotatedString,
-    onClickText: () -> Unit,
+    onTextClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -24,7 +24,7 @@ fun Footer(
 
         ClickableText(
             text = text,
-            onClick = { onClickText() }
+            onClick = { onTextClick() }
         )
     }
 }

@@ -39,7 +39,7 @@ class Database {
             }
     }
 
-    fun updateChecklistToDb(
+    fun updateChecklistInDb(
         checklist: Checklist,
         onSuccess: () -> Unit
     ) {
