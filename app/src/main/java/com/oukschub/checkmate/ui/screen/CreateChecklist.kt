@@ -26,6 +26,7 @@ fun CreateChecklist(
             title = viewModel.title.value,
             itemList = viewModel.itemList,
             onUpdateTitle = { viewModel.updateTitle(it) },
+            onSendTitle = {},
             onUpdateItem = { index, name, isChecked ->
                 viewModel.updateItem(index, name, isChecked)
             },

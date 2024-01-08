@@ -38,6 +38,7 @@ fun Checklist(
     title: String,
     itemList: List<ChecklistItem>,
     onUpdateTitle: (String) -> Unit,
+    onSendTitle: (String) -> Unit,
     onUpdateItem: (Int, String, Boolean) -> Unit,
     onAddItem: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -47,7 +48,7 @@ fun Checklist(
             .fillMaxWidth()
             .padding(start = 10.dp, top = 50.dp, end = 10.dp)
     ) {
-        Header(title = title, onUpdateTitle = onUpdateTitle)
+        Header(title = title, onUpdateTitle = onUpdateTitle, onSendTitle = onSendTitle)
         Checkboxes(itemList = itemList, onUpdateItem = onUpdateItem)
         InputField(onAddItem = onAddItem)
     }
@@ -56,7 +57,8 @@ fun Checklist(
 @Composable
 private fun Header(
     title: String,
-    onUpdateTitle: (String) -> Unit
+    onUpdateTitle: (String) -> Unit,
+    onSendTitle: (String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -68,7 +70,15 @@ private fun Header(
         TextField(
             value = title,
             onValueChange = { onUpdateTitle(it) },
-            textStyle = TextStyle(fontSize = 18.sp)
+            textStyle = TextStyle(fontSize = 18.sp),
+            trailingIcon = {
+                IconButton(onClick = { onSendTitle(title) }) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = stringResource(R.string.desc_done)
+                    )
+                }
+            }
         )
 
         IconButton(onClick = { /*TODO*/ }) {

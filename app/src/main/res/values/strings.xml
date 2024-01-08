@@ -32,7 +32,8 @@
     <string name="sign_up_pw_match_error">Passwords do not match</string>
 
     // Checklist
-    <string name="checklist_updated">Checklist has been updated</string>
+    <string name="checklist_update">Checklist has been updated</string>
+    <string name="checklist_update_error">Checklist failed to update</string>
 
     // Content Description
     <string name="desc_options">Options</string>

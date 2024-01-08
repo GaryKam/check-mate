@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.HomeViewModel
@@ -33,7 +32,18 @@ fun Home(
                     viewModel.updateChecklistTitle(
                         title = title,
                         index = index,
-                        onUpdate = { MessageUtil.displayToast(R.string.checklist_updated, context) }
+                    )
+                },
+                onSendTitle = {
+                    viewModel.sendChecklistTitle(
+                        title = it,
+                        index = index,
+                        onUpdate = { resId ->
+                            MessageUtil.displayToast(
+                                resId,
+                                context
+                            )
+                        }
                     )
                 },
                 onUpdateItem = { _, _, _ -> },
