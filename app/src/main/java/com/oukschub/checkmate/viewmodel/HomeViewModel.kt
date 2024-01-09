@@ -13,8 +13,13 @@ class HomeViewModel(
     val checklists: List<Checklist> = _checklists
 
     init {
+        loadChecklistsFromDb()
+    }
+
+    fun loadChecklistsFromDb(onLoadSuccess: () -> Unit = {}) {
         database.loadChecklistsFromDb {
             _checklists.add(it)
+            onLoadSuccess()
         }
     }
 
@@ -38,6 +43,17 @@ class HomeViewModel(
                     onComplete(R.string.checklist_update)
                 }
             )
+        } else {
+            onComplete(R.string.checklist_update_error)
+        }
+    }
+
+    fun sendChecklistItem(
+        name: String,
+        onComplete: (Int) -> Unit
+    ) {
+        if (name.isNotEmpty()) {
+            onComplete(R.string.checklist_update)
         } else {
             onComplete(R.string.checklist_update_error)
         }

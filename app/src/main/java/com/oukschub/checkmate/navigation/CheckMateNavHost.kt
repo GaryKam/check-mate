@@ -82,7 +82,9 @@ fun CheckMateNavHost(
             Profile(onSignOutClick = { navController.navigate(Screen.SignIn.route) })
         }
 
-        composable(Screen.CreateChecklist.route) { CreateChecklist() }
+        composable(Screen.CreateChecklist.route) {
+            CreateChecklist(onCreateClick = { navController.navigate(Screen.Home.route) })
+        }
     }
 }
 

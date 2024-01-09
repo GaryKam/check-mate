@@ -11,11 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
+import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun CreateChecklist(
+    onCreateClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CreateChecklistViewModel = viewModel()
+    viewModel: CreateChecklistViewModel = viewModel(),
+    homeViewModel: HomeViewModel = viewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -34,7 +37,10 @@ fun CreateChecklist(
         )
 
         Button(
-            onClick = { viewModel.createChecklist(viewModel.title.value, viewModel.itemList) }
+            onClick = {
+                viewModel.createChecklist(viewModel.title.value, viewModel.itemList)
+                homeViewModel.loadChecklistsFromDb { onCreateClick() }
+            }
         ) {
             Text(text = "Create")
         }
