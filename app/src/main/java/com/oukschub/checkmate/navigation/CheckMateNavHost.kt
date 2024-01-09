@@ -83,7 +83,7 @@ fun CheckMateNavHost(
         }
 
         composable(Screen.CreateChecklist.route) {
-            CreateChecklist(onCreateClick = { navController.navigate(Screen.Home.route) })
+            CreateChecklist(onCreateChecklist = { navController.navigate(Screen.Home.route) })
         }
     }
 }

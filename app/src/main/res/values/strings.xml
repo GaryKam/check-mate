@@ -34,9 +34,10 @@
     // Checklist
     <string name="checklist_update">Checklist has been updated</string>
     <string name="checklist_update_error">Checklist failed to update</string>
+    <string name="checklist_delete">Delete Checklist</string>
 
     // Content Description
-    <string name="desc_options">Options</string>
+    <string name="desc_checklist_options">Checklist options</string>
     <string name="desc_done">Done</string>
     <string name="desc_create_checklist">Create new checklist</string>
 </resources>

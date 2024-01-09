@@ -13,6 +13,7 @@ class CreateChecklistViewModel(
 ) : ViewModel() {
     var title = mutableStateOf("")
     var isCreatingChecklist by mutableStateOf(false)
+        private set
     private val _items = mutableStateListOf<ChecklistItem>()
     val items: List<ChecklistItem> = _items
 
@@ -36,17 +37,20 @@ class CreateChecklistViewModel(
         }
     }
 
-    fun createChecklist(
+    fun createChecklistInDb(
         title: String,
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
     ) {
         isCreatingChecklist = true
 
-        database.addChecklistToDb(
+        database.addChecklist(
             title = title,
             items = items,
-            onSuccess = onSuccess
+            onSuccess = {
+                onSuccess()
+                isCreatingChecklist = false
+            }
         )
     }
 }

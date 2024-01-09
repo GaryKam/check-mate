@@ -34,15 +34,16 @@ fun Home(
                         index = index,
                     )
                 },
-                onTitleSend = { title ->
-                    viewModel.sendChecklistTitle(
+                onTitleUpdate = { title ->
+                    viewModel.updateChecklistTitleInDb(
                         title = title,
                         index = index,
                         onComplete = { MessageUtil.displayToast(context, it) }
                     )
                 },
                 onItemChange = { _, _, _ -> },
-                onItemCreate = {}
+                onItemCreate = {},
+                onChecklistDelete = { viewModel.deleteChecklistFromDb(checklist) }
             )
         }
     }

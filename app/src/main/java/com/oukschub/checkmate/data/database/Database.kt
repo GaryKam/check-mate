@@ -12,13 +12,13 @@ import com.oukschub.checkmate.util.FirebaseUtil
 class Database {
     private val firestore = Firebase.firestore
 
-    fun addUserToDb() {
+    fun addUser() {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .set(mapOf(USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>()))
     }
 
-    fun addChecklistToDb(
+    fun addChecklist(
         title: String,
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
@@ -32,16 +32,17 @@ class Database {
         )
 
         firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id).set(checklist)
+            .document(id)
+            .set(checklist)
             .addOnSuccessListener { _ ->
                 firestore.collection(USERS_COLLECTION)
                     .document(FirebaseUtil.getUserId())
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
-                onSuccess()
+                    .addOnSuccessListener { onSuccess() }
             }
     }
 
-    fun updateChecklistInDb(
+    fun updateChecklist(
         checklist: Checklist,
         onSuccess: () -> Unit
     ) {
@@ -51,7 +52,7 @@ class Database {
             .addOnSuccessListener { onSuccess() }
     }
 
-    fun loadChecklistsFromDb(onSuccess: (Checklist) -> Unit) {
+    fun loadChecklists(onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()
@@ -61,11 +62,24 @@ class Database {
                 if (checklistIds != null) {
                     for (id in checklistIds) {
                         firestore.collection(CHECKLISTS_COLLECTION).document(id).get()
-                            .addOnSuccessListener {
-                                onSuccess(it.toObject<Checklist>()!!)
-                            }
+                            .addOnSuccessListener { onSuccess(it.toObject<Checklist>()!!) }
                     }
                 }
+            }
+    }
+
+    fun deleteChecklist(
+        id: String,
+        onSuccess: () -> Unit
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(id)
+            .delete()
+            .addOnSuccessListener {
+                firestore.collection(USERS_COLLECTION)
+                    .document(FirebaseUtil.getUserId())
+                    .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(id))
+                    .addOnSuccessListener { onSuccess() }
             }
     }
 

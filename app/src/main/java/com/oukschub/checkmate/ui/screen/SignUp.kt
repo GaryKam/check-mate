@@ -87,7 +87,7 @@ fun SignUp(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_in))
             },
-            onTextClick = { onSignInClick() },
+            onClick = { onSignInClick() },
             modifier = Modifier.weight(.15F)
         )
     }

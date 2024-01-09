@@ -16,7 +16,7 @@ import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun CreateChecklist(
-    onCreateClick: () -> Unit,
+    onCreateChecklist: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CreateChecklistViewModel = viewModel(),
     homeViewModel: HomeViewModel = viewModel()
@@ -30,22 +30,22 @@ fun CreateChecklist(
             title = viewModel.title.value,
             items = viewModel.items,
             onTitleChange = { viewModel.changeChecklistTitle(it) },
-            onTitleSend = {},
+            onTitleUpdate = {},
             onItemChange = { index, name, isChecked ->
                 viewModel.changeChecklistItem(index, name, isChecked)
             },
-            onItemCreate = { viewModel.createChecklistItem(it) }
+            onItemCreate = { viewModel.createChecklistItem(it) },
+            onChecklistDelete = {}
         )
 
         Button(
             onClick = {
-                viewModel.createChecklist(
+                viewModel.createChecklistInDb(
                     title = viewModel.title.value,
                     items = viewModel.items,
                     onSuccess = {
                         homeViewModel.loadChecklistsFromDb(onSuccess = {
-                            viewModel.isCreatingChecklist = false
-                            onCreateClick()
+                            onCreateChecklist()
                         })
                     }
                 )

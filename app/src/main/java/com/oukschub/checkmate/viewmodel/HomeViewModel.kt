@@ -16,13 +16,6 @@ class HomeViewModel(
         loadChecklistsFromDb(onSuccess = {})
     }
 
-    fun loadChecklistsFromDb(onSuccess: () -> Unit) {
-        database.loadChecklistsFromDb(onSuccess = {
-            _checklists.add(it)
-            onSuccess()
-        })
-    }
-
     fun changeChecklistTitle(
         title: String,
         index: Int
@@ -30,13 +23,22 @@ class HomeViewModel(
         _checklists[index] = _checklists[index].copy(title = title)
     }
 
-    fun sendChecklistTitle(
+    fun loadChecklistsFromDb(onSuccess: () -> Unit) {
+        _checklists.clear()
+
+        database.loadChecklists(onSuccess = {
+            _checklists.add(it)
+            onSuccess()
+        })
+    }
+
+    fun updateChecklistTitleInDb(
         title: String,
         index: Int,
         onComplete: (Int) -> Unit
     ) {
         if (title.isNotEmpty()) {
-            database.updateChecklistInDb(
+            database.updateChecklist(
                 checklist = _checklists[index],
                 onSuccess = {
                     _checklists[index] = _checklists[index].copy(title = title)
@@ -48,7 +50,7 @@ class HomeViewModel(
         }
     }
 
-    fun sendChecklistItem(
+    fun updateChecklistItemInDb(
         name: String,
         onComplete: (Int) -> Unit
     ) {
@@ -57,5 +59,14 @@ class HomeViewModel(
         } else {
             onComplete(R.string.checklist_update_error)
         }
+    }
+
+    fun deleteChecklistFromDb(checklist: Checklist) {
+        database.deleteChecklist(
+            id = checklist.id,
+            onSuccess = {
+                _checklists.remove(checklist)
+            }
+        )
     }
 }

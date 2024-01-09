@@ -2,6 +2,7 @@ package com.oukschub.checkmate.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,9 +41,10 @@ fun Checklist(
     title: String,
     items: List<ChecklistItem>,
     onTitleChange: (String) -> Unit,
-    onTitleSend: (String) -> Unit,
+    onTitleUpdate: (String) -> Unit,
     onItemChange: (Int, String, Boolean) -> Unit,
     onItemCreate: (String) -> Unit,
+    onChecklistDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
@@ -48,7 +52,12 @@ fun Checklist(
             .fillMaxWidth()
             .padding(start = 10.dp, top = 50.dp, end = 10.dp)
     ) {
-        Header(title = title, onTitleChange = onTitleChange, onTitleSend = onTitleSend)
+        Header(
+            title = title,
+            onTitleChange = onTitleChange,
+            onTitleUpdate = onTitleUpdate,
+            onChecklistDelete = onChecklistDelete
+        )
         Checkboxes(items = items, onItemChange = onItemChange)
         InputField(onItemCreate = onItemCreate)
     }
@@ -58,7 +67,8 @@ fun Checklist(
 private fun Header(
     title: String,
     onTitleChange: (String) -> Unit,
-    onTitleSend: (String) -> Unit
+    onTitleUpdate: (String) -> Unit,
+    onChecklistDelete: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -72,7 +82,7 @@ private fun Header(
             onValueChange = { onTitleChange(it) },
             textStyle = TextStyle(fontSize = 18.sp),
             trailingIcon = {
-                IconButton(onClick = { onTitleSend(title) }) {
+                IconButton(onClick = { onTitleUpdate(title) }) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = stringResource(R.string.desc_done)
@@ -81,11 +91,27 @@ private fun Header(
             }
         )
 
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.desc_options)
-            )
+        Box {
+            var isDropdownVisible by remember { mutableStateOf(false) }
+
+            IconButton(onClick = { isDropdownVisible = true }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(R.string.desc_checklist_options)
+                )
+            }
+
+            DropdownMenu(
+                expanded = isDropdownVisible,
+                onDismissRequest = { isDropdownVisible = false }
+            ) {
+                DropdownMenuItem(text = {
+                    Text(text = stringResource(R.string.checklist_delete))
+                }, onClick = {
+                    isDropdownVisible = false
+                    onChecklistDelete()
+                })
+            }
         }
     }
 }
