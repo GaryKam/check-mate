@@ -27,7 +27,7 @@ fun Home(
         for ((index, checklist) in viewModel.checklists.withIndex()) {
             Checklist(
                 title = checklist.title,
-                itemList = checklist.items,
+                items = checklist.items,
                 onTitleChange = { title ->
                     viewModel.changeChecklistTitle(
                         title = title,

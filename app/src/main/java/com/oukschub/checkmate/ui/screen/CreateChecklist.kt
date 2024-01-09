@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,22 +28,34 @@ fun CreateChecklist(
     ) {
         Checklist(
             title = viewModel.title.value,
-            itemList = viewModel.itemList,
+            items = viewModel.items,
             onTitleChange = { viewModel.changeChecklistTitle(it) },
             onTitleSend = {},
             onItemChange = { index, name, isChecked ->
                 viewModel.changeChecklistItem(index, name, isChecked)
             },
-            onItemCreate = { text -> viewModel.createChecklistItem(text) }
+            onItemCreate = { viewModel.createChecklistItem(it) }
         )
 
         Button(
             onClick = {
-                viewModel.createChecklist(viewModel.title.value, viewModel.itemList)
-                homeViewModel.loadChecklistsFromDb { onCreateClick() }
+                viewModel.createChecklist(
+                    title = viewModel.title.value,
+                    items = viewModel.items,
+                    onSuccess = {
+                        homeViewModel.loadChecklistsFromDb(onSuccess = {
+                            viewModel.isCreatingChecklist = false
+                            onCreateClick()
+                        })
+                    }
+                )
             }
         ) {
             Text(text = "Create")
+        }
+
+        if (viewModel.isCreatingChecklist) {
+            CircularProgressIndicator()
         }
     }
 }

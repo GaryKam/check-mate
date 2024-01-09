@@ -13,14 +13,14 @@ class HomeViewModel(
     val checklists: List<Checklist> = _checklists
 
     init {
-        loadChecklistsFromDb()
+        loadChecklistsFromDb(onSuccess = {})
     }
 
-    fun loadChecklistsFromDb(onLoadSuccess: () -> Unit = {}) {
-        database.loadChecklistsFromDb {
+    fun loadChecklistsFromDb(onSuccess: () -> Unit) {
+        database.loadChecklistsFromDb(onSuccess = {
             _checklists.add(it)
-            onLoadSuccess()
-        }
+            onSuccess()
+        })
     }
 
     fun changeChecklistTitle(

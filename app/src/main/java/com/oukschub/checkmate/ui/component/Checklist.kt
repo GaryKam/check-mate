@@ -36,7 +36,7 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 @Composable
 fun Checklist(
     title: String,
-    itemList: List<ChecklistItem>,
+    items: List<ChecklistItem>,
     onTitleChange: (String) -> Unit,
     onTitleSend: (String) -> Unit,
     onItemChange: (Int, String, Boolean) -> Unit,
@@ -49,7 +49,7 @@ fun Checklist(
             .padding(start = 10.dp, top = 50.dp, end = 10.dp)
     ) {
         Header(title = title, onTitleChange = onTitleChange, onTitleSend = onTitleSend)
-        Checkboxes(itemList = itemList, onItemChange = onItemChange)
+        Checkboxes(items = items, onItemChange = onItemChange)
         InputField(onItemCreate = onItemCreate)
     }
 }
@@ -92,7 +92,7 @@ private fun Header(
 
 @Composable
 private fun Checkboxes(
-    itemList: List<ChecklistItem>,
+    items: List<ChecklistItem>,
     onItemChange: (Int, String, Boolean) -> Unit
 ) {
     Column(
@@ -101,7 +101,7 @@ private fun Checkboxes(
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 20.dp)
     ) {
-        for ((index, item) in itemList.withIndex()) {
+        for ((index, item) in items.withIndex()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

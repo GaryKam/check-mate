@@ -20,7 +20,8 @@ class Database {
 
     fun addChecklistToDb(
         title: String,
-        items: List<ChecklistItem>
+        items: List<ChecklistItem>,
+        onSuccess: () -> Unit
     ) {
         val id = firestore.collection(CHECKLISTS_COLLECTION).document().id
 
@@ -36,6 +37,7 @@ class Database {
                 firestore.collection(USERS_COLLECTION)
                     .document(FirebaseUtil.getUserId())
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
+                onSuccess()
             }
     }
 
