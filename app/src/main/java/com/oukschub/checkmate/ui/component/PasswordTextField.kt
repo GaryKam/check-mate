@@ -27,7 +27,7 @@ fun PasswordTextField(
     errorMessage: String,
     placeholder: String,
     focusManager: FocusManager,
-    onChangePassword: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val passwordVisualTransformation = PasswordVisualTransformation()
@@ -38,7 +38,7 @@ fun PasswordTextField(
 
     OutlinedTextField(
         value = password,
-        onValueChange = { onChangePassword(it) },
+        onValueChange = { onPasswordChange(it) },
         modifier = modifier,
         placeholder = { Text(text = placeholder) },
         trailingIcon = {

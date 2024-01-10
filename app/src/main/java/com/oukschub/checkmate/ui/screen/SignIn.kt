@@ -1,22 +1,18 @@
 package com.oukschub.checkmate.ui.screen
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -28,12 +24,13 @@ import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.Logo
+import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.SignInViewModel
 
 @Composable
 fun SignIn(
-    onSignIn: () -> Unit,
-    onClickSignUp: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel()
 ) {
@@ -51,25 +48,25 @@ fun SignIn(
                 modifier = Modifier
                     .padding(30.dp)
                     .size(200.dp)
-                    .border(BorderStroke(4.dp, MaterialTheme.colorScheme.primary), CircleShape)
-                    .clip(CircleShape)
             )
 
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
-                emailError = viewModel.emailError,
-                passwordError = viewModel.passwordError,
+                emailError = stringResource(viewModel.emailError),
+                passwordError = stringResource(viewModel.passwordError),
                 focusManager = LocalFocusManager.current,
-                onChangeEmail = { viewModel.updateEmail(it) },
-                onChangePassword = { viewModel.updatePassword(it) }
+                onEmailChange = { viewModel.changeEmail(it) },
+                onPasswordChange = { viewModel.changePassword(it) }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            val context = LocalContext.current
             Button(onClick = {
                 viewModel.signIn(
-                    onSuccess = { onSignIn() }
+                    onSuccess = { onNavigateToHome() },
+                    onFailure = { MessageUtil.displayToast(context, it) }
                 )
             }) {
                 Text(text = stringResource(R.string.sign_in))
@@ -83,7 +80,7 @@ fun SignIn(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_up))
             },
-            onClickText = { onClickSignUp() },
+            onClick = { onNavigateToSignUp() },
             modifier = Modifier.weight(.15F)
         )
     }

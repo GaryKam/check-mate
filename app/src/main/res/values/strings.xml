@@ -8,6 +8,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="red_x">\u274C</string>
+    <string name="blank" />
 
     // Sign In
     <string name="sign_in">Sign In</string>
@@ -30,8 +31,14 @@
     <string name="sign_up_pw_digit">Password needs at least one digit\n</string>
     <string name="sign_up_pw_match_error">Passwords do not match</string>
 
+    // Checklist
+    <string name="checklist_create">Create Checklist</string>
+    <string name="checklist_update">Checklist has been updated</string>
+    <string name="checklist_update_error">Checklist failed to update</string>
+    <string name="checklist_delete">Delete Checklist</string>
+
     // Content Description
-    <string name="desc_options">Options</string>
+    <string name="desc_checklist_options">Checklist options</string>
     <string name="desc_done">Done</string>
     <string name="desc_create_checklist">Create new checklist</string>
 </resources>

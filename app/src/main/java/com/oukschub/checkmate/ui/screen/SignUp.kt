@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -19,16 +20,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.PasswordTextField
+import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
 fun SignUp(
-    onSignUp: () -> Unit,
-    onClickSignIn: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToSignIn: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = viewModel()
 ) {
@@ -47,11 +50,11 @@ fun SignUp(
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
-                emailError = viewModel.emailError,
+                emailError = stringResource(viewModel.emailError),
                 passwordError = "",
                 focusManager = focusManager,
-                onChangeEmail = { viewModel.updateEmail(it) },
-                onChangePassword = { viewModel.updatePassword(it) }
+                onEmailChange = { viewModel.changeEmail(it) },
+                onPasswordChange = { viewModel.changePassword(it) }
             )
 
             PasswordTextField(
@@ -59,16 +62,18 @@ fun SignUp(
                 errorMessage = "",
                 placeholder = stringResource(R.string.sign_up_repeat_password),
                 focusManager = focusManager,
-                onChangePassword = { viewModel.updatePasswordMatch(it) }
+                onPasswordChange = { viewModel.changePasswordMatch(it) }
             )
 
             PasswordCheckText(passwordChecks = viewModel.passwordChecks)
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            val context = LocalContext.current
             Button(onClick = {
                 viewModel.signUp(
-                    onSuccess = { onSignUp() }
+                    onSuccess = { onNavigateToHome() },
+                    onFailure = { MessageUtil.displayToast(context, it) }
                 )
             }) {
                 Text(text = stringResource(R.string.sign_up))
@@ -82,14 +87,14 @@ fun SignUp(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_in))
             },
-            onClickText = { onClickSignIn() },
+            onClick = { onNavigateToSignIn() },
             modifier = Modifier.weight(.15F)
         )
     }
 }
 
 @Composable
-private fun PasswordCheckText(passwordChecks: List<Pair<Boolean, Int>>) {
+private fun PasswordCheckText(passwordChecks: ImmutableList<Pair<Boolean, Int>>) {
     Text(
         text = buildAnnotatedString {
             for ((checkStatus, resId) in passwordChecks) {

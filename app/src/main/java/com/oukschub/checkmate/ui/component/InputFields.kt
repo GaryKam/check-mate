@@ -23,8 +23,8 @@ fun InputFields(
     emailError: String,
     passwordError: String,
     focusManager: FocusManager,
-    onChangeEmail: (String) -> Unit,
-    onChangePassword: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -32,7 +32,7 @@ fun InputFields(
             email = email,
             errorMessage = emailError,
             focusManager = focusManager,
-            onChangeEmail = onChangeEmail
+            onEmailChange = onEmailChange
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -42,7 +42,7 @@ fun InputFields(
             errorMessage = passwordError,
             placeholder = stringResource(R.string.password),
             focusManager = focusManager,
-            onChangePassword = onChangePassword
+            onPasswordChange = onPasswordChange
         )
     }
 }
@@ -52,11 +52,11 @@ private fun EmailTextField(
     email: String,
     errorMessage: String,
     focusManager: FocusManager,
-    onChangeEmail: (String) -> Unit
+    onEmailChange: (String) -> Unit
 ) {
     OutlinedTextField(
         value = email,
-        onValueChange = { onChangeEmail(it) },
+        onValueChange = { onEmailChange(it) },
         placeholder = { Text(text = stringResource(R.string.email)) },
         supportingText = {
             if (errorMessage.isNotBlank()) {

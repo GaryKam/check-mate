@@ -30,19 +30,19 @@ fun CheckMateNavHost(
     ) {
         composable(Screen.SignIn.route) {
             SignIn(
-                onSignIn = {
+                onNavigateToHome = {
                     navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
                 },
-                onClickSignUp = { navController.navigate(Screen.SignUp.route) }
+                onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) }
             )
         }
 
         composable(Screen.SignUp.route) {
             SignUp(
-                onSignUp = {
+                onNavigateToHome = {
                     navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
                 },
-                onClickSignIn = { navController.navigate(Screen.SignIn.route) }
+                onNavigateToSignIn = { navController.navigate(Screen.SignIn.route) }
             )
         }
 
@@ -79,10 +79,12 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(false) },
             exitTransition = { slideScreenOut(true) }
         ) {
-            Profile(onSignOut = { navController.navigate(Screen.SignIn.route) })
+            Profile(onNavigateToSignIn = { navController.navigate(Screen.SignIn.route) })
         }
 
-        composable(Screen.CreateChecklist.route) { CreateChecklist() }
+        composable(Screen.CreateChecklist.route) {
+            CreateChecklist(onNavigateToHome = { navController.navigate(Screen.Home.route) })
+        }
     }
 }
 

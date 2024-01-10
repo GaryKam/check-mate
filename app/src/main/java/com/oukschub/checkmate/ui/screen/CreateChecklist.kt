@@ -4,18 +4,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
+import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun CreateChecklist(
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CreateChecklistViewModel = viewModel()
+    viewModel: CreateChecklistViewModel = viewModel(),
+    homeViewModel: HomeViewModel = viewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -23,19 +29,33 @@ fun CreateChecklist(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Checklist(
-            title = viewModel.title.value,
-            itemList = viewModel.itemList,
-            onUpdateTitle = { viewModel.updateTitle(it) },
-            onUpdateItem = { index, name, isChecked ->
-                viewModel.updateItem(index, name, isChecked)
+            title = viewModel.title,
+            items = viewModel.items,
+            onTitleChange = { viewModel.changeChecklistTitle(it) },
+            onTitleUpdate = {},
+            onItemChange = { index, name, isChecked ->
+                viewModel.changeChecklistItem(index, name, isChecked)
             },
-            onAddItem = { text -> viewModel.addItem(text) }
+            onItemCreate = { viewModel.createChecklistItem(it) },
+            onChecklistDelete = {}
         )
 
         Button(
-            onClick = { viewModel.createChecklist(viewModel.title.value, viewModel.itemList) }
+            onClick = {
+                viewModel.createChecklistInDb(
+                    onSuccess = {
+                        homeViewModel.loadChecklistsFromDb(onSuccess = {
+                            onNavigateToHome()
+                        })
+                    }
+                )
+            }
         ) {
-            Text(text = "Create")
+            Text(text = stringResource(R.string.checklist_create))
+        }
+
+        if (viewModel.isCreatingChecklist) {
+            CircularProgressIndicator()
         }
     }
 }

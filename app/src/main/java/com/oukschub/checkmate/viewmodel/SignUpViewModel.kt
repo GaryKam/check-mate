@@ -1,14 +1,15 @@
 package com.oukschub.checkmate.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.common.collect.ImmutableList
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.database.Database
-import com.oukschub.checkmate.util.MessageUtil
 
 class SignUpViewModel(
     private val database: Database = Database()
@@ -19,10 +20,11 @@ class SignUpViewModel(
         private set
     var passwordMatch by mutableStateOf("")
         private set
-    var emailError by mutableStateOf("")
+    var emailError by mutableIntStateOf(R.string.blank)
         private set
     private val _passwordChecks = mutableStateListOf<Pair<Boolean, Int>>()
-    val passwordChecks: List<Pair<Boolean, Int>> = _passwordChecks
+    val passwordChecks: ImmutableList<Pair<Boolean, Int>>
+        get() = ImmutableList.copyOf(_passwordChecks)
     private val emailRegex = Regex("^\\S+@\\S+\\.\\S+$")
     private val passwordChecker = PasswordChecker()
 
@@ -30,42 +32,44 @@ class SignUpViewModel(
         _passwordChecks.addAll(passwordChecker.getChecks())
     }
 
-    fun signUp(onSuccess: () -> Unit) {
+    fun signUp(
+        onSuccess: () -> Unit,
+        onFailure: (Int) -> Unit
+    ) {
         val validEmail = emailRegex.matches(email)
 
         if (validEmail && passwordChecker.isValidated) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    database.addUserToDb()
+                    database.addUser()
                     onSuccess()
                 }
                 .addOnFailureListener {
-                    MessageUtil.displayToast(R.string.sign_up_failure)
+                    onFailure(R.string.sign_up_failure)
                 }
         } else {
             if (!validEmail) {
-                emailError = MessageUtil.getStringFromRes(R.string.sign_up_email_error)
+                emailError = R.string.sign_up_email_error
             }
         }
     }
 
-    fun updateEmail(email: String) {
+    fun changeEmail(email: String) {
         this.email = email.trim()
-        emailError = ""
+        emailError = R.string.blank
     }
 
-    fun updatePassword(password: String) {
+    fun changePassword(password: String) {
         this.password = password.trim()
         passwordChecker.check(password, passwordMatch)
         _passwordChecks.clear()
         _passwordChecks.addAll(passwordChecker.getChecks())
     }
 
-    fun updatePasswordMatch(passwordMatch: String) {
+    fun changePasswordMatch(passwordMatch: String) {
         this.passwordMatch = passwordMatch.trim()
         passwordChecker.checkMatch(password, passwordMatch)
-        _passwordChecks.removeLast()
-        _passwordChecks.add(passwordChecker.getChecks().last())
+        _passwordChecks[_passwordChecks.lastIndex] = passwordChecker.getChecks().last()
     }
 
     private class PasswordChecker {
