@@ -23,7 +23,7 @@ import com.oukschub.checkmate.util.FirebaseUtil
 
 @Composable
 fun Profile(
-    onSignOutClick: () -> Unit,
+    onNavigateToSignIn: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -74,7 +74,7 @@ fun Profile(
                 Button(
                     onClick = {
                         FirebaseUtil.signOut()
-                        onSignOutClick()
+                        onNavigateToSignIn()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

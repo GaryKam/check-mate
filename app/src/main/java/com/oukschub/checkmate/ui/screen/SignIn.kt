@@ -29,8 +29,8 @@ import com.oukschub.checkmate.viewmodel.SignInViewModel
 
 @Composable
 fun SignIn(
-    onSignIn: () -> Unit,
-    onSignUpClick: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel()
 ) {
@@ -65,7 +65,7 @@ fun SignIn(
             val context = LocalContext.current
             Button(onClick = {
                 viewModel.signIn(
-                    onSuccess = { onSignIn() },
+                    onSuccess = { onNavigateToHome() },
                     onFailure = { MessageUtil.displayToast(context, it) }
                 )
             }) {
@@ -80,7 +80,7 @@ fun SignIn(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_up))
             },
-            onClick = { onSignUpClick() },
+            onClick = { onNavigateToSignUp() },
             modifier = Modifier.weight(.15F)
         )
     }

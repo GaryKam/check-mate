@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
+import com.oukschub.checkmate.data.model.ChecklistItem
 
 class HomeViewModel(
     private val database: Database = Database()
@@ -17,10 +18,23 @@ class HomeViewModel(
     }
 
     fun changeChecklistTitle(
+        checklistIndex: Int,
         title: String,
-        index: Int
     ) {
-        _checklists[index] = _checklists[index].copy(title = title)
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
+    }
+
+    fun changeChecklistItem(
+        checklistIndex: Int,
+        itemIndex: Int,
+        name: String,
+        isChecked: Boolean
+    ) {
+        val items = _checklists[checklistIndex].items.toMutableList()
+        items[itemIndex] = ChecklistItem(name, isChecked)
+
+        _checklists[checklistIndex] = _checklists[checklistIndex]
+            .copy(items = items)
     }
 
     fun loadChecklistsFromDb(onSuccess: () -> Unit) {
@@ -33,15 +47,16 @@ class HomeViewModel(
     }
 
     fun updateChecklistTitleInDb(
+        checklistIndex: Int,
         title: String,
-        index: Int,
         onComplete: (Int) -> Unit
     ) {
         if (title.isNotEmpty()) {
-            database.updateChecklist(
-                checklist = _checklists[index],
+            database.updateChecklistTitle(
+                id = _checklists[checklistIndex].id,
+                title = title,
                 onSuccess = {
-                    _checklists[index] = _checklists[index].copy(title = title)
+                    _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
                     onComplete(R.string.checklist_update)
                 }
             )
@@ -50,15 +65,11 @@ class HomeViewModel(
         }
     }
 
-    fun updateChecklistItemInDb(
-        name: String,
-        onComplete: (Int) -> Unit
-    ) {
-        if (name.isNotEmpty()) {
-            onComplete(R.string.checklist_update)
-        } else {
-            onComplete(R.string.checklist_update_error)
-        }
+    fun updateChecklistItemInDb(checklistIndex: Int) {
+        database.updateChecklistItems(
+            id = _checklists[checklistIndex].id,
+            items = _checklists[checklistIndex].items
+        )
     }
 
     fun deleteChecklistFromDb(checklist: Checklist) {

@@ -33,13 +33,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
 
 @Composable
 fun Checklist(
     title: String,
-    items: List<ChecklistItem>,
+    items: ImmutableList<ChecklistItem>,
     onTitleChange: (String) -> Unit,
     onTitleUpdate: (String) -> Unit,
     onItemChange: (Int, String, Boolean) -> Unit,

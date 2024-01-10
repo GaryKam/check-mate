@@ -9,14 +9,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
 import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun CreateChecklist(
-    onCreateChecklist: () -> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CreateChecklistViewModel = viewModel(),
     homeViewModel: HomeViewModel = viewModel()
@@ -27,7 +29,7 @@ fun CreateChecklist(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Checklist(
-            title = viewModel.title.value,
+            title = viewModel.title,
             items = viewModel.items,
             onTitleChange = { viewModel.changeChecklistTitle(it) },
             onTitleUpdate = {},
@@ -41,17 +43,15 @@ fun CreateChecklist(
         Button(
             onClick = {
                 viewModel.createChecklistInDb(
-                    title = viewModel.title.value,
-                    items = viewModel.items,
                     onSuccess = {
                         homeViewModel.loadChecklistsFromDb(onSuccess = {
-                            onCreateChecklist()
+                            onNavigateToHome()
                         })
                     }
                 )
             }
         ) {
-            Text(text = "Create")
+            Text(text = stringResource(R.string.checklist_create))
         }
 
         if (viewModel.isCreatingChecklist) {

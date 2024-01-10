@@ -25,11 +25,7 @@ class Database {
     ) {
         val id = firestore.collection(CHECKLISTS_COLLECTION).document().id
 
-        val checklist = Checklist(
-            id = id,
-            title = title,
-            items = items
-        )
+        val checklist = Checklist(id, title, items)
 
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(id)
@@ -42,16 +38,6 @@ class Database {
             }
     }
 
-    fun updateChecklist(
-        checklist: Checklist,
-        onSuccess: () -> Unit
-    ) {
-        firestore.collection(CHECKLISTS_COLLECTION)
-            .document(checklist.id)
-            .update(CHECKLIST_TITLE_FIELD, checklist.title)
-            .addOnSuccessListener { onSuccess() }
-    }
-
     fun loadChecklists(onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
@@ -61,11 +47,33 @@ class Database {
                     snapshot.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>
                 if (checklistIds != null) {
                     for (id in checklistIds) {
-                        firestore.collection(CHECKLISTS_COLLECTION).document(id).get()
+                        firestore.collection(CHECKLISTS_COLLECTION)
+                            .document(id)
+                            .get()
                             .addOnSuccessListener { onSuccess(it.toObject<Checklist>()!!) }
                     }
                 }
             }
+    }
+
+    fun updateChecklistTitle(
+        id: String,
+        title: String,
+        onSuccess: () -> Unit
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(id)
+            .update(CHECKLIST_TITLE_FIELD, title)
+            .addOnSuccessListener { onSuccess() }
+    }
+
+    fun updateChecklistItems(
+        id: String,
+        items: List<ChecklistItem>
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(id)
+            .update(CHECKLIST_ITEMS_FIELD, items)
     }
 
     fun deleteChecklist(
@@ -86,6 +94,7 @@ class Database {
     companion object {
         private const val CHECKLISTS_COLLECTION = "checklists"
         private const val CHECKLIST_TITLE_FIELD = "title"
+        private const val CHECKLIST_ITEMS_FIELD = "items"
 
         private const val USERS_COLLECTION = "users"
         private const val USER_CHECKLIST_IDS_FIELD = "checklistIds"

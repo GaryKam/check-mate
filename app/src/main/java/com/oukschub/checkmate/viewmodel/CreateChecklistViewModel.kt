@@ -5,21 +5,23 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.ChecklistItem
 
 class CreateChecklistViewModel(
     private val database: Database = Database()
 ) : ViewModel() {
-    var title = mutableStateOf("")
+    var title by mutableStateOf("")
     var isCreatingChecklist by mutableStateOf(false)
         private set
     private val _items = mutableStateListOf<ChecklistItem>()
-    val items: List<ChecklistItem> = _items
+    val items: ImmutableList<ChecklistItem>
+        get() = ImmutableList.copyOf(_items)
 
     fun changeChecklistTitle(text: String) {
         if (text.isNotBlank()) {
-            title.value = text
+            title = text
         }
     }
 
@@ -37,16 +39,12 @@ class CreateChecklistViewModel(
         }
     }
 
-    fun createChecklistInDb(
-        title: String,
-        items: List<ChecklistItem>,
-        onSuccess: () -> Unit
-    ) {
+    fun createChecklistInDb(onSuccess: () -> Unit) {
         isCreatingChecklist = true
 
         database.addChecklist(
             title = title,
-            items = items,
+            items = _items,
             onSuccess = {
                 onSuccess()
                 isCreatingChecklist = false
