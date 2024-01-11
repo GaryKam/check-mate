@@ -38,6 +38,7 @@
     <string name="checklist_delete">Delete Checklist</string>
 
     // Content Description
+    <string name="desc_back">Back</string>
     <string name="desc_checklist_options">Checklist options</string>
     <string name="desc_done">Done</string>
     <string name="desc_create_checklist">Create new checklist</string>
