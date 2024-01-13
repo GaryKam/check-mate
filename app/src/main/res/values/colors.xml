@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    // Logo
+    <color name="logo_primary">#40C18D</color>
+    <color name="logo_secondary">#0B4F33</color>
+    <color name="logo_background">#DEFFF1</color>
+
+    // Launcher
+    <color name="launcher_background">#DEFFF1</color>
 </resources>
