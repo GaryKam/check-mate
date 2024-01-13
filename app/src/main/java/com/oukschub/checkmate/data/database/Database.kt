@@ -1,6 +1,8 @@
 package com.oukschub.checkmate.data.database
 
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
@@ -12,10 +14,14 @@ import com.oukschub.checkmate.util.FirebaseUtil
 class Database {
     private val firestore = Firebase.firestore
 
-    fun addUser() {
+    fun addUser(displayName: String) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .set(mapOf(USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>()))
+
+        FirebaseAuth.getInstance().currentUser?.updateProfile(
+            UserProfileChangeRequest.Builder().setDisplayName(displayName).build()
+        )
     }
 
     fun addChecklist(

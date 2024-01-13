@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
+import com.oukschub.checkmate.ui.component.DisplayNameTextField
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.PasswordTextField
@@ -46,6 +47,13 @@ fun SignUp(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val focusManager = LocalFocusManager.current
+
+            DisplayNameTextField(
+                displayName = viewModel.displayName,
+                errorMessage = stringResource(viewModel.displayNameError),
+                focusManager = focusManager,
+                onDisplayNameChange = { viewModel.changeDisplayName(it) }
+            )
 
             InputFields(
                 email = viewModel.email,

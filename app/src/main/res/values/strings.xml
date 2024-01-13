@@ -30,6 +30,7 @@
     <string name="sign_up_pw_character">Password needs at least one special character\n</string>
     <string name="sign_up_pw_digit">Password needs at least one digit\n</string>
     <string name="sign_up_pw_match_error">Passwords do not match</string>
+    <string name="sign_up_display_name">Display Name</string>
 
     // Checklist
     <string name="checklist_create">Create Checklist</string>
@@ -41,4 +42,5 @@
     <string name="desc_checklist_options">Checklist options</string>
     <string name="desc_done">Done</string>
     <string name="desc_create_checklist">Create new checklist</string>
+
 </resources>

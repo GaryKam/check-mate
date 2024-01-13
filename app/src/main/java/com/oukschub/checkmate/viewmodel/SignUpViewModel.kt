@@ -14,11 +14,15 @@ import com.oukschub.checkmate.data.database.Database
 class SignUpViewModel(
     private val database: Database = Database()
 ) : ViewModel() {
+    var displayName by mutableStateOf("")
+        private set
     var email by mutableStateOf("")
         private set
     var password by mutableStateOf("")
         private set
     var passwordMatch by mutableStateOf("")
+        private set
+    var displayNameError by mutableIntStateOf(R.string.blank)
         private set
     var emailError by mutableIntStateOf(R.string.blank)
         private set
@@ -38,10 +42,10 @@ class SignUpViewModel(
     ) {
         val validEmail = emailRegex.matches(email)
 
-        if (validEmail && passwordChecker.isValidated) {
+        if (validEmail && passwordChecker.isValidated()) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    database.addUser()
+                    database.addUser(displayName)
                     onSuccess()
                 }
                 .addOnFailureListener {
@@ -52,6 +56,11 @@ class SignUpViewModel(
                 emailError = R.string.sign_up_email_error
             }
         }
+    }
+
+    fun changeDisplayName(displayName: String) {
+        this.displayName = displayName.trim()
+        displayNameError = R.string.blank
     }
 
     fun changeEmail(email: String) {
@@ -117,8 +126,9 @@ class SignUpViewModel(
             )
         }
 
-        val isValidated =
-            lengthMinCheck && lengthMaxCheck && lowercaseCheck &&
+        fun isValidated(): Boolean {
+            return lengthMinCheck && lengthMaxCheck && lowercaseCheck &&
                 uppercaseCheck && digitCheck && characterCheck && matchCheck
+        }
     }
 }
