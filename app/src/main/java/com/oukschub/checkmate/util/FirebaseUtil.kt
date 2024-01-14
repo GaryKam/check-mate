@@ -9,5 +9,7 @@ object FirebaseUtil {
 
     fun getUserId() = auth.currentUser!!.uid
 
+    fun getDisplayName() = auth.currentUser!!.displayName
+
     fun signOut() = auth.signOut()
 }
