@@ -19,12 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.oukschub.checkmate.util.FirebaseUtil
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oukschub.checkmate.viewmodel.ProfileViewModel
 
 @Composable
 fun Profile(
     onNavigateToSignIn: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = viewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -50,7 +52,7 @@ fun Profile(
                 )
 
                 Text(
-                    text = "Profile",
+                    text = viewModel.getDisplayName(),
                     modifier = Modifier.padding(bottom = 5.dp),
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium,
@@ -73,7 +75,7 @@ fun Profile(
 
                 Button(
                     onClick = {
-                        FirebaseUtil.signOut()
+                        viewModel.signOut()
                         onNavigateToSignIn()
                     },
                     modifier = Modifier.fillMaxWidth()

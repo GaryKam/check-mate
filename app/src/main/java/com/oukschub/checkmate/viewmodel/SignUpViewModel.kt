@@ -14,18 +14,24 @@ import com.oukschub.checkmate.data.database.Database
 class SignUpViewModel(
     private val database: Database = Database()
 ) : ViewModel() {
+    var displayName by mutableStateOf("")
+        private set
     var email by mutableStateOf("")
         private set
     var password by mutableStateOf("")
         private set
     var passwordMatch by mutableStateOf("")
         private set
+    private val _displayNameErrors = mutableStateListOf<Int>()
+    val displayNameErrors: ImmutableList<Int>
+        get() = ImmutableList.copyOf(_displayNameErrors)
     var emailError by mutableIntStateOf(R.string.blank)
         private set
     private val _passwordChecks = mutableStateListOf<Pair<Boolean, Int>>()
     val passwordChecks: ImmutableList<Pair<Boolean, Int>>
         get() = ImmutableList.copyOf(_passwordChecks)
     private val emailRegex = Regex("^\\S+@\\S+\\.\\S+$")
+    private val displayNameChecker = DisplayNameChecker()
     private val passwordChecker = PasswordChecker()
 
     init {
@@ -36,22 +42,35 @@ class SignUpViewModel(
         onSuccess: () -> Unit,
         onFailure: (Int) -> Unit
     ) {
+        displayNameChecker.check(displayName)
+
         val validEmail = emailRegex.matches(email)
 
-        if (validEmail && passwordChecker.isValidated) {
+        if (displayNameChecker.isValidated() && validEmail && passwordChecker.isValidated()) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    database.addUser()
+                    database.addUser(displayName)
                     onSuccess()
                 }
                 .addOnFailureListener {
                     onFailure(R.string.sign_up_failure)
                 }
         } else {
+            for ((checkStatus, errorMessageId) in displayNameChecker.getChecks()) {
+                if (!checkStatus) {
+                    _displayNameErrors.add(errorMessageId)
+                }
+            }
+
             if (!validEmail) {
                 emailError = R.string.sign_up_email_error
             }
         }
+    }
+
+    fun changeDisplayName(displayName: String) {
+        this.displayName = displayName.trim()
+        _displayNameErrors.clear()
     }
 
     fun changeEmail(email: String) {
@@ -70,6 +89,34 @@ class SignUpViewModel(
         this.passwordMatch = passwordMatch.trim()
         passwordChecker.checkMatch(password, passwordMatch)
         _passwordChecks[_passwordChecks.lastIndex] = passwordChecker.getChecks().last()
+    }
+
+    private class DisplayNameChecker {
+        var lengthMinCheck = false
+            private set
+        var lengthMaxCheck = true
+            private set
+        var alphaNumCheck = false
+            private set
+        private val alphaNumRegex = Regex("^[a-zA-Z0-9]+\$")
+
+        fun check(displayName: String) {
+            lengthMinCheck = displayName.length >= 2
+            lengthMaxCheck = displayName.length < 20
+            alphaNumCheck = displayName.matches(alphaNumRegex)
+        }
+
+        fun isValidated(): Boolean {
+            return lengthMinCheck && lengthMaxCheck && alphaNumCheck
+        }
+
+        fun getChecks(): List<Pair<Boolean, Int>> {
+            return listOf(
+                lengthMinCheck to R.string.sign_up_display_name_min_length,
+                lengthMaxCheck to R.string.sign_up_display_name_max_length,
+                alphaNumCheck to R.string.sign_up_display_name_alpha_num
+            )
+        }
     }
 
     private class PasswordChecker {
@@ -117,8 +164,9 @@ class SignUpViewModel(
             )
         }
 
-        val isValidated =
-            lengthMinCheck && lengthMaxCheck && lowercaseCheck &&
+        fun isValidated(): Boolean {
+            return lengthMinCheck && lengthMaxCheck && lowercaseCheck &&
                 uppercaseCheck && digitCheck && characterCheck && matchCheck
+        }
     }
 }
