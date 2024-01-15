@@ -50,7 +50,7 @@ fun SignUp(
 
             DisplayNameTextField(
                 displayName = viewModel.displayName,
-                errorMessage = stringResource(viewModel.displayNameError),
+                errorIds = viewModel.displayNameErrors,
                 focusManager = focusManager,
                 onDisplayNameChange = { viewModel.changeDisplayName(it) }
             )

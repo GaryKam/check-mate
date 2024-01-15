@@ -31,6 +31,9 @@
     <string name="sign_up_pw_digit">Password needs at least one digit\n</string>
     <string name="sign_up_pw_match_error">Passwords do not match</string>
     <string name="sign_up_display_name">Display Name</string>
+    <string name="sign_up_display_name_min_length">Display name is too short\n</string>
+    <string name="sign_up_display_name_max_length">Display name is too long\n</string>
+    <string name="sign_up_display_name_alpha_num">Display name can only contain alphanumeric characters\n</string>
 
     // Checklist
     <string name="checklist_create">Create Checklist</string>
