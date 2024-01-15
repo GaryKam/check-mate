@@ -1,8 +1,6 @@
 package com.oukschub.checkmate.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,10 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,20 +27,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
 
 @Composable
 fun Checklist(
-    title: String,
+    header: @Composable () -> Unit,
     items: ImmutableList<ChecklistItem>,
-    onTitleChange: (String) -> Unit,
-    onTitleUpdate: (String) -> Unit,
     onItemChange: (Int, String, Boolean) -> Unit,
     onItemCreate: (String) -> Unit,
-    onChecklistDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
@@ -53,67 +44,9 @@ fun Checklist(
             .fillMaxWidth()
             .padding(start = 10.dp, top = 50.dp, end = 10.dp)
     ) {
-        Header(
-            title = title,
-            onTitleChange = onTitleChange,
-            onTitleUpdate = onTitleUpdate,
-            onChecklistDelete = onChecklistDelete
-        )
+        header()
         Checkboxes(items = items, onItemChange = onItemChange)
         InputField(onItemCreate = onItemCreate)
-    }
-}
-
-@Composable
-private fun Header(
-    title: String,
-    onTitleChange: (String) -> Unit,
-    onTitleUpdate: (String) -> Unit,
-    onChecklistDelete: () -> Unit,
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, top = 5.dp, end = 5.dp)
-    ) {
-        TextField(
-            value = title,
-            onValueChange = { onTitleChange(it) },
-            textStyle = TextStyle(fontSize = 18.sp),
-            trailingIcon = {
-                IconButton(onClick = { onTitleUpdate(title) }) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = stringResource(R.string.desc_done)
-                    )
-                }
-            }
-        )
-
-        Box {
-            var isDropdownVisible by remember { mutableStateOf(false) }
-
-            IconButton(onClick = { isDropdownVisible = true }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(R.string.desc_checklist_options)
-                )
-            }
-
-            DropdownMenu(
-                expanded = isDropdownVisible,
-                onDismissRequest = { isDropdownVisible = false }
-            ) {
-                DropdownMenuItem(text = {
-                    Text(text = stringResource(R.string.checklist_delete))
-                }, onClick = {
-                    isDropdownVisible = false
-                    onChecklistDelete()
-                })
-            }
-        }
     }
 }
 
