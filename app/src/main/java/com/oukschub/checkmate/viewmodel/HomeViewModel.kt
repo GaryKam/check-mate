@@ -33,8 +33,7 @@ class HomeViewModel(
         val items = _checklists[checklistIndex].items.toMutableList()
         items[itemIndex] = ChecklistItem(name, isChecked)
 
-        _checklists[checklistIndex] = _checklists[checklistIndex]
-            .copy(items = items)
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
     fun loadChecklistsFromDb(onSuccess: () -> Unit) {
@@ -72,12 +71,17 @@ class HomeViewModel(
         )
     }
 
+    fun updateChecklistFavoriteInDb(checklistIndex: Int) {
+        database.updateChecklistFavorite(
+            id = _checklists[checklistIndex].id,
+            isFavorite = true
+        )
+    }
+
     fun deleteChecklistFromDb(checklist: Checklist) {
         database.deleteChecklist(
             id = checklist.id,
-            onSuccess = {
-                _checklists.remove(checklist)
-            }
+            onSuccess = { _checklists.remove(checklist) }
         )
     }
 }

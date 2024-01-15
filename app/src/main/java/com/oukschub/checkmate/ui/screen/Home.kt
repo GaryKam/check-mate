@@ -66,6 +66,7 @@ fun Home(
                                 onComplete = { MessageUtil.displayToast(context, it) }
                             )
                         },
+                        onChecklistRemoveFavorite = { viewModel.updateChecklistFavoriteInDb(checklistIndex) },
                         onChecklistDelete = { viewModel.deleteChecklistFromDb(checklist) }
                     )
                 },
@@ -93,6 +94,7 @@ private fun Header(
     title: String,
     onTitleChange: (String) -> Unit,
     onTitleUpdate: (String) -> Unit,
+    onChecklistRemoveFavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
 ) {
     Row(
@@ -131,6 +133,13 @@ private fun Header(
                 expanded = isDropdownVisible,
                 onDismissRequest = { isDropdownVisible = false }
             ) {
+                DropdownMenuItem(text = {
+                    Text(text = stringResource(R.string.checklist_unfavorite))
+                }, onClick = {
+                    isDropdownVisible = false
+                    onChecklistRemoveFavorite()
+                })
+
                 DropdownMenuItem(text = {
                     Text(text = stringResource(R.string.checklist_delete))
                 }, onClick = {

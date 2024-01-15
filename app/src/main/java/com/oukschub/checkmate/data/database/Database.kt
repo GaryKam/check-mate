@@ -17,7 +17,12 @@ class Database {
     fun addUser(displayName: String) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
-            .set(mapOf(USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>()))
+            .set(
+                mapOf(
+                    USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>(),
+                    USER_CHECKLIST_FAVORITES_FIELD to emptyList<DocumentReference>()
+                )
+            )
 
         FirebaseAuth.getInstance().currentUser?.updateProfile(
             UserProfileChangeRequest.Builder().setDisplayName(displayName).build()
@@ -82,6 +87,22 @@ class Database {
             .update(CHECKLIST_ITEMS_FIELD, items)
     }
 
+    fun updateChecklistFavorite(
+        id: String,
+        isFavorite: Boolean
+    ) {
+        firestore.collection(USERS_COLLECTION)
+            .document(FirebaseUtil.getUserId())
+            .update(
+                USER_CHECKLIST_FAVORITES_FIELD,
+                if (isFavorite) {
+                    FieldValue.arrayUnion(id)
+                } else {
+                    FieldValue.arrayRemove(id)
+                }
+            )
+    }
+
     fun deleteChecklist(
         id: String,
         onSuccess: () -> Unit
@@ -104,5 +125,6 @@ class Database {
 
         private const val USERS_COLLECTION = "users"
         private const val USER_CHECKLIST_IDS_FIELD = "checklistIds"
+        private const val USER_CHECKLIST_FAVORITES_FIELD = "favoriteIds"
     }
 }
