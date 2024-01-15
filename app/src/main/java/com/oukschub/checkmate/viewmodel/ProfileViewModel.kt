@@ -1,12 +1,14 @@
 package com.oukschub.checkmate.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.oukschub.checkmate.data.database.Database
+import com.oukschub.checkmate.util.FirebaseUtil
 
-class ProfileViewModel(
-    private val database: Database = Database()
-) : ViewModel() {
-    fun loadDisplayNameFromDb(): String {
-        return database.loadDisplayName()
+class ProfileViewModel : ViewModel() {
+    fun getDisplayName(): String {
+        return FirebaseUtil.getDisplayName()
+    }
+
+    fun signOut() {
+        FirebaseUtil.signOut()
     }
 }

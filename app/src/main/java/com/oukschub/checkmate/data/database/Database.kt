@@ -44,10 +44,6 @@ class Database {
             }
     }
 
-    fun loadDisplayName(): String {
-        return FirebaseUtil.getDisplayName()!!
-    }
-
     fun loadChecklists(onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
