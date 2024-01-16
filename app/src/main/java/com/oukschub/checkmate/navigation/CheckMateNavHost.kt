@@ -54,7 +54,7 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(true) },
             exitTransition = { slideScreenOut(false) }
         ) {
-            Checklists(viewModel = checklistsViewModel)
+            Checklists(checklistsViewModel)
         }
 
         composable(
