@@ -8,8 +8,16 @@ import javax.inject.Inject
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
+    fun createChecklist(
+        title: String,
+        items: List<ChecklistItem>,
+        onSuccess: () -> Unit
+    ) {
+        database.createChecklist(title, items, onSuccess)
+    }
+
     fun getChecklists(onSuccess: (Checklist) -> Unit) {
-        database.fetchChecklists(onSuccess = { onSuccess(it) })
+        database.fetchChecklists { onSuccess(it) }
     }
 
     fun setChecklistTitle(

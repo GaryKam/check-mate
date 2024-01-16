@@ -17,7 +17,7 @@ class HomeViewModel @Inject constructor(
     val checklists: List<Checklist> = _checklists
 
     init {
-        loadChecklistsFromDb(onSuccess = {})
+        getChecklists {}
     }
 
     fun changeChecklistTitle(
@@ -39,16 +39,18 @@ class HomeViewModel @Inject constructor(
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
-    fun loadChecklistsFromDb(onSuccess: () -> Unit) {
+    fun getChecklists(onSuccess: () -> Unit) {
         _checklists.clear()
 
-        repository.getChecklists(onSuccess = {
-            _checklists.add(it)
-            onSuccess()
-        })
+        repository.getChecklists(
+            onSuccess = {
+                _checklists.add(it)
+                onSuccess()
+            }
+        )
     }
 
-    fun updateChecklistTitleInDb(
+    fun updateChecklistTitle(
         checklistIndex: Int,
         title: String,
         onComplete: (Int) -> Unit
@@ -67,21 +69,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateChecklistItemInDb(checklistIndex: Int) {
+    fun updateChecklistItem(checklistIndex: Int) {
         repository.setChecklistItems(
             id = _checklists[checklistIndex].id,
             items = _checklists[checklistIndex].items
         )
     }
 
-    fun updateChecklistFavoriteInDb(checklistIndex: Int) {
+    fun updateChecklistFavorite(checklistIndex: Int) {
         repository.setChecklistFavorite(
             id = _checklists[checklistIndex].id,
             isFavorite = true
         )
     }
 
-    fun deleteChecklistFromDb(checklist: Checklist) {
+    fun deleteChecklist(checklist: Checklist) {
         repository.deleteChecklist(
             id = checklist.id,
             onSuccess = { _checklists.remove(checklist) }

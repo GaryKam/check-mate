@@ -53,39 +53,20 @@ fun Home(
                 header = {
                     Header(
                         title = checklist.title,
-                        onTitleChange = { title ->
-                            viewModel.changeChecklistTitle(
-                                checklistIndex = checklistIndex,
-                                title = title
-                            )
-                        },
+                        onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
                         onTitleUpdate = { title ->
-                            viewModel.updateChecklistTitleInDb(
-                                checklistIndex = checklistIndex,
-                                title = title,
-                                onComplete = { MessageUtil.displayToast(context, it) }
-                            )
+                            viewModel.updateChecklistTitle(checklistIndex, title) {
+                                MessageUtil.displayToast(context, it)
+                            }
                         },
-                        onChecklistRemoveFavorite = {
-                            viewModel.updateChecklistFavoriteInDb(
-                                checklistIndex
-                            )
-                        },
-                        onChecklistDelete = { viewModel.deleteChecklistFromDb(checklist) }
+                        onChecklistRemoveFavorite = { viewModel.updateChecklistFavorite(checklistIndex) },
+                        onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                     )
                 },
                 items = ImmutableList.copyOf(checklist.items),
                 onItemChange = { itemIndex, name, isChecked ->
-                    viewModel.changeChecklistItem(
-                        checklistIndex = checklistIndex,
-                        itemIndex = itemIndex,
-                        name = name,
-                        isChecked = isChecked
-                    )
-
-                    viewModel.updateChecklistItemInDb(
-                        checklistIndex = checklistIndex
-                    )
+                    viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
+                    viewModel.updateChecklistItem(checklistIndex)
                 },
                 onItemCreate = {}
             )

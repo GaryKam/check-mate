@@ -49,7 +49,7 @@ class SignUpViewModel(
         if (displayNameChecker.isValidated() && validEmail && passwordChecker.isValidated()) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    database.addUser(displayName)
+                    database.createUser(displayName)
                     onSuccess()
                 }
                 .addOnFailureListener {

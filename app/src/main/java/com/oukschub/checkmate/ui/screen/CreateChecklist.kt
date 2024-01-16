@@ -42,11 +42,9 @@ fun CreateChecklist(
             TopBar(
                 onNavigateToHome = onNavigateToHome,
                 onCreateChecklist = {
-                    viewModel.createChecklistInDb(
+                    viewModel.createChecklist(
                         onSuccess = {
-                            homeViewModel.loadChecklistsFromDb(onSuccess = {
-                                onNavigateToHome()
-                            })
+                            homeViewModel.getChecklists { onNavigateToHome() }
                         }
                     )
                 }
@@ -69,7 +67,7 @@ fun CreateChecklist(
                 onItemChange = { index, name, isChecked ->
                     viewModel.changeChecklistItem(index, name, isChecked)
                 },
-                onItemCreate = { viewModel.createChecklistItem(it) },
+                onItemCreate = { viewModel.addChecklistItem(it) },
             )
 
             if (viewModel.isCreatingChecklist) {
