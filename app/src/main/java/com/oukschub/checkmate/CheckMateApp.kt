@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -26,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.navigation.CheckMateNavHost
 import com.oukschub.checkmate.navigation.Screen
 import com.oukschub.checkmate.util.FirebaseUtil
+import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 
 @Composable
 fun CheckMateApp(
@@ -46,7 +48,10 @@ fun CheckMateApp(
 }
 
 @Composable
-private fun NavigationBar(navController: NavHostController) {
+private fun NavigationBar(
+    navController: NavHostController,
+    checklistsViewModel: ChecklistsViewModel = hiltViewModel()
+) {
     val navBarItems = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
     val navBackStack by navController.currentBackStackEntryAsState()
     val showNavBar = navBackStack.destinationEqualsTo(Screen.Checklists.route) ||
@@ -66,6 +71,9 @@ private fun NavigationBar(navController: NavHostController) {
                         navController.navigate(screen.route) {
                             launchSingleTop = true
                             popUpTo(Screen.Home.route)
+                        }
+                        if (screen.route == Screen.Checklists.route) {
+                            checklistsViewModel.getChecklists()
                         }
                     },
                     icon = {

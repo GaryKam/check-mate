@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,12 +17,14 @@ import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 import com.oukschub.checkmate.ui.screen.SignIn
 import com.oukschub.checkmate.ui.screen.SignUp
+import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 
 @Composable
 fun CheckMateNavHost(
     startDestination: String,
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    checklistsViewModel: ChecklistsViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -51,7 +54,7 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(true) },
             exitTransition = { slideScreenOut(false) }
         ) {
-            Checklists()
+            Checklists(viewModel = checklistsViewModel)
         }
 
         composable(
