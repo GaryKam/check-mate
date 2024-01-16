@@ -3,12 +3,15 @@ package com.oukschub.checkmate.viewmodel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
+import com.oukschub.checkmate.data.repository.ChecklistRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class HomeViewModel(
-    private val database: Database = Database()
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: ChecklistRepository
 ) : ViewModel() {
     private val _checklists = mutableStateListOf<Checklist>()
     val checklists: List<Checklist> = _checklists
@@ -39,7 +42,7 @@ class HomeViewModel(
     fun loadChecklistsFromDb(onSuccess: () -> Unit) {
         _checklists.clear()
 
-        database.loadChecklists(onSuccess = {
+        repository.getChecklists(onSuccess = {
             _checklists.add(it)
             onSuccess()
         })
@@ -51,7 +54,7 @@ class HomeViewModel(
         onComplete: (Int) -> Unit
     ) {
         if (title.isNotEmpty()) {
-            database.updateChecklistTitle(
+            repository.setChecklistTitle(
                 id = _checklists[checklistIndex].id,
                 title = title,
                 onSuccess = {
@@ -65,21 +68,21 @@ class HomeViewModel(
     }
 
     fun updateChecklistItemInDb(checklistIndex: Int) {
-        database.updateChecklistItems(
+        repository.setChecklistItems(
             id = _checklists[checklistIndex].id,
             items = _checklists[checklistIndex].items
         )
     }
 
     fun updateChecklistFavoriteInDb(checklistIndex: Int) {
-        database.updateChecklistFavorite(
+        repository.setChecklistFavorite(
             id = _checklists[checklistIndex].id,
             isFavorite = true
         )
     }
 
     fun deleteChecklistFromDb(checklist: Checklist) {
-        database.deleteChecklist(
+        repository.deleteChecklist(
             id = checklist.id,
             onSuccess = { _checklists.remove(checklist) }
         )

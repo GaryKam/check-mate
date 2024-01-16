@@ -1,8 +1,10 @@
 plugins {
     id("com.android.application")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.android")
-    id("org.jlleitschuh.gradle.ktlint") version "12.0.3"
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -79,6 +81,12 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+
+    // Hilt
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.48.1")
+    ksp("androidx.hilt:hilt-compiler:1.1.0")
 
     // Lint
     lintChecks("com.slack.lint.compose:compose-lint-checks:1.2.0")

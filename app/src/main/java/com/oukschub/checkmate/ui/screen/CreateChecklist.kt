@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
@@ -33,8 +33,8 @@ import com.oukschub.checkmate.viewmodel.HomeViewModel
 fun CreateChecklist(
     onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CreateChecklistViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel()
+    viewModel: CreateChecklistViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),

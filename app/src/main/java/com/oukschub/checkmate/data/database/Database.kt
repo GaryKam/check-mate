@@ -49,7 +49,7 @@ class Database {
             }
     }
 
-    fun loadChecklists(onSuccess: (Checklist) -> Unit) {
+    fun fetchChecklists(onSuccess: (Checklist) -> Unit) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()
