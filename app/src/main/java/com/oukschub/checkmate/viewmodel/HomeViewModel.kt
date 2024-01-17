@@ -19,7 +19,7 @@ class HomeViewModel @Inject constructor(
         get() = ImmutableList.copyOf(_checklists)
 
     init {
-        getChecklists {}
+        _checklists.addAll(repository.getChecklists())
     }
 
     fun changeChecklistTitle(
@@ -39,17 +39,6 @@ class HomeViewModel @Inject constructor(
         items[itemIndex] = ChecklistItem(name, isChecked)
 
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
-    }
-
-    fun getChecklists(onSuccess: () -> Unit) {
-        _checklists.clear()
-
-        repository.getChecklists(
-            onSuccess = {
-                _checklists.add(it)
-                onSuccess()
-            }
-        )
     }
 
     fun updateChecklistTitle(

@@ -17,22 +17,46 @@ import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 import com.oukschub.checkmate.ui.screen.SignIn
 import com.oukschub.checkmate.ui.screen.SignUp
+import com.oukschub.checkmate.ui.screen.Splash
+import com.oukschub.checkmate.util.FirebaseUtil
 import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
+import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
+import com.oukschub.checkmate.viewmodel.HomeViewModel
+import com.oukschub.checkmate.viewmodel.ProfileViewModel
+import com.oukschub.checkmate.viewmodel.SignInViewModel
+import com.oukschub.checkmate.viewmodel.SignUpViewModel
+import com.oukschub.checkmate.viewmodel.SplashViewModel
 
 @Composable
 fun CheckMateNavHost(
     startDestination: String,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    checklistsViewModel: ChecklistsViewModel = hiltViewModel()
+    splashViewModel: SplashViewModel = hiltViewModel(),
+    signInViewModel: SignInViewModel = hiltViewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
+    checklistsViewModel: ChecklistsViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    createChecklistViewModel: CreateChecklistViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
+        composable(Screen.Splash.route) {
+            Splash(
+                viewModel = splashViewModel,
+                onNavigate = {
+                    navController.navigate(if (FirebaseUtil.isLoggedIn()) Screen.Home.route else Screen.SignIn.route)
+                }
+            )
+        }
+
         composable(Screen.SignIn.route) {
             SignIn(
+                viewModel = signInViewModel,
                 onNavigateToHome = {
                     navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
                 },
@@ -42,6 +66,7 @@ fun CheckMateNavHost(
 
         composable(Screen.SignUp.route) {
             SignUp(
+                viewModel = signUpViewModel,
                 onNavigateToHome = {
                     navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
                 },
@@ -54,7 +79,7 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(true) },
             exitTransition = { slideScreenOut(false) }
         ) {
-            Checklists(checklistsViewModel)
+            Checklists(viewModel = checklistsViewModel)
         }
 
         composable(
@@ -74,7 +99,7 @@ fun CheckMateNavHost(
                 }
             }
         ) {
-            Home()
+            Home(viewModel = homeViewModel)
         }
 
         composable(
@@ -82,11 +107,17 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(false) },
             exitTransition = { slideScreenOut(true) }
         ) {
-            Profile(onNavigateToSignIn = { navController.navigate(Screen.SignIn.route) })
+            Profile(
+                viewModel = profileViewModel,
+                onNavigateToSignIn = { navController.navigate(Screen.SignIn.route) }
+            )
         }
 
         composable(Screen.CreateChecklist.route) {
-            CreateChecklist(onNavigateToHome = { navController.navigate(Screen.Home.route) })
+            CreateChecklist(
+                viewModel = createChecklistViewModel,
+                onNavigateToHome = { navController.navigate(Screen.Home.route) }
+            )
         }
     }
 }

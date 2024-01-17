@@ -23,31 +23,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
-import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun CreateChecklist(
+    viewModel: CreateChecklistViewModel,
     onNavigateToHome: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: CreateChecklistViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
                 onNavigateToHome = onNavigateToHome,
-                onCreateChecklist = {
-                    viewModel.createChecklist(
-                        onSuccess = {
-                            homeViewModel.getChecklists { onNavigateToHome() }
-                        }
-                    )
-                }
+                onCreateChecklist = { viewModel.createChecklist { onNavigateToHome() } }
             )
         }
     ) { paddingValues ->

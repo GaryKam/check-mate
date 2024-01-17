@@ -33,7 +33,7 @@ class Database {
         title: String,
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
-    ) {
+    ): Checklist {
         val id = firestore.collection(CHECKLISTS_COLLECTION).document().id
         val checklist = Checklist(id, title, items)
 
@@ -46,9 +46,14 @@ class Database {
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
                     .addOnSuccessListener { onSuccess() }
             }
+
+        return checklist
     }
 
-    fun fetchChecklists(onSuccess: (Checklist) -> Unit) {
+    fun fetchChecklists(
+        onSuccess: (Checklist) -> Unit,
+        onComplete: () -> Unit
+    ) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()

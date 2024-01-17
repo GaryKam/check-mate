@@ -25,11 +25,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.navigation.CheckMateNavHost
 import com.oukschub.checkmate.navigation.Screen
-import com.oukschub.checkmate.util.FirebaseUtil
 
 @Composable
 fun CheckMateApp(
     modifier: Modifier = Modifier,
+    startDestination: String = Screen.Home.route,
     navController: NavHostController = rememberNavController()
 ) {
     Scaffold(
@@ -38,7 +38,7 @@ fun CheckMateApp(
         floatingActionButton = { CreateChecklistFab(navController) }
     ) { paddingValues ->
         CheckMateNavHost(
-            startDestination = if (FirebaseUtil.isLoggedIn()) Screen.Home.route else Screen.SignIn.route,
+            startDestination = startDestination,
             modifier = Modifier.padding(paddingValues),
             navController = navController
         )

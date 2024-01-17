@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
@@ -38,8 +37,8 @@ import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun Home(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -59,7 +58,11 @@ fun Home(
                                 MessageUtil.displayToast(context, it)
                             }
                         },
-                        onChecklistRemoveFavorite = { viewModel.updateChecklistFavorite(checklistIndex) },
+                        onChecklistRemoveFavorite = {
+                            viewModel.updateChecklistFavorite(
+                                checklistIndex
+                            )
+                        },
                         onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                     )
                 },

@@ -10,17 +10,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChecklistsViewModel @Inject constructor(
-    private val repository: ChecklistRepository
+    repository: ChecklistRepository
 ) : ViewModel() {
     private val _checklists = mutableStateListOf<Checklist>()
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
 
-    fun getChecklists() {
-        _checklists.clear()
-
-        repository.getChecklists {
-            _checklists.add(it)
-        }
+    init {
+        _checklists.addAll(repository.getChecklists())
     }
 }

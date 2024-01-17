@@ -1,5 +1,7 @@
 package com.oukschub.checkmate.data.repository
 
+import android.util.Log
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
@@ -8,16 +10,32 @@ import javax.inject.Inject
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
+    private val checklists = mutableListOf<Checklist>()
+
     fun createChecklist(
         title: String,
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
     ) {
-        database.createChecklist(title, items, onSuccess)
+        val checklist = database.createChecklist(title, items, onSuccess)
+
+        checklists.add(checklist)
     }
 
-    fun getChecklists(onSuccess: (Checklist) -> Unit) {
-        database.fetchChecklists { onSuccess(it) }
+    fun loadChecklists(onComplete: () -> Unit) {
+        Log.d("fiefie", "start loading checklists")
+        database.fetchChecklists(
+            onSuccess = {
+                checklists.add(it)
+                Log.d("fiefie", "load a checklist")
+            },
+            onComplete = onComplete
+        )
+    }
+
+    fun getChecklists(): ImmutableList<Checklist> {
+        Log.d("fiefie", "get all checklists")
+        return ImmutableList.copyOf(checklists)
     }
 
     fun setChecklistTitle(
