@@ -15,8 +15,4 @@ class ChecklistsViewModel @Inject constructor(
     private val _checklists = mutableStateListOf<Checklist>()
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
-
-    init {
-        _checklists.addAll(repository.getChecklists())
-    }
 }

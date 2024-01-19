@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,17 @@ fun Home(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
 ) {
+    var isLaunched by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        if (!isLaunched) {
+            isLaunched = true
+            viewModel.getChecklists()
+        }
+    }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,

@@ -18,10 +18,6 @@ class HomeViewModel @Inject constructor(
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
 
-    init {
-        _checklists.addAll(repository.getChecklists())
-    }
-
     fun changeChecklistTitle(
         checklistIndex: Int,
         title: String,
@@ -79,5 +75,10 @@ class HomeViewModel @Inject constructor(
             id = checklist.id,
             onSuccess = { _checklists.remove(checklist) }
         )
+    }
+
+    fun getChecklists() {
+        _checklists.clear()
+        _checklists.addAll(repository.getChecklists())
     }
 }

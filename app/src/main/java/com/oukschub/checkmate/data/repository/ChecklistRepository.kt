@@ -1,6 +1,5 @@
 package com.oukschub.checkmate.data.repository
 
-import android.util.Log
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
@@ -22,19 +21,13 @@ class ChecklistRepository @Inject constructor(
         checklists.add(checklist)
     }
 
-    fun loadChecklists(onComplete: () -> Unit) {
-        Log.d("fiefie", "start loading checklists")
-        database.fetchChecklists(
-            onSuccess = {
-                checklists.add(it)
-                Log.d("fiefie", "load a checklist")
-            },
-            onComplete = onComplete
-        )
+    suspend fun loadChecklists(): List<Checklist> {
+        checklists.clear()
+        checklists.addAll(database.fetchChecklists())
+        return checklists
     }
 
     fun getChecklists(): ImmutableList<Checklist> {
-        Log.d("fiefie", "get all checklists")
         return ImmutableList.copyOf(checklists)
     }
 

@@ -10,6 +10,7 @@ import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.util.FirebaseUtil
+import kotlinx.coroutines.tasks.await
 
 class Database {
     private val firestore = Firebase.firestore
@@ -50,23 +51,25 @@ class Database {
         return checklist
     }
 
-    fun fetchChecklists(
-        onSuccess: (Checklist) -> Unit,
-        onComplete: () -> Unit
-    ) {
-        firestore.collection(USERS_COLLECTION)
+    suspend fun fetchChecklists(): List<Checklist> {
+        val result = firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()
-            .addOnSuccessListener { snapshot ->
-                (snapshot.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>)?.let { ids ->
-                    for (id in ids) {
-                        firestore.collection(CHECKLISTS_COLLECTION)
-                            .document(id)
-                            .get()
-                            .addOnSuccessListener { onSuccess(it.toObject<Checklist>()!!) }
-                    }
-                }
+            .await()
+
+        val checklists = mutableListOf<Checklist>()
+
+        (result.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>)?.let { ids ->
+            for (id in ids) {
+                val checklist = firestore.collection(CHECKLISTS_COLLECTION)
+                    .document(id)
+                    .get()
+                    .await()
+                    .toObject<Checklist>()!!
+                checklists.add(checklist)
             }
+        }
+        return checklists
     }
 
     fun updateChecklistTitle(

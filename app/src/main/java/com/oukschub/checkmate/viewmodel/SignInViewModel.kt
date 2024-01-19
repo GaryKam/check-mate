@@ -5,10 +5,18 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.R
+import com.oukschub.checkmate.data.repository.ChecklistRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignInViewModel : ViewModel() {
+@HiltViewModel
+class SignInViewModel @Inject constructor(
+    private val repository: ChecklistRepository
+) : ViewModel() {
     var email by mutableStateOf("")
         private set
     var password by mutableStateOf("")
@@ -25,7 +33,12 @@ class SignInViewModel : ViewModel() {
         if (email.isNotBlank() && password.isNotBlank()) {
             FirebaseAuth.getInstance()
                 .signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener { onSuccess() }
+                .addOnSuccessListener {
+                    viewModelScope.launch {
+                        repository.loadChecklists()
+                        onSuccess()
+                    }
+                }
                 .addOnFailureListener { onFailure(R.string.sign_in_failure) }
         } else {
             if (email.isBlank()) {
