@@ -6,8 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.oukschub.checkmate.ui.theme.CheckMateTheme
+import com.oukschub.checkmate.util.CustomTree
 import com.oukschub.checkmate.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -15,6 +17,10 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(CustomTree("fiefie:"))
+        }
 
         val viewModel: MainViewModel by viewModels()
         viewModel.getChecklists {

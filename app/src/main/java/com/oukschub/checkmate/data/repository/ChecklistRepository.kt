@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
+import timber.log.Timber
 import javax.inject.Inject
 
 class ChecklistRepository @Inject constructor(
@@ -22,6 +23,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     suspend fun getChecklists() {
+        Timber.d("Fetching checklists from database")
         checklists.clear()
         checklists.addAll(database.fetchChecklists())
     }
