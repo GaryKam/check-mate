@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,12 +17,24 @@ import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 import com.oukschub.checkmate.ui.screen.SignIn
 import com.oukschub.checkmate.ui.screen.SignUp
+import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
+import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
+import com.oukschub.checkmate.viewmodel.HomeViewModel
+import com.oukschub.checkmate.viewmodel.ProfileViewModel
+import com.oukschub.checkmate.viewmodel.SignInViewModel
+import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
 fun CheckMateNavHost(
     startDestination: String,
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    signInViewModel: SignInViewModel = hiltViewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
+    checklistViewModel: ChecklistsViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    createChecklistViewModel: CreateChecklistViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -30,19 +43,17 @@ fun CheckMateNavHost(
     ) {
         composable(Screen.SignIn.route) {
             SignIn(
-                onNavigateToHome = {
-                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
-                },
-                onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) }
+                viewModel = signInViewModel,
+                onSignIn = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) } },
+                onFooterClick = { navController.navigate(Screen.SignUp.route) }
             )
         }
 
         composable(Screen.SignUp.route) {
             SignUp(
-                onNavigateToHome = {
-                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) }
-                },
-                onNavigateToSignIn = { navController.navigate(Screen.SignIn.route) }
+                viewModel = signUpViewModel,
+                onSignUp = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) } },
+                onFooterClick = { navController.navigate(Screen.SignIn.route) }
             )
         }
 
@@ -51,7 +62,7 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(true) },
             exitTransition = { slideScreenOut(false) }
         ) {
-            Checklists()
+            Checklists(viewModel = checklistViewModel)
         }
 
         composable(
@@ -71,7 +82,7 @@ fun CheckMateNavHost(
                 }
             }
         ) {
-            Home()
+            Home(viewModel = homeViewModel)
         }
 
         composable(
@@ -79,11 +90,18 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(false) },
             exitTransition = { slideScreenOut(true) }
         ) {
-            Profile(onNavigateToSignIn = { navController.navigate(Screen.SignIn.route) })
+            Profile(
+                viewModel = profileViewModel,
+                onSignOut = { navController.navigate(Screen.SignIn.route) }
+            )
         }
 
         composable(Screen.CreateChecklist.route) {
-            CreateChecklist(onNavigateToHome = { navController.navigate(Screen.Home.route) })
+            CreateChecklist(
+                viewModel = createChecklistViewModel,
+                onBack = { navController.popBackStack() },
+                onChecklistCreate = { navController.navigate(Screen.Home.route) }
+            )
         }
     }
 }

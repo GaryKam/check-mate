@@ -22,15 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 
 @Composable
 fun Checklists(
-    modifier: Modifier = Modifier,
-    viewModel: ChecklistsViewModel = hiltViewModel()
+    viewModel: ChecklistsViewModel,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize(),

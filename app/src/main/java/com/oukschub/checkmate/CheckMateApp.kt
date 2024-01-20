@@ -30,7 +30,7 @@ import com.oukschub.checkmate.util.FirebaseUtil
 @Composable
 fun CheckMateApp(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
     Scaffold(
         modifier = modifier,

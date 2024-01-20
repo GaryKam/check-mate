@@ -23,23 +23,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
 
 @Composable
 fun CreateChecklist(
-    onNavigateToHome: () -> Unit,
+    viewModel: CreateChecklistViewModel,
+    onBack: () -> Unit,
+    onChecklistCreate: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CreateChecklistViewModel = hiltViewModel()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
-                onNavigateToHome = onNavigateToHome,
-                onCreateChecklist = { viewModel.createChecklist { onNavigateToHome() } }
+                onBack = onBack,
+                onChecklistCreate = { viewModel.createChecklist { onChecklistCreate() } }
             )
         }
     ) { paddingValues ->
@@ -72,13 +72,13 @@ fun CreateChecklist(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    onNavigateToHome: () -> Unit,
-    onCreateChecklist: () -> Unit
+    onBack: () -> Unit,
+    onChecklistCreate: () -> Unit
 ) {
     TopAppBar(
         title = { Text(stringResource(R.string.checklist_create)) },
         navigationIcon = {
-            IconButton(onClick = onNavigateToHome) {
+            IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.desc_back)
@@ -86,7 +86,7 @@ private fun TopBar(
             }
         },
         actions = {
-            IconButton(onClick = onCreateChecklist) {
+            IconButton(onClick = onChecklistCreate) {
                 Icon(
                     imageVector = Icons.Default.Create,
                     contentDescription = stringResource(R.string.desc_create_checklist)

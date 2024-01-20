@@ -1,13 +1,11 @@
 package com.oukschub.checkmate.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,7 +15,6 @@ class HomeViewModel @Inject constructor(
     private val _checklists = repository.checklists
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
-    private var isInitialized = false
     private var initialTitle: String? = null
 
     fun focusChecklistTitle(title: String) {
@@ -41,16 +38,6 @@ class HomeViewModel @Inject constructor(
         items[itemIndex] = ChecklistItem(name, isChecked)
 
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
-    }
-
-    fun getChecklists() {
-        if (!isInitialized) {
-            isInitialized = true
-
-            viewModelScope.launch {
-                repository.getChecklists()
-            }
-        }
     }
 
     fun updateChecklistTitle(

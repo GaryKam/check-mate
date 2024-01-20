@@ -19,14 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.viewmodel.ProfileViewModel
 
 @Composable
 fun Profile(
-    onNavigateToSignIn: () -> Unit,
+    viewModel: ProfileViewModel,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -76,7 +75,7 @@ fun Profile(
                 Button(
                     onClick = {
                         viewModel.signOut()
-                        onNavigateToSignIn()
+                        onSignOut()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
