@@ -63,9 +63,11 @@ private fun NavigationBar(navController: NavHostController) {
                 NavigationBarItem(
                     selected = navBackStack.destinationEqualsTo(screen.route),
                     onClick = {
-                        navController.navigate(screen.route) {
-                            launchSingleTop = true
-                            popUpTo(Screen.Home.route)
+                        if (!navBackStack.destinationEqualsTo(screen.route)) {
+                            navController.navigate(screen.route) {
+                                launchSingleTop = true
+                                popUpTo(Screen.Home.route)
+                            }
                         }
                     },
                     icon = {
