@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.data.repository
 
+import androidx.compose.runtime.mutableStateListOf
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
@@ -8,8 +9,7 @@ import javax.inject.Inject
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
-    private val checklists = mutableListOf<Checklist>()
-    private var isInitialized = false
+    val checklists = mutableStateListOf<Checklist>()
 
     fun createChecklist(
         title: String,
@@ -21,14 +21,9 @@ class ChecklistRepository @Inject constructor(
         checklists.add(checklist)
     }
 
-    suspend fun getChecklists(): List<Checklist> {
-        if (!isInitialized) {
-            isInitialized = true
-            checklists.clear()
-            checklists.addAll(database.fetchChecklists())
-        }
-
-        return checklists
+    suspend fun getChecklists() {
+        checklists.clear()
+        checklists.addAll(database.fetchChecklists())
     }
 
     fun setChecklistTitle(
