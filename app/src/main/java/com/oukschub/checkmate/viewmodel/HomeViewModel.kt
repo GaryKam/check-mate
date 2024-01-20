@@ -12,9 +12,14 @@ class HomeViewModel(
 ) : ViewModel() {
     private val _checklists = mutableStateListOf<Checklist>()
     val checklists: List<Checklist> = _checklists
+    var initialTitle = ""
 
     init {
         loadChecklistsFromDb(onSuccess = {})
+    }
+
+    fun onFocusChecklistTitle(title: String) {
+        initialTitle = title
     }
 
     fun changeChecklistTitle(
@@ -51,7 +56,7 @@ class HomeViewModel(
         title: String,
         onComplete: (Int) -> Unit
     ) {
-        if (title.isNotEmpty()) {
+        if (initialTitle != title) {
             database.updateChecklistTitle(
                 id = _checklists[checklistIndex].id,
                 title = title,
@@ -60,8 +65,6 @@ class HomeViewModel(
                     onComplete(R.string.checklist_update)
                 }
             )
-        } else {
-            onComplete(R.string.checklist_update_error)
         }
     }
 
