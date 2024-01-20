@@ -3,7 +3,6 @@ package com.oukschub.checkmate.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.collect.ImmutableList
-import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.data.repository.ChecklistRepository
@@ -19,7 +18,7 @@ class HomeViewModel @Inject constructor(
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
     private var isInitialized = false
-    private var initialTitle = ""
+    private var initialTitle: String? = null
 
     fun focusChecklistTitle(title: String) {
         initialTitle = title
@@ -56,18 +55,18 @@ class HomeViewModel @Inject constructor(
 
     fun updateChecklistTitle(
         checklistIndex: Int,
-        title: String,
-        onComplete: (Int) -> Unit
+        title: String
     ) {
-        if (initialTitle != title) {
+        if (initialTitle != null && initialTitle != title) {
             repository.setChecklistTitle(
                 id = _checklists[checklistIndex].id,
                 title = title,
                 onSuccess = {
                     _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
-                    onComplete(R.string.checklist_update)
                 }
             )
+
+            initialTitle = null
         }
     }
 

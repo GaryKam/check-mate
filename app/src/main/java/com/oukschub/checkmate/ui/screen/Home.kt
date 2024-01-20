@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -38,7 +37,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
-import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
@@ -64,8 +62,6 @@ fun Home(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val context = LocalContext.current
-
         for ((checklistIndex, checklist) in viewModel.checklists.withIndex()) {
             Checklist(
                 header = {
@@ -74,9 +70,10 @@ fun Home(
                         onTitleFocus = { viewModel.focusChecklistTitle(it) },
                         onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
                         onTitleUpdate = { title ->
-                            viewModel.updateChecklistTitle(checklistIndex, title) {
-                                MessageUtil.displayToast(context, it)
-                            }
+                            viewModel.updateChecklistTitle(
+                                checklistIndex,
+                                title
+                            )
                         },
                         onChecklistRemoveFavorite = {
                             viewModel.updateChecklistFavorite(
