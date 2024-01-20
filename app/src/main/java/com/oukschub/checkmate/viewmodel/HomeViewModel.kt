@@ -2,12 +2,14 @@ package com.oukschub.checkmate.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,6 +19,12 @@ class HomeViewModel @Inject constructor(
     private val _checklists = mutableStateListOf<Checklist>()
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
+    private var isInitialized = false
+    private var initialTitle = ""
+
+    fun focusChecklistTitle(title: String) {
+        initialTitle = title
+    }
 
     fun changeChecklistTitle(
         checklistIndex: Int,
@@ -37,12 +45,22 @@ class HomeViewModel @Inject constructor(
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
+    fun getChecklists() {
+        if (!isInitialized) {
+            isInitialized = true
+
+            viewModelScope.launch {
+                _checklists.addAll(repository.getChecklists())
+            }
+        }
+    }
+
     fun updateChecklistTitle(
         checklistIndex: Int,
         title: String,
         onComplete: (Int) -> Unit
     ) {
-        if (title.isNotEmpty()) {
+        if (initialTitle != title) {
             repository.setChecklistTitle(
                 id = _checklists[checklistIndex].id,
                 title = title,
@@ -51,8 +69,6 @@ class HomeViewModel @Inject constructor(
                     onComplete(R.string.checklist_update)
                 }
             )
-        } else {
-            onComplete(R.string.checklist_update_error)
         }
     }
 
@@ -75,10 +91,5 @@ class HomeViewModel @Inject constructor(
             id = checklist.id,
             onSuccess = { _checklists.remove(checklist) }
         )
-    }
-
-    fun getChecklists() {
-        _checklists.clear()
-        _checklists.addAll(repository.getChecklists())
     }
 }

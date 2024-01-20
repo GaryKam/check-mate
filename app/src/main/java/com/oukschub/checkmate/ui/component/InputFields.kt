@@ -57,10 +57,10 @@ private fun EmailTextField(
     OutlinedTextField(
         value = email,
         onValueChange = { onEmailChange(it) },
-        placeholder = { Text(text = stringResource(R.string.email)) },
+        placeholder = { Text(stringResource(R.string.email)) },
         supportingText = {
             if (errorMessage.isNotBlank()) {
-                Text(text = errorMessage)
+                Text(errorMessage)
             }
         },
         isError = errorMessage.isNotBlank(),

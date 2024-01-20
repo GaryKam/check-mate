@@ -69,6 +69,7 @@ class Database {
                 checklists.add(checklist)
             }
         }
+
         return checklists
     }
 

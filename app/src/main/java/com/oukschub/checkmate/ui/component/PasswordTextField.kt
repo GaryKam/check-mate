@@ -31,16 +31,13 @@ fun PasswordTextField(
     modifier: Modifier = Modifier
 ) {
     val passwordVisualTransformation = PasswordVisualTransformation()
-
-    var isPasswordVisible by remember {
-        mutableStateOf(false)
-    }
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = password,
         onValueChange = { onPasswordChange(it) },
         modifier = modifier,
-        placeholder = { Text(text = placeholder) },
+        placeholder = { Text(placeholder) },
         trailingIcon = {
             IconButton(
                 onClick = { isPasswordVisible = !isPasswordVisible },
@@ -60,7 +57,7 @@ fun PasswordTextField(
         },
         supportingText = {
             if (errorMessage.isNotBlank()) {
-                Text(text = errorMessage)
+                Text(errorMessage)
             }
         },
         isError = errorMessage.isNotBlank(),

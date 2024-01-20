@@ -63,9 +63,11 @@ private fun NavigationBar(navController: NavHostController) {
                 NavigationBarItem(
                     selected = navBackStack.destinationEqualsTo(screen.route),
                     onClick = {
-                        navController.navigate(screen.route) {
-                            launchSingleTop = true
-                            popUpTo(Screen.Home.route)
+                        if (!navBackStack.destinationEqualsTo(screen.route)) {
+                            navController.navigate(screen.route) {
+                                launchSingleTop = true
+                                popUpTo(Screen.Home.route)
+                            }
                         }
                     },
                     icon = {
@@ -74,7 +76,7 @@ private fun NavigationBar(navController: NavHostController) {
                             contentDescription = stringResource(screen.resourceId)
                         )
                     },
-                    label = { Text(text = stringResource(screen.resourceId)) }
+                    label = { Text(stringResource(screen.resourceId)) }
                 )
             }
         })
@@ -107,6 +109,6 @@ private fun CreateChecklistFab(navController: NavHostController) {
     }
 }
 
-fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
+private fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
     return this?.destination?.hierarchy?.any { it.route == destination } ?: false
 }

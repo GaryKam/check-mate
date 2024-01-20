@@ -18,19 +18,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 
 @Composable
 fun Checklists(
-    viewModel: ChecklistsViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ChecklistsViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getChecklists()
+    }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -73,9 +79,9 @@ private fun Filters() {
             .padding(vertical = 5.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text(text = "Private") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text(text = "Shared") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text(text = "Favorite") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Private") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Shared") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Favorite") })
     }
 }
 
@@ -87,7 +93,7 @@ private fun Content(checklists: ImmutableList<Checklist>) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = checklist.title)
+                Text(checklist.title)
 
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(

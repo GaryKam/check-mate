@@ -23,15 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
 
 @Composable
 fun CreateChecklist(
-    viewModel: CreateChecklistViewModel,
     onNavigateToHome: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: CreateChecklistViewModel = hiltViewModel()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -75,7 +76,7 @@ private fun TopBar(
     onCreateChecklist: () -> Unit
 ) {
     TopAppBar(
-        title = { Text(text = stringResource(R.string.checklist_create)) },
+        title = { Text(stringResource(R.string.checklist_create)) },
         navigationIcon = {
             IconButton(onClick = onNavigateToHome) {
                 Icon(
@@ -105,7 +106,7 @@ private fun Header(
         onValueChange = { onTitleChange(it) },
         modifier = Modifier.fillMaxWidth(),
         textStyle = TextStyle(fontSize = 18.sp),
-        placeholder = { Text(text = "Title") },
+        placeholder = { Text("Title") },
         colors = OutlinedTextFieldDefaults.colors()
     )
 }

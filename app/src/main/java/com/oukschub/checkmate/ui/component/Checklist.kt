@@ -92,7 +92,7 @@ private fun InputField(onItemCreate: (String) -> Unit) {
         value = text,
         onValueChange = { text = it },
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text = stringResource(R.string.type_placeholder)) },
+        placeholder = { Text(stringResource(R.string.type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
                 onItemCreate(text)

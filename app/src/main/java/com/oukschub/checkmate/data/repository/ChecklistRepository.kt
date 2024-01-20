@@ -1,6 +1,5 @@
 package com.oukschub.checkmate.data.repository
 
-import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
@@ -10,6 +9,7 @@ class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
     private val checklists = mutableListOf<Checklist>()
+    private var isInitialized = false
 
     fun createChecklist(
         title: String,
@@ -21,14 +21,14 @@ class ChecklistRepository @Inject constructor(
         checklists.add(checklist)
     }
 
-    suspend fun loadChecklists(): List<Checklist> {
-        checklists.clear()
-        checklists.addAll(database.fetchChecklists())
-        return checklists
-    }
+    suspend fun getChecklists(): List<Checklist> {
+        if (!isInitialized) {
+            isInitialized = true
+            checklists.clear()
+            checklists.addAll(database.fetchChecklists())
+        }
 
-    fun getChecklists(): ImmutableList<Checklist> {
-        return ImmutableList.copyOf(checklists)
+        return checklists
     }
 
     fun setChecklistTitle(
