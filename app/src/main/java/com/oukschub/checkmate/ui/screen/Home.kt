@@ -1,5 +1,7 @@
 package com.oukschub.checkmate.ui.screen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,45 +48,54 @@ fun Home(
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = { focusManager.clearFocus() }
-            ),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    LaunchedEffect(Unit) {
+        viewModel.isContentVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = viewModel.isContentVisible,
+        enter = fadeIn()
     ) {
-        for ((checklistIndex, checklist) in viewModel.checklists.withIndex()) {
-            Checklist(
-                header = {
-                    Header(
-                        title = checklist.title,
-                        onTitleFocus = { viewModel.focusChecklistTitle(it) },
-                        onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
-                        onTitleUpdate = { title ->
-                            viewModel.updateChecklistTitle(
-                                checklistIndex,
-                                title
-                            )
-                        },
-                        onChecklistRemoveFavorite = {
-                            viewModel.updateChecklistFavorite(
-                                checklistIndex
-                            )
-                        },
-                        onChecklistDelete = { viewModel.deleteChecklist(checklist) }
-                    )
-                },
-                items = ImmutableList.copyOf(checklist.items),
-                onItemChange = { itemIndex, name, isChecked ->
-                    viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
-                    viewModel.updateChecklistItem(checklistIndex)
-                },
-                onItemCreate = {}
-            )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = { focusManager.clearFocus() }
+                ),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            for ((checklistIndex, checklist) in viewModel.checklists.withIndex()) {
+                Checklist(
+                    header = {
+                        Header(
+                            title = checklist.title,
+                            onTitleFocus = { viewModel.focusChecklistTitle(it) },
+                            onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
+                            onTitleUpdate = { title ->
+                                viewModel.updateChecklistTitle(
+                                    checklistIndex,
+                                    title
+                                )
+                            },
+                            onChecklistRemoveFavorite = {
+                                viewModel.updateChecklistFavorite(
+                                    checklistIndex
+                                )
+                            },
+                            onChecklistDelete = { viewModel.deleteChecklist(checklist) }
+                        )
+                    },
+                    items = ImmutableList.copyOf(checklist.items),
+                    onItemChange = { itemIndex, name, isChecked ->
+                        viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
+                        viewModel.updateChecklistItem(checklistIndex)
+                    },
+                    onItemCreate = {}
+                )
+            }
         }
     }
 }

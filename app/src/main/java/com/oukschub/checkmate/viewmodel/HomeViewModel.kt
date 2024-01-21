@@ -1,5 +1,8 @@
 package com.oukschub.checkmate.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.model.Checklist
@@ -12,6 +15,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : ViewModel() {
+    var isContentVisible by mutableStateOf(false)
     private val _checklists = repository.checklists
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
