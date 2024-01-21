@@ -6,19 +6,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.oukschub.checkmate.R
 
-@Preview
 @Composable
 fun Logo(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(R.drawable.ic_logo),
+        painter = painterResource(R.drawable.ic_launcher),
         contentDescription = null,
         modifier = modifier
             .clip(CircleShape)
+            .scale(1.5F)
             .background(colorResource(R.color.logo_background))
     )
 }
