@@ -38,7 +38,7 @@ fun CheckMateApp(
         floatingActionButton = { CreateChecklistFab(navController) }
     ) { paddingValues ->
         CheckMateNavHost(
-            startDestination = if (FirebaseUtil.isLoggedIn()) Screen.Home.route else Screen.SignIn.route,
+            startDestination = if (FirebaseUtil.isSignedIn()) Screen.Home.route else Screen.SignIn.route,
             modifier = Modifier.padding(paddingValues),
             navController = navController
         )

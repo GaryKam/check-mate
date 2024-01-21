@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 object FirebaseUtil {
     private val auth = FirebaseAuth.getInstance()
 
-    fun isLoggedIn(): Boolean = auth.currentUser != null
+    fun isSignedIn(): Boolean = auth.currentUser != null
 
     fun getUserId(): String = auth.currentUser!!.uid
 

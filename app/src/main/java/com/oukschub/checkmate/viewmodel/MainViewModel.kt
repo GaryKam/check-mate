@@ -13,7 +13,7 @@ class MainViewModel @Inject constructor(
     private val repository: ChecklistRepository,
 ) : ViewModel() {
     fun getChecklists(onComplete: () -> Unit) {
-        if (FirebaseUtil.isLoggedIn()) {
+        if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
                 repository.getChecklists()
                 onComplete()
