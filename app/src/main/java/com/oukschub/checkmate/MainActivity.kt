@@ -3,15 +3,13 @@ package com.oukschub.checkmate
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.oukschub.checkmate.ui.theme.AppTheme
 import com.oukschub.checkmate.util.CustomTree
-import com.oukschub.checkmate.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -28,16 +26,13 @@ class MainActivity : ComponentActivity() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(Color.Red)
             )
         }
 
-        val viewModel: MainViewModel by viewModels()
-        viewModel.getChecklists {
-            setContent {
-                AppTheme(useDarkTheme = false) {
-                    CheckMateApp()
-                }
+        setContent {
+            AppTheme(useDarkTheme = false) {
+                CheckMateApp()
             }
         }
     }

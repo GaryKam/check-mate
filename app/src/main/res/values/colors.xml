@@ -11,4 +11,7 @@
 
     // Launcher
     <color name="launcher_background">#DEFFF1</color>
+
+    // Splash
+    <color name="splash_background">#448786</color>
 </resources>

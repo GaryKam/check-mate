@@ -17,6 +17,8 @@ import com.oukschub.checkmate.ui.screen.Home
 import com.oukschub.checkmate.ui.screen.Profile
 import com.oukschub.checkmate.ui.screen.SignIn
 import com.oukschub.checkmate.ui.screen.SignUp
+import com.oukschub.checkmate.ui.screen.Splash
+import com.oukschub.checkmate.util.FirebaseUtil
 import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
 import com.oukschub.checkmate.viewmodel.HomeViewModel
@@ -41,6 +43,15 @@ fun CheckMateNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
+        composable(Screen.Splash.route) {
+            Splash(
+                onComplete = {
+                    navController.popBackStack()
+                    navController.navigate(if (FirebaseUtil.isSignedIn()) Screen.Home.route else Screen.SignIn.route)
+                }
+            )
+        }
+
         composable(Screen.SignIn.route) {
             SignIn(
                 viewModel = signInViewModel,

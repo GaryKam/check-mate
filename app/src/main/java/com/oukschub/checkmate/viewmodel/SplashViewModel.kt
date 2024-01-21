@@ -9,10 +9,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    private val repository: ChecklistRepository,
+class SplashViewModel @Inject constructor(
+    private val repository: ChecklistRepository
 ) : ViewModel() {
-    fun getChecklists(onComplete: () -> Unit) {
+    fun runTasks(onComplete: () -> Unit) {
         if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
                 repository.getChecklists()
