@@ -94,11 +94,7 @@ private fun CreateChecklistFab(navController: NavHostController) {
         exit = fadeOut()
     ) {
         FloatingActionButton(
-            onClick = {
-                navController.navigate(Screen.CreateChecklist.route) {
-                    popUpTo(Screen.Home.route)
-                }
-            }
+            onClick = { navController.navigate(Screen.CreateChecklist.route) }
         ) {
             Icon(
                 imageVector = Icons.Default.Add,

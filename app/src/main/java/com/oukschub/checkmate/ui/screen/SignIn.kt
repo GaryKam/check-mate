@@ -19,6 +19,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
@@ -28,10 +29,10 @@ import com.oukschub.checkmate.viewmodel.SignInViewModel
 
 @Composable
 fun SignIn(
-    viewModel: SignInViewModel,
     onSignIn: () -> Unit,
     onFooterClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SignInViewModel = hiltViewModel(),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),

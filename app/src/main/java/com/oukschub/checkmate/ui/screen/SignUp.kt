@@ -19,6 +19,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.DisplayNameTextField
@@ -30,10 +31,10 @@ import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
 fun SignUp(
-    viewModel: SignUpViewModel,
     onSignUp: () -> Unit,
     onFooterClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
