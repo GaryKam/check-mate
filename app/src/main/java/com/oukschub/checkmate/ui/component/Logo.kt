@@ -19,6 +19,6 @@ fun Logo(modifier: Modifier = Modifier) {
         contentDescription = null,
         modifier = modifier
             .clip(CircleShape)
-            .background(color = colorResource(R.color.logo_background))
+            .background(colorResource(R.color.logo_background))
     )
 }

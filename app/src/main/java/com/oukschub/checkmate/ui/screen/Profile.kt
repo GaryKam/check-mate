@@ -19,14 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.viewmodel.ProfileViewModel
 
 @Composable
 fun Profile(
-    onNavigateToSignIn: () -> Unit,
+    viewModel: ProfileViewModel,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = viewModel()
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -63,24 +62,24 @@ fun Profile(
                     onClick = { /*TODO*/ },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Change Password")
+                    Text("Change Password")
                 }
 
                 Button(
                     onClick = { /*TODO*/ },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Settings")
+                    Text("Settings")
                 }
 
                 Button(
                     onClick = {
                         viewModel.signOut()
-                        onNavigateToSignIn()
+                        onSignOut()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Sign Out")
+                    Text("Sign Out")
                 }
             }
         }

@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,26 +28,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
-import com.oukschub.checkmate.util.MessageUtil
 import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun Home(
-    modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel,
+    modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getChecklists()
+    }
+
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -58,42 +61,31 @@ fun Home(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val context = LocalContext.current
-
         for ((checklistIndex, checklist) in viewModel.checklists.withIndex()) {
             Checklist(
                 header = {
                     Header(
                         title = checklist.title,
-                        onTitleChange = { title ->
-                            viewModel.changeChecklistTitle(
-                                checklistIndex = checklistIndex,
-                                title = title
-                            )
-                        },
+                        onTitleFocus = { viewModel.focusChecklistTitle(it) },
+                        onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
                         onTitleUpdate = { title ->
-                            viewModel.updateChecklistTitleInDb(
-                                checklistIndex = checklistIndex,
-                                title = title,
-                                onComplete = { MessageUtil.displayToast(context, it) }
+                            viewModel.updateChecklistTitle(
+                                checklistIndex,
+                                title
                             )
                         },
-                        onChecklistDelete = { viewModel.deleteChecklistFromDb(checklist) },
-                        onFocusChecklistTitle = { viewModel.onFocusChecklistTitle(it) }
+                        onChecklistRemoveFavorite = {
+                            viewModel.updateChecklistFavorite(
+                                checklistIndex
+                            )
+                        },
+                        onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                     )
                 },
                 items = ImmutableList.copyOf(checklist.items),
                 onItemChange = { itemIndex, name, isChecked ->
-                    viewModel.changeChecklistItem(
-                        checklistIndex = checklistIndex,
-                        itemIndex = itemIndex,
-                        name = name,
-                        isChecked = isChecked
-                    )
-
-                    viewModel.updateChecklistItemInDb(
-                        checklistIndex = checklistIndex
-                    )
+                    viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
+                    viewModel.updateChecklistItem(checklistIndex)
                 },
                 onItemCreate = {}
             )
@@ -104,10 +96,11 @@ fun Home(
 @Composable
 private fun Header(
     title: String,
+    onTitleFocus: (String) -> Unit,
     onTitleChange: (String) -> Unit,
     onTitleUpdate: (String) -> Unit,
+    onChecklistRemoveFavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
-    onFocusChecklistTitle: (String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -125,10 +118,10 @@ private fun Header(
                 focusedIndicatorColor = Color.Transparent
             ),
             modifier = Modifier.onFocusChanged { focusState ->
-                if (!focusState.isFocused) {
-                    onTitleUpdate(title)
+                if (focusState.isFocused) {
+                    onTitleFocus(title)
                 } else {
-                    onFocusChecklistTitle(title)
+                    onTitleUpdate(title)
                 }
             }
         )
@@ -148,7 +141,14 @@ private fun Header(
                 onDismissRequest = { isDropdownVisible = false }
             ) {
                 DropdownMenuItem(text = {
-                    Text(text = stringResource(R.string.checklist_delete))
+                    Text(stringResource(R.string.checklist_unfavorite))
+                }, onClick = {
+                    isDropdownVisible = false
+                    onChecklistRemoveFavorite()
+                })
+
+                DropdownMenuItem(text = {
+                    Text(stringResource(R.string.checklist_delete))
                 }, onClick = {
                     isDropdownVisible = false
                     onChecklistDelete()

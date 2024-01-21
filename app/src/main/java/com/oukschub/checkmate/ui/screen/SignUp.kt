@@ -19,7 +19,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.DisplayNameTextField
@@ -31,10 +30,10 @@ import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
 @Composable
 fun SignUp(
-    onNavigateToHome: () -> Unit,
-    onNavigateToSignIn: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel,
+    onSignUp: () -> Unit,
+    onFooterClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -80,11 +79,11 @@ fun SignUp(
             val context = LocalContext.current
             Button(onClick = {
                 viewModel.signUp(
-                    onSuccess = { onNavigateToHome() },
+                    onSuccess = { onSignUp() },
                     onFailure = { MessageUtil.displayToast(context, it) }
                 )
             }) {
-                Text(text = stringResource(R.string.sign_up))
+                Text(stringResource(R.string.sign_up))
             }
         }
 
@@ -95,7 +94,7 @@ fun SignUp(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_in))
             },
-            onClick = { onNavigateToSignIn() },
+            onClick = { onFooterClick() },
             modifier = Modifier.weight(.15F)
         )
     }

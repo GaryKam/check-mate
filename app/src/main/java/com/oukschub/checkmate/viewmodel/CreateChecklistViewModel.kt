@@ -6,11 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.common.collect.ImmutableList
-import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.ChecklistItem
+import com.oukschub.checkmate.data.repository.ChecklistRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class CreateChecklistViewModel(
-    private val database: Database = Database()
+@HiltViewModel
+class CreateChecklistViewModel @Inject constructor(
+    private val repository: ChecklistRepository
 ) : ViewModel() {
     var title by mutableStateOf("")
     var isCreatingChecklist by mutableStateOf(false)
@@ -33,22 +36,18 @@ class CreateChecklistViewModel(
         _items[index] = _items[index].copy(name = name, isChecked = isChecked)
     }
 
-    fun createChecklistItem(text: String) {
+    fun addChecklistItem(text: String) {
         if (text.isNotBlank()) {
             _items.add(ChecklistItem(text, false))
         }
     }
 
-    fun createChecklistInDb(onSuccess: () -> Unit) {
+    fun createChecklist(onSuccess: () -> Unit) {
         isCreatingChecklist = true
 
-        database.addChecklist(
-            title = title,
-            items = _items,
-            onSuccess = {
-                onSuccess()
-                isCreatingChecklist = false
-            }
-        )
+        repository.createChecklist(title, _items) {
+            onSuccess()
+            isCreatingChecklist = false
+        }
     }
 }

@@ -23,33 +23,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
-import com.oukschub.checkmate.viewmodel.HomeViewModel
 
 @Composable
 fun CreateChecklist(
-    onNavigateToHome: () -> Unit,
+    viewModel: CreateChecklistViewModel,
+    onBack: () -> Unit,
+    onChecklistCreate: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CreateChecklistViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
-                onNavigateToHome = onNavigateToHome,
-                onCreateChecklist = {
-                    viewModel.createChecklistInDb(
-                        onSuccess = {
-                            homeViewModel.loadChecklistsFromDb(onSuccess = {
-                                onNavigateToHome()
-                            })
-                        }
-                    )
-                }
+                onBack = onBack,
+                onChecklistCreate = { viewModel.createChecklist { onChecklistCreate() } }
             )
         }
     ) { paddingValues ->
@@ -69,7 +59,7 @@ fun CreateChecklist(
                 onItemChange = { index, name, isChecked ->
                     viewModel.changeChecklistItem(index, name, isChecked)
                 },
-                onItemCreate = { viewModel.createChecklistItem(it) },
+                onItemCreate = { viewModel.addChecklistItem(it) },
             )
 
             if (viewModel.isCreatingChecklist) {
@@ -82,13 +72,13 @@ fun CreateChecklist(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    onNavigateToHome: () -> Unit,
-    onCreateChecklist: () -> Unit
+    onBack: () -> Unit,
+    onChecklistCreate: () -> Unit
 ) {
     TopAppBar(
-        title = { Text(text = stringResource(R.string.checklist_create)) },
+        title = { Text(stringResource(R.string.checklist_create)) },
         navigationIcon = {
-            IconButton(onClick = onNavigateToHome) {
+            IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.desc_back)
@@ -96,7 +86,7 @@ private fun TopBar(
             }
         },
         actions = {
-            IconButton(onClick = onCreateChecklist) {
+            IconButton(onClick = onChecklistCreate) {
                 Icon(
                     imageVector = Icons.Default.Create,
                     contentDescription = stringResource(R.string.desc_create_checklist)
@@ -116,7 +106,7 @@ private fun Header(
         onValueChange = { onTitleChange(it) },
         modifier = Modifier.fillMaxWidth(),
         textStyle = TextStyle(fontSize = 18.sp),
-        placeholder = { Text(text = "Title") },
+        placeholder = { Text("Title") },
         colors = OutlinedTextFieldDefaults.colors()
     )
 }

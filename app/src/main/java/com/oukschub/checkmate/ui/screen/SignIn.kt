@@ -19,7 +19,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
@@ -29,10 +28,10 @@ import com.oukschub.checkmate.viewmodel.SignInViewModel
 
 @Composable
 fun SignIn(
-    onNavigateToHome: () -> Unit,
-    onNavigateToSignUp: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: SignInViewModel = viewModel()
+    viewModel: SignInViewModel,
+    onSignIn: () -> Unit,
+    onFooterClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -65,11 +64,11 @@ fun SignIn(
             val context = LocalContext.current
             Button(onClick = {
                 viewModel.signIn(
-                    onSuccess = { onNavigateToHome() },
+                    onSuccess = { onSignIn() },
                     onFailure = { MessageUtil.displayToast(context, it) }
                 )
             }) {
-                Text(text = stringResource(R.string.sign_in))
+                Text(stringResource(R.string.sign_in))
             }
         }
 
@@ -80,7 +79,7 @@ fun SignIn(
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
                 append(stringResource(R.string.sign_up))
             },
-            onClick = { onNavigateToSignUp() },
+            onClick = { onFooterClick() },
             modifier = Modifier.weight(.15F)
         )
     }

@@ -29,8 +29,8 @@ fun DisplayNameTextField(
     OutlinedTextField(
         value = displayName,
         onValueChange = { onDisplayNameChange(it) },
-        placeholder = { Text(text = stringResource(R.string.sign_up_display_name)) },
-        supportingText = { Text(text = errorMessage) },
+        placeholder = { Text(stringResource(R.string.sign_up_display_name)) },
+        supportingText = { Text(errorMessage) },
         isError = errorIds.isNotEmpty(),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),

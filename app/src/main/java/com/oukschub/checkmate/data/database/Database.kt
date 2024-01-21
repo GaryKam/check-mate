@@ -10,27 +10,32 @@ import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.util.FirebaseUtil
+import kotlinx.coroutines.tasks.await
 
 class Database {
     private val firestore = Firebase.firestore
 
-    fun addUser(displayName: String) {
+    fun createUser(displayName: String) {
         firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
-            .set(mapOf(USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>()))
+            .set(
+                mapOf(
+                    USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>(),
+                    USER_CHECKLIST_FAVORITES_FIELD to emptyList<DocumentReference>()
+                )
+            )
 
         FirebaseAuth.getInstance().currentUser?.updateProfile(
             UserProfileChangeRequest.Builder().setDisplayName(displayName).build()
         )
     }
 
-    fun addChecklist(
+    fun createChecklist(
         title: String,
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
-    ) {
+    ): Checklist {
         val id = firestore.collection(CHECKLISTS_COLLECTION).document().id
-
         val checklist = Checklist(id, title, items)
 
         firestore.collection(CHECKLISTS_COLLECTION)
@@ -42,24 +47,30 @@ class Database {
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
                     .addOnSuccessListener { onSuccess() }
             }
+
+        return checklist
     }
 
-    fun loadChecklists(onSuccess: (Checklist) -> Unit) {
-        firestore.collection(USERS_COLLECTION)
+    suspend fun fetchChecklists(): List<Checklist> {
+        val result = firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()
-            .addOnSuccessListener { snapshot ->
-                val checklistIds =
-                    snapshot.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>
-                if (checklistIds != null) {
-                    for (id in checklistIds) {
-                        firestore.collection(CHECKLISTS_COLLECTION)
-                            .document(id)
-                            .get()
-                            .addOnSuccessListener { onSuccess(it.toObject<Checklist>()!!) }
-                    }
-                }
+            .await()
+
+        val checklists = mutableListOf<Checklist>()
+
+        (result.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>)?.let { ids ->
+            for (id in ids) {
+                val checklist = firestore.collection(CHECKLISTS_COLLECTION)
+                    .document(id)
+                    .get()
+                    .await()
+                    .toObject<Checklist>()!!
+                checklists.add(checklist)
             }
+        }
+
+        return checklists
     }
 
     fun updateChecklistTitle(
@@ -80,6 +91,22 @@ class Database {
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(id)
             .update(CHECKLIST_ITEMS_FIELD, items)
+    }
+
+    fun updateChecklistFavorite(
+        id: String,
+        isFavorite: Boolean
+    ) {
+        firestore.collection(USERS_COLLECTION)
+            .document(FirebaseUtil.getUserId())
+            .update(
+                USER_CHECKLIST_FAVORITES_FIELD,
+                if (isFavorite) {
+                    FieldValue.arrayUnion(id)
+                } else {
+                    FieldValue.arrayRemove(id)
+                }
+            )
     }
 
     fun deleteChecklist(
@@ -104,5 +131,6 @@ class Database {
 
         private const val USERS_COLLECTION = "users"
         private const val USER_CHECKLIST_IDS_FIELD = "checklistIds"
+        private const val USER_CHECKLIST_FAVORITES_FIELD = "favoriteIds"
     }
 }

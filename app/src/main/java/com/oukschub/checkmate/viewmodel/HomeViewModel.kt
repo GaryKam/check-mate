@@ -1,24 +1,23 @@
 package com.oukschub.checkmate.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.oukschub.checkmate.R
-import com.oukschub.checkmate.data.database.Database
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
+import com.oukschub.checkmate.data.repository.ChecklistRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class HomeViewModel(
-    private val database: Database = Database()
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: ChecklistRepository
 ) : ViewModel() {
-    private val _checklists = mutableStateListOf<Checklist>()
-    val checklists: List<Checklist> = _checklists
-    var initialTitle = ""
+    private val _checklists = repository.checklists
+    val checklists: ImmutableList<Checklist>
+        get() = ImmutableList.copyOf(_checklists)
+    private var initialTitle: String? = null
 
-    init {
-        loadChecklistsFromDb(onSuccess = {})
-    }
-
-    fun onFocusChecklistTitle(title: String) {
+    fun focusChecklistTitle(title: String) {
         initialTitle = title
     }
 
@@ -38,49 +37,44 @@ class HomeViewModel(
         val items = _checklists[checklistIndex].items.toMutableList()
         items[itemIndex] = ChecklistItem(name, isChecked)
 
-        _checklists[checklistIndex] = _checklists[checklistIndex]
-            .copy(items = items)
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
-    fun loadChecklistsFromDb(onSuccess: () -> Unit) {
-        _checklists.clear()
-
-        database.loadChecklists(onSuccess = {
-            _checklists.add(it)
-            onSuccess()
-        })
-    }
-
-    fun updateChecklistTitleInDb(
+    fun updateChecklistTitle(
         checklistIndex: Int,
-        title: String,
-        onComplete: (Int) -> Unit
+        title: String
     ) {
-        if (initialTitle != title) {
-            database.updateChecklistTitle(
+        if (initialTitle != null && initialTitle != title) {
+            repository.setChecklistTitle(
                 id = _checklists[checklistIndex].id,
                 title = title,
                 onSuccess = {
                     _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
-                    onComplete(R.string.checklist_update)
                 }
             )
+
+            initialTitle = null
         }
     }
 
-    fun updateChecklistItemInDb(checklistIndex: Int) {
-        database.updateChecklistItems(
+    fun updateChecklistItem(checklistIndex: Int) {
+        repository.setChecklistItems(
             id = _checklists[checklistIndex].id,
             items = _checklists[checklistIndex].items
         )
     }
 
-    fun deleteChecklistFromDb(checklist: Checklist) {
-        database.deleteChecklist(
+    fun updateChecklistFavorite(checklistIndex: Int) {
+        repository.setChecklistFavorite(
+            id = _checklists[checklistIndex].id,
+            isFavorite = true
+        )
+    }
+
+    fun deleteChecklist(checklist: Checklist) {
+        repository.deleteChecklist(
             id = checklist.id,
-            onSuccess = {
-                _checklists.remove(checklist)
-            }
+            onSuccess = { _checklists.remove(checklist) }
         )
     }
 }

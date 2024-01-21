@@ -76,7 +76,7 @@ private fun NavigationBar(navController: NavHostController) {
                             contentDescription = stringResource(screen.resourceId)
                         )
                     },
-                    label = { Text(text = stringResource(screen.resourceId)) }
+                    label = { Text(stringResource(screen.resourceId)) }
                 )
             }
         })
@@ -109,6 +109,6 @@ private fun CreateChecklistFab(navController: NavHostController) {
     }
 }
 
-fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
+private fun NavBackStackEntry?.destinationEqualsTo(destination: String): Boolean {
     return this?.destination?.hierarchy?.any { it.route == destination } ?: false
 }
