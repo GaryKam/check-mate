@@ -3,31 +3,36 @@ package com.oukschub.checkmate
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.oukschub.checkmate.ui.theme.CheckMateTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.oukschub.checkmate.ui.theme.AppTheme
 import com.oukschub.checkmate.util.CustomTree
-import com.oukschub.checkmate.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
-
         super.onCreate(savedInstanceState)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(CustomTree("fiefie:"))
         }
 
-        val viewModel: MainViewModel by viewModels()
-        viewModel.getChecklists {
-            setContent {
-                CheckMateTheme(darkTheme = false) {
-                    CheckMateApp()
-                }
+        setContent {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Red)
+            )
+        }
+
+        setContent {
+            AppTheme(useDarkTheme = false) {
+                CheckMateApp()
             }
         }
     }

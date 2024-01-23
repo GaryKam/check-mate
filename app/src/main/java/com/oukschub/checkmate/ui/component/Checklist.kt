@@ -52,7 +52,7 @@ fun Checklist(
 
 @Composable
 private fun Checkboxes(
-    items: List<ChecklistItem>,
+    items: ImmutableList<ChecklistItem>,
     onItemChange: (Int, String, Boolean) -> Unit
 ) {
     Column(
