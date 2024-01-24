@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.res.painterResource
@@ -28,7 +27,8 @@ fun PasswordTextField(
     placeholder: String,
     focusManager: FocusManager,
     onPasswordChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onImeAction: () -> Unit = {},
 ) {
     val passwordVisualTransformation = PasswordVisualTransformation()
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -63,7 +63,7 @@ fun PasswordTextField(
         isError = errorMessage.isNotBlank(),
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else passwordVisualTransformation,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-        keyboardActions = KeyboardActions(onSend = { focusManager.moveFocus(FocusDirection.Down) }),
+        keyboardActions = KeyboardActions(onSend = { onImeAction() }),
         singleLine = true
     )
 }

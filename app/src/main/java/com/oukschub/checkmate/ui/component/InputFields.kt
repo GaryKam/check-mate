@@ -25,7 +25,8 @@ fun InputFields(
     focusManager: FocusManager,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onImeAction: () -> Unit = {}
 ) {
     Column(modifier = modifier) {
         EmailTextField(
@@ -42,7 +43,8 @@ fun InputFields(
             errorMessage = passwordError,
             placeholder = stringResource(R.string.password),
             focusManager = focusManager,
-            onPasswordChange = onPasswordChange
+            onPasswordChange = onPasswordChange,
+            onImeAction = { onImeAction() }
         )
     }
 }

@@ -50,6 +50,7 @@ fun SignIn(
                     .size(200.dp)
             )
 
+            val context = LocalContext.current
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
@@ -57,18 +58,25 @@ fun SignIn(
                 passwordError = stringResource(viewModel.passwordError),
                 focusManager = LocalFocusManager.current,
                 onEmailChange = { viewModel.changeEmail(it) },
-                onPasswordChange = { viewModel.changePassword(it) }
+                onPasswordChange = { viewModel.changePassword(it) },
+                onImeAction = {
+                    viewModel.signIn(
+                        onSuccess = { onSignIn() },
+                        onFailure = { MessageUtil.displayToast(context, it) }
+                    )
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            val context = LocalContext.current
-            Button(onClick = {
-                viewModel.signIn(
-                    onSuccess = { onSignIn() },
-                    onFailure = { MessageUtil.displayToast(context, it) }
-                )
-            }) {
+            Button(
+                onClick = {
+                    viewModel.signIn(
+                        onSuccess = { onSignIn() },
+                        onFailure = { MessageUtil.displayToast(context, it) }
+                    )
+                }
+            ) {
                 Text(stringResource(R.string.sign_in))
             }
         }
