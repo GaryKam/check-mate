@@ -20,12 +20,14 @@ import com.oukschub.checkmate.R
 fun InputFields(
     email: String,
     password: String,
+    passwordImeAction: ImeAction,
     emailError: String,
     passwordError: String,
     focusManager: FocusManager,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onImeAction: () -> Unit = {}
 ) {
     Column(modifier = modifier) {
         EmailTextField(
@@ -39,10 +41,11 @@ fun InputFields(
 
         PasswordTextField(
             password = password,
+            imeAction = passwordImeAction,
             errorMessage = passwordError,
             placeholder = stringResource(R.string.password),
-            focusManager = focusManager,
-            onPasswordChange = onPasswordChange
+            onPasswordChange = onPasswordChange,
+            onImeAction = { onImeAction() }
         )
     }
 }
