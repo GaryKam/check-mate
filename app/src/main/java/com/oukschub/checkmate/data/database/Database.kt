@@ -93,6 +93,18 @@ class Database {
             .update(CHECKLIST_ITEMS_FIELD, items)
     }
 
+    fun updateChecklistItems(
+        id: String,
+        name: String
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(id)
+            .update(
+                CHECKLIST_ITEMS_FIELD,
+                FieldValue.arrayUnion(ChecklistItem(name))
+            )
+    }
+
     fun updateChecklistFavorite(
         id: String,
         isFavorite: Boolean

@@ -44,6 +44,16 @@ class HomeViewModel @Inject constructor(
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
+    fun addChecklistItem(
+        checklistIndex: Int,
+        name: String
+    ) {
+        val items = _checklists[checklistIndex].items.toMutableList()
+        items.add(ChecklistItem(name))
+
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+    }
+
     fun updateChecklistTitle(
         checklistIndex: Int,
         title: String
@@ -59,6 +69,16 @@ class HomeViewModel @Inject constructor(
 
             initialTitle = null
         }
+    }
+
+    fun createChecklistItem(
+        checklistIndex: Int,
+        name: String
+    ) {
+        repository.createChecklistItem(
+            id = _checklists[checklistIndex].id,
+            name = name
+        )
     }
 
     fun updateChecklistItem(checklistIndex: Int) {

@@ -93,7 +93,10 @@ fun Home(
                         viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
                         viewModel.updateChecklistItem(checklistIndex)
                     },
-                    onItemCreate = {}
+                    onItemCreate = { name ->
+                        viewModel.addChecklistItem(checklistIndex, name)
+                        viewModel.createChecklistItem(checklistIndex, name)
+                    }
                 )
             }
         }
