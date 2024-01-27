@@ -36,6 +36,13 @@ class ChecklistRepository @Inject constructor(
         database.updateChecklistTitle(id, title, onSuccess)
     }
 
+    fun createChecklistItem(
+        id: String,
+        name: String
+    ) {
+        database.updateChecklistItems(id, name)
+    }
+
     fun setChecklistItems(
         id: String,
         items: List<ChecklistItem>
