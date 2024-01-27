@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,6 +60,7 @@ fun SignUp(
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
+                passwordImeAction = ImeAction.Next,
                 emailError = stringResource(viewModel.emailError),
                 passwordError = "",
                 focusManager = focusManager,
@@ -70,9 +72,9 @@ fun SignUp(
             val context = LocalContext.current
             PasswordTextField(
                 password = viewModel.passwordMatch,
+                imeAction = ImeAction.Done,
                 errorMessage = "",
                 placeholder = stringResource(R.string.sign_up_repeat_password),
-                focusManager = focusManager,
                 onPasswordChange = { viewModel.changePasswordMatch(it) },
                 onImeAction = {
                     viewModel.signUp(

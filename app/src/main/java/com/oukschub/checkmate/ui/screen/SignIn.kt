@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
@@ -54,6 +55,7 @@ fun SignIn(
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
+                passwordImeAction = ImeAction.Done,
                 emailError = stringResource(viewModel.emailError),
                 passwordError = stringResource(viewModel.passwordError),
                 focusManager = LocalFocusManager.current,
