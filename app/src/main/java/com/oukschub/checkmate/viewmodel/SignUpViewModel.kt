@@ -56,6 +56,7 @@ class SignUpViewModel(
                     onFailure(R.string.sign_up_failure)
                 }
         } else {
+            _displayNameErrors.clear()
             for ((checkStatus, errorMessageId) in displayNameChecker.getChecks()) {
                 if (!checkStatus) {
                     _displayNameErrors.add(errorMessageId)
