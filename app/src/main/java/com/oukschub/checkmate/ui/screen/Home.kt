@@ -2,6 +2,7 @@ package com.oukschub.checkmate.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -50,7 +52,7 @@ fun Home(
         visible = viewModel.isContentVisible,
         enter = fadeIn()
     ) {
-        LazyColumn(modifier = modifier) {
+        LazyColumn {
             itemsIndexed(items = viewModel.checklists) { checklistIndex, checklist ->
                 Checklist(
                     header = {
@@ -101,6 +103,7 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(start = 20.dp, top = 5.dp, end = 5.dp)
     ) {
         TextField(
@@ -108,8 +111,10 @@ private fun Header(
             onValueChange = { onTitleChange(it) },
             textStyle = TextStyle(fontSize = 18.sp),
             colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
             ),
             modifier = Modifier.onFocusChanged { focusState ->
                 if (focusState.isFocused) {
