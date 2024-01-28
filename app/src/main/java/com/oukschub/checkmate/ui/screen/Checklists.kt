@@ -52,7 +52,10 @@ fun Checklists(
             query = viewModel.query,
             onQueryChange = { viewModel.changeQuery(it) }
         )
-        Filters()
+        ChipFilters(
+            filters = viewModel.filters,
+            onFilterClick = { viewModel.changeFilter(it) }
+        )
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,30 +90,23 @@ private fun SearchBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Filters() {
+private fun ChipFilters(
+    filters: ImmutableList<Triple<Int, Boolean, (Checklist) -> Boolean>>,
+    onFilterClick: (Int) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 5.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        FilterChip(
-            selected = false,
-            onClick = { /*TODO*/ },
-            label = { Text(stringResource(R.string.checklists_filter_private)) }
-        )
-
-        FilterChip(
-            selected = false,
-            onClick = { /*TODO*/ },
-            label = { Text(stringResource(R.string.checklists_filter_shared)) }
-        )
-
-        FilterChip(
-            selected = false,
-            onClick = { /*TODO*/ },
-            label = { Text(stringResource(R.string.checklists_filter_favorite)) }
-        )
+        for ((index, status) in filters.withIndex()) {
+            FilterChip(
+                selected = status.second,
+                onClick = { onFilterClick(index) },
+                label = { Text(stringResource(status.first)) }
+            )
+        }
     }
 }
 
