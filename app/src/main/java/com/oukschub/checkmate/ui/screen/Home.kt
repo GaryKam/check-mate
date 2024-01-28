@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,32 +53,27 @@ fun Home(
         visible = viewModel.isContentVisible,
         enter = fadeIn()
     ) {
-        LazyColumn(modifier = modifier) {
+        LazyColumn(modifier = modifier.fillMaxSize()) {
             itemsIndexed(items = viewModel.checklists) { checklistIndex, checklist ->
+                if (!checklist.isFavorite) {
+                    return@itemsIndexed
+                }
+
                 Checklist(
                     header = {
                         Header(
                             title = checklist.title,
                             onTitleFocus = { viewModel.focusChecklistTitle(it) },
                             onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
-                            onTitleUpdate = { title ->
-                                viewModel.updateChecklistTitle(
-                                    checklistIndex,
-                                    title
-                                )
-                            },
-                            onChecklistRemoveFavorite = {
-                                viewModel.updateChecklistFavorite(
-                                    checklistIndex
-                                )
-                            },
+                            onTitleUpdate = { viewModel.updateChecklistTitle(checklistIndex, it) },
+                            onChecklistUnfavorite = { viewModel.updateChecklistFavorite(checklistIndex) },
                             onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
                     onItemChange = { itemIndex, name, isChecked ->
                         viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
-                        viewModel.updateChecklistItem(checklistIndex)
+                        viewModel.updateChecklistItems(checklistIndex)
                     },
                     onItemCreate = { name ->
                         viewModel.addChecklistItem(checklistIndex, name)
@@ -95,7 +91,7 @@ private fun Header(
     onTitleFocus: (String) -> Unit,
     onTitleChange: (String) -> Unit,
     onTitleUpdate: (String) -> Unit,
-    onChecklistRemoveFavorite: () -> Unit,
+    onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
 ) {
     Row(
@@ -143,7 +139,7 @@ private fun Header(
                     Text(stringResource(R.string.checklist_unfavorite))
                 }, onClick = {
                     isDropdownVisible = false
-                    onChecklistRemoveFavorite()
+                    onChecklistUnfavorite()
                 })
 
                 DropdownMenuItem(text = {

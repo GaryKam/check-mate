@@ -12,8 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,7 +63,10 @@ fun Checklists(
                 .background(Color.Black)
                 .height(1.dp)
         )
-        Content(checklists = viewModel.checklists)
+        Content(
+            checklists = viewModel.checklists,
+            onChecklistFavorite = { viewModel.updateFavoriteChecklist(it) }
+        )
     }
 }
 
@@ -111,9 +115,12 @@ private fun ChipFilters(
 }
 
 @Composable
-private fun Content(checklists: ImmutableList<Checklist>) {
+private fun Content(
+    checklists: ImmutableList<Checklist>,
+    onChecklistFavorite: (Int) -> Unit
+) {
     LazyColumn {
-        items(items = checklists) { checklist ->
+        itemsIndexed(items = checklists) { index, checklist ->
             var isExpanded by remember { mutableStateOf(false) }
 
             Column(
@@ -132,10 +139,16 @@ private fun Content(checklists: ImmutableList<Checklist>) {
                         style = MaterialTheme.typography.titleLarge
                     )
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = { onChecklistFavorite(index) }
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
-                            contentDescription = "favorite"
+                            imageVector = if (checklist.isFavorite) {
+                                Icons.Default.Favorite
+                            } else {
+                                Icons.Default.FavoriteBorder
+                            },
+                            contentDescription = stringResource(R.string.desc_favorite_checklist)
                         )
                     }
                 }

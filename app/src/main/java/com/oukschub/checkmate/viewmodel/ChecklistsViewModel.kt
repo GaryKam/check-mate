@@ -51,4 +51,17 @@ class ChecklistsViewModel @Inject constructor(
         val filter = _filters[filterIndex]
         _filters[filterIndex] = filter.copy(second = !filter.second)
     }
+
+    fun updateFavoriteChecklist(checklistIndex: Int) {
+        val checklist = checklists[checklistIndex]
+        val isFavorite = !checklist.isFavorite
+
+        val index = _checklists.indexOfFirst { it.id == checklist.id }
+        _checklists[index] = checklist.copy(isFavorite = isFavorite)
+
+        repository.updateChecklistFavorite(
+            id = checklist.id,
+            isFavorite = isFavorite
+        )
+    }
 }

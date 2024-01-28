@@ -59,14 +59,24 @@ class Database {
 
         val checklists = mutableListOf<Checklist>()
 
-        (result.data?.get(USER_CHECKLIST_IDS_FIELD) as? ArrayList<String>)?.let { ids ->
+        @Suppress("UNCHECKED_CAST")
+        val favoriteChecklistIds =
+            (result.data?.get(USER_CHECKLIST_FAVORITES_FIELD) as ArrayList<String>)
+
+        @Suppress("UNCHECKED_CAST")
+        (result.data?.get(USER_CHECKLIST_IDS_FIELD) as ArrayList<String>).let { ids ->
             for (id in ids) {
                 val checklist = firestore.collection(CHECKLISTS_COLLECTION)
                     .document(id)
                     .get()
                     .await()
                     .toObject<Checklist>()!!
-                checklists.add(checklist)
+
+                if (favoriteChecklistIds.contains(id)) {
+                    checklists.add(checklist.copy(isFavorite = true))
+                } else {
+                    checklists.add(checklist)
+                }
             }
         }
 
