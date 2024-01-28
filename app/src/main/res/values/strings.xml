@@ -42,6 +42,12 @@
     <string name="checklist_unfavorite">Remove Favorite</string>
     <string name="checklist_delete">Delete Checklist</string>
 
+    // Checklists
+    <string name="checklists_search">Search</string>
+    <string name="checklists_filter_private">Private</string>
+    <string name="checklists_filter_shared">Shared</string>
+    <string name="checklists_filter_favorite">Favorite</string>
+
     // Content Description
     <string name="desc_back">Back</string>
     <string name="desc_checklist_options">Checklist options</string>

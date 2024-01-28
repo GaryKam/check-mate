@@ -30,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.common.collect.ImmutableList
+import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
@@ -46,7 +48,10 @@ fun Checklists(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SearchBar()
+        SearchBar(
+            query = viewModel.query,
+            onQueryChange = { viewModel.changeQuery(it) }
+        )
         Filters()
         Spacer(
             modifier = Modifier
@@ -60,18 +65,24 @@ fun Checklists(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchBar() {
+private fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit
+) {
     androidx.compose.material3.SearchBar(
-        query = "",
-        onQueryChange = {},
+        query = query,
+        onQueryChange = { onQueryChange(it) },
         onSearch = {},
         active = false,
         onActiveChange = {},
         modifier = Modifier.padding(10.dp),
-        leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "Search") }
-    ) {
-        // TODO
-    }
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(R.string.checklists_search)
+            )
+        }
+    ) {}
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,9 +94,23 @@ private fun Filters() {
             .padding(vertical = 5.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Private") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Shared") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Favorite") })
+        FilterChip(
+            selected = false,
+            onClick = { /*TODO*/ },
+            label = { Text(stringResource(R.string.checklists_filter_private)) }
+        )
+
+        FilterChip(
+            selected = false,
+            onClick = { /*TODO*/ },
+            label = { Text(stringResource(R.string.checklists_filter_shared)) }
+        )
+
+        FilterChip(
+            selected = false,
+            onClick = { /*TODO*/ },
+            label = { Text(stringResource(R.string.checklists_filter_favorite)) }
+        )
     }
 }
 

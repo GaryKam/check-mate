@@ -52,7 +52,7 @@ fun Home(
         visible = viewModel.isContentVisible,
         enter = fadeIn()
     ) {
-        LazyColumn {
+        LazyColumn(modifier = modifier) {
             itemsIndexed(items = viewModel.checklists) { checklistIndex, checklist ->
                 Checklist(
                     header = {
