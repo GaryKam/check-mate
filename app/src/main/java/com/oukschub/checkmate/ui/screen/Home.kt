@@ -2,9 +2,11 @@ package com.oukschub.checkmate.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +17,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -50,32 +53,27 @@ fun Home(
         visible = viewModel.isContentVisible,
         enter = fadeIn()
     ) {
-        LazyColumn(modifier = modifier) {
+        LazyColumn(modifier = modifier.fillMaxSize()) {
             itemsIndexed(items = viewModel.checklists) { checklistIndex, checklist ->
+                if (!checklist.isFavorite) {
+                    return@itemsIndexed
+                }
+
                 Checklist(
                     header = {
                         Header(
                             title = checklist.title,
                             onTitleFocus = { viewModel.focusChecklistTitle(it) },
                             onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
-                            onTitleUpdate = { title ->
-                                viewModel.updateChecklistTitle(
-                                    checklistIndex,
-                                    title
-                                )
-                            },
-                            onChecklistRemoveFavorite = {
-                                viewModel.updateChecklistFavorite(
-                                    checklistIndex
-                                )
-                            },
+                            onTitleUpdate = { viewModel.updateChecklistTitle(checklistIndex, it) },
+                            onChecklistUnfavorite = { viewModel.updateChecklistFavorite(checklistIndex) },
                             onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
                     onItemChange = { itemIndex, name, isChecked ->
                         viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
-                        viewModel.updateChecklistItem(checklistIndex)
+                        viewModel.updateChecklistItems(checklistIndex)
                     },
                     onItemCreate = { name ->
                         viewModel.addChecklistItem(checklistIndex, name)
@@ -93,7 +91,7 @@ private fun Header(
     onTitleFocus: (String) -> Unit,
     onTitleChange: (String) -> Unit,
     onTitleUpdate: (String) -> Unit,
-    onChecklistRemoveFavorite: () -> Unit,
+    onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
 ) {
     Row(
@@ -101,6 +99,7 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(start = 20.dp, top = 5.dp, end = 5.dp)
     ) {
         TextField(
@@ -108,8 +107,10 @@ private fun Header(
             onValueChange = { onTitleChange(it) },
             textStyle = TextStyle(fontSize = 18.sp),
             colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
             ),
             modifier = Modifier.onFocusChanged { focusState ->
                 if (focusState.isFocused) {
@@ -138,7 +139,7 @@ private fun Header(
                     Text(stringResource(R.string.checklist_unfavorite))
                 }, onClick = {
                     isDropdownVisible = false
-                    onChecklistRemoveFavorite()
+                    onChecklistUnfavorite()
                 })
 
                 DropdownMenuItem(text = {

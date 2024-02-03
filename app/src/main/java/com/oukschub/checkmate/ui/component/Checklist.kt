@@ -8,13 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,10 +41,11 @@ fun Checklist(
     onItemCreate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
+    ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, top = 50.dp, end = 10.dp)
+            .padding(10.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
     ) {
         header()
         Checkboxes(items = items, onItemChange = onItemChange)
@@ -58,7 +61,7 @@ private fun Checkboxes(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 20.dp)
     ) {
         for ((index, item) in items.withIndex()) {
@@ -103,6 +106,12 @@ private fun InputField(onItemCreate: (String) -> Unit) {
                     contentDescription = stringResource(R.string.desc_done)
                 )
             }
-        }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
     )
 }

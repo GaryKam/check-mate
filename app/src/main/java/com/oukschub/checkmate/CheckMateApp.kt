@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,10 +32,27 @@ fun CheckMateApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
+    val navBackStack by navController.currentBackStackEntryAsState()
+
     Scaffold(
         modifier = modifier,
-        bottomBar = { NavigationBar(navController) },
-        floatingActionButton = { CreateChecklistFab(navController) }
+        bottomBar = {
+            NavigationBar(
+                navBackStack = navBackStack,
+                onDestinationClick = {
+                    navController.navigate(it) {
+                        launchSingleTop = true
+                        popUpTo(Screen.Home.route)
+                    }
+                },
+                floatingActionButton = {
+                    CreateChecklistFab(
+                        navBackStack = navBackStack,
+                        onClick = { navController.navigate(Screen.CreateChecklist.route) }
+                    )
+                }
+            )
+        }
     ) { paddingValues ->
         CheckMateNavHost(
             startDestination = Screen.Splash.route,
@@ -45,9 +63,12 @@ fun CheckMateApp(
 }
 
 @Composable
-private fun NavigationBar(navController: NavHostController) {
+private fun NavigationBar(
+    navBackStack: NavBackStackEntry?,
+    onDestinationClick: (String) -> Unit,
+    floatingActionButton: @Composable () -> Unit = {}
+) {
     val navBarItems = listOf(Screen.Checklists, Screen.Home, Screen.Profile)
-    val navBackStack by navController.currentBackStackEntryAsState()
     val showNavBar = navBackStack.destinationEqualsTo(Screen.Checklists.route) ||
         navBackStack.destinationEqualsTo(Screen.Home.route) ||
         navBackStack.destinationEqualsTo(Screen.Profile.route)
@@ -57,34 +78,37 @@ private fun NavigationBar(navController: NavHostController) {
         enter = expandVertically(),
         exit = shrinkVertically(),
     ) {
-        BottomAppBar(actions = {
-            for (screen in navBarItems) {
-                NavigationBarItem(
-                    selected = navBackStack.destinationEqualsTo(screen.route),
-                    onClick = {
-                        if (!navBackStack.destinationEqualsTo(screen.route)) {
-                            navController.navigate(screen.route) {
-                                launchSingleTop = true
-                                popUpTo(Screen.Home.route)
+        BottomAppBar(
+            actions = {
+                for (screen in navBarItems) {
+                    NavigationBarItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        selected = navBackStack.destinationEqualsTo(screen.route),
+                        onClick = {
+                            if (!navBackStack.destinationEqualsTo(screen.route)) {
+                                onDestinationClick(screen.route)
                             }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = screen.icon!!,
-                            contentDescription = stringResource(screen.resourceId)
-                        )
-                    },
-                    label = { Text(stringResource(screen.resourceId)) }
-                )
-            }
-        })
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = screen.icon!!,
+                                contentDescription = stringResource(screen.resourceId)
+                            )
+                        },
+                        label = { Text(stringResource(screen.resourceId)) }
+                    )
+                }
+            },
+            floatingActionButton = floatingActionButton
+        )
     }
 }
 
 @Composable
-private fun CreateChecklistFab(navController: NavHostController) {
-    val navBackStack by navController.currentBackStackEntryAsState()
+private fun CreateChecklistFab(
+    navBackStack: NavBackStackEntry?,
+    onClick: () -> Unit
+) {
     val showFab = navBackStack.destinationEqualsTo(Screen.Checklists.route) ||
         navBackStack.destinationEqualsTo(Screen.Home.route)
 
@@ -93,9 +117,7 @@ private fun CreateChecklistFab(navController: NavHostController) {
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        FloatingActionButton(
-            onClick = { navController.navigate(Screen.CreateChecklist.route) }
-        ) {
+        FloatingActionButton(onClick = onClick) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = stringResource(R.string.desc_create_checklist)

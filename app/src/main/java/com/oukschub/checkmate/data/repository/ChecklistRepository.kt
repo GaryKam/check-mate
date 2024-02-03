@@ -28,7 +28,7 @@ class ChecklistRepository @Inject constructor(
         checklists.addAll(database.fetchChecklists())
     }
 
-    fun setChecklistTitle(
+    fun updateChecklistTitle(
         id: String,
         title: String,
         onSuccess: () -> Unit
@@ -43,14 +43,14 @@ class ChecklistRepository @Inject constructor(
         database.updateChecklistItems(id, name)
     }
 
-    fun setChecklistItems(
+    fun updateChecklistItems(
         id: String,
         items: List<ChecklistItem>
     ) {
         database.updateChecklistItems(id, items)
     }
 
-    fun setChecklistFavorite(
+    fun updateChecklistFavorite(
         id: String,
         isFavorite: Boolean
     ) {

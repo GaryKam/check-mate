@@ -59,7 +59,7 @@ class HomeViewModel @Inject constructor(
         title: String
     ) {
         if (initialTitle != null && initialTitle != title) {
-            repository.setChecklistTitle(
+            repository.updateChecklistTitle(
                 id = _checklists[checklistIndex].id,
                 title = title,
                 onSuccess = {
@@ -81,17 +81,19 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun updateChecklistItem(checklistIndex: Int) {
-        repository.setChecklistItems(
+    fun updateChecklistItems(checklistIndex: Int) {
+        repository.updateChecklistItems(
             id = _checklists[checklistIndex].id,
             items = _checklists[checklistIndex].items
         )
     }
 
     fun updateChecklistFavorite(checklistIndex: Int) {
-        repository.setChecklistFavorite(
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(isFavorite = false)
+
+        repository.updateChecklistFavorite(
             id = _checklists[checklistIndex].id,
-            isFavorite = true
+            isFavorite = false
         )
     }
 
