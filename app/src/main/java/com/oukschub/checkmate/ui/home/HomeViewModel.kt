@@ -42,9 +42,14 @@ class HomeViewModel @Inject constructor(
         items[itemIndex] = ChecklistItem(name, isChecked)
 
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+
+        repository.updateChecklistItems(
+            id = _checklists[checklistIndex].id,
+            items = _checklists[checklistIndex].items
+        )
     }
 
-    fun addChecklistItem(
+    fun createChecklistItem(
         checklistIndex: Int,
         name: String
     ) {
@@ -52,6 +57,11 @@ class HomeViewModel @Inject constructor(
         items.add(ChecklistItem(name))
 
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+
+        repository.createChecklistItem(
+            id = _checklists[checklistIndex].id,
+            name = name
+        )
     }
 
     fun updateChecklistTitle(
@@ -71,24 +81,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun createChecklistItem(
-        checklistIndex: Int,
-        name: String
-    ) {
-        repository.createChecklistItem(
-            id = _checklists[checklistIndex].id,
-            name = name
-        )
-    }
-
-    fun updateChecklistItems(checklistIndex: Int) {
-        repository.updateChecklistItems(
-            id = _checklists[checklistIndex].id,
-            items = _checklists[checklistIndex].items
-        )
-    }
-
-    fun updateChecklistFavorite(checklistIndex: Int) {
+    fun unfavoriteChecklist(checklistIndex: Int) {
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(isFavorite = false)
 
         repository.updateChecklistFavorite(

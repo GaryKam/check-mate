@@ -23,7 +23,7 @@ import com.oukschub.checkmate.R
  * Allows some data to load in background before app is displayed.
  */
 @Composable
-fun Splash(
+fun SplashScreen(
     onComplete: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SplashViewModel = hiltViewModel()

@@ -31,7 +31,7 @@ import com.oukschub.checkmate.util.MessageUtil
  * The screen for users to login to an existing account.
  */
 @Composable
-fun SignIn(
+fun SignInScreen(
     onSignIn: () -> Unit,
     onFooterClick: () -> Unit,
     modifier: Modifier = Modifier,

@@ -11,17 +11,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.oukschub.checkmate.ui.checklists.Checklists
+import com.oukschub.checkmate.ui.checklists.ChecklistsScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
-import com.oukschub.checkmate.ui.createchecklist.CreateChecklist
+import com.oukschub.checkmate.ui.createchecklist.CreateChecklistScreen
 import com.oukschub.checkmate.ui.createchecklist.CreateChecklistViewModel
-import com.oukschub.checkmate.ui.home.Home
+import com.oukschub.checkmate.ui.home.HomeScreen
 import com.oukschub.checkmate.ui.home.HomeViewModel
-import com.oukschub.checkmate.ui.profile.Profile
+import com.oukschub.checkmate.ui.profile.ProfileScreen
 import com.oukschub.checkmate.ui.profile.ProfileViewModel
-import com.oukschub.checkmate.ui.signin.SignIn
-import com.oukschub.checkmate.ui.signup.SignUp
-import com.oukschub.checkmate.ui.splash.Splash
+import com.oukschub.checkmate.ui.signin.SignInScreen
+import com.oukschub.checkmate.ui.signup.SignUpScreen
+import com.oukschub.checkmate.ui.splash.SplashScreen
 import com.oukschub.checkmate.util.FirebaseUtil
 
 /**
@@ -43,7 +43,7 @@ fun CheckMateNavHost(
         modifier = modifier
     ) {
         composable(Screen.Splash.route) {
-            Splash(
+            SplashScreen(
                 onComplete = {
                     navController.popBackStack()
                     navController.navigate(if (FirebaseUtil.isSignedIn()) Screen.Home.route else Screen.SignIn.route)
@@ -52,7 +52,7 @@ fun CheckMateNavHost(
         }
 
         composable(Screen.SignIn.route) {
-            SignIn(
+            SignInScreen(
                 onSignIn = {
                     navController.popBackStack()
                     navController.navigate(Screen.Home.route)
@@ -64,7 +64,7 @@ fun CheckMateNavHost(
         }
 
         composable(Screen.SignUp.route) {
-            SignUp(
+            SignUpScreen(
                 onSignUp = {
                     navController.popBackStack(Screen.SignIn.route, true)
                     navController.navigate(Screen.Home.route)
@@ -80,7 +80,7 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(true) },
             exitTransition = { slideScreenOut(false) }
         ) {
-            Checklists(viewModel = checklistViewModel)
+            ChecklistsScreen(viewModel = checklistViewModel)
         }
 
         composable(
@@ -100,7 +100,7 @@ fun CheckMateNavHost(
                 }
             }
         ) {
-            Home(viewModel = homeViewModel)
+            HomeScreen(viewModel = homeViewModel)
         }
 
         composable(
@@ -108,7 +108,7 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(false) },
             exitTransition = { slideScreenOut(true) }
         ) {
-            Profile(
+            ProfileScreen(
                 viewModel = profileViewModel,
                 onSignOut = {
                     navController.navigate(Screen.SignIn.route) {
@@ -121,7 +121,7 @@ fun CheckMateNavHost(
         }
 
         composable(Screen.CreateChecklist.route) {
-            CreateChecklist(
+            CreateChecklistScreen(
                 viewModel = createChecklistViewModel,
                 onBack = { navController.popBackStack() },
                 onChecklistCreate = { navController.navigate(Screen.Home.route) }

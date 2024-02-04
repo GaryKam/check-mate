@@ -34,7 +34,7 @@ import com.oukschub.checkmate.util.MessageUtil
  * The screen for users to create a new account.
  */
 @Composable
-fun SignUp(
+fun SignUpScreen(
     onSignUp: () -> Unit,
     onFooterClick: () -> Unit,
     modifier: Modifier = Modifier,

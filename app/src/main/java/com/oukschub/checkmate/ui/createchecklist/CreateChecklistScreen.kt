@@ -30,7 +30,7 @@ import com.oukschub.checkmate.ui.component.Checklist
  * The screen to create a new checklist.
  */
 @Composable
-fun CreateChecklist(
+fun CreateChecklistScreen(
     viewModel: CreateChecklistViewModel,
     onBack: () -> Unit,
     onChecklistCreate: () -> Unit,
@@ -61,7 +61,7 @@ fun CreateChecklist(
                 onItemChange = { index, name, isChecked ->
                     viewModel.changeChecklistItem(index, name, isChecked)
                 },
-                onItemCreate = { viewModel.addChecklistItem(it) },
+                onItemCreate = { viewModel.createChecklistItem(it) },
             )
 
             if (viewModel.isCreatingChecklist) {

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
  * The screen for users to update their account information and logout.
  */
 @Composable
-fun Profile(
+fun ProfileScreen(
     viewModel: ProfileViewModel,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,

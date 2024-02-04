@@ -51,7 +51,7 @@ import com.oukschub.checkmate.ui.component.Checklist
  * Displays the user's favorite checklists.
  */
 @Composable
-fun Home(
+fun HomeScreen(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -96,40 +96,17 @@ fun Home(
                             Header(
                                 title = checklist.title,
                                 onTitleFocus = { viewModel.focusChecklistTitle(it) },
-                                onTitleChange = {
-                                    viewModel.changeChecklistTitle(
-                                        checklistIndex,
-                                        it
-                                    )
-                                },
-                                onTitleUpdate = {
-                                    viewModel.updateChecklistTitle(
-                                        checklistIndex,
-                                        it
-                                    )
-                                },
-                                onChecklistUnfavorite = {
-                                    viewModel.updateChecklistFavorite(
-                                        checklistIndex
-                                    )
-                                },
+                                onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
+                                onTitleUpdate = { viewModel.updateChecklistTitle(checklistIndex, it) },
+                                onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
                                 onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                             )
                         },
                         items = ImmutableList.copyOf(checklist.items),
                         onItemChange = { itemIndex, name, isChecked ->
-                            viewModel.changeChecklistItem(
-                                checklistIndex,
-                                itemIndex,
-                                name,
-                                isChecked
-                            )
-                            viewModel.updateChecklistItems(checklistIndex)
+                            viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
                         },
-                        onItemCreate = { name ->
-                            viewModel.addChecklistItem(checklistIndex, name)
-                            viewModel.createChecklistItem(checklistIndex, name)
-                        }
+                        onItemCreate = { viewModel.createChecklistItem(checklistIndex, it) }
                     )
                 }
             }
