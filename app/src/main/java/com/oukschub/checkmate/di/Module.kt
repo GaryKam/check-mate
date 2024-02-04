@@ -8,6 +8,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Injects dependencies throughout the app.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object Module {

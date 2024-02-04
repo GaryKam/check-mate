@@ -12,6 +12,9 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.util.FirebaseUtil
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Firestore database to handle checklist and user data.
+ */
 class Database {
     private val firestore = Firebase.firestore
 

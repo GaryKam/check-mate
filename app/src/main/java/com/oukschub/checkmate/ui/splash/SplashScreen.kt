@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.splash
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
@@ -17,8 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.viewmodel.SplashViewModel
 
+/**
+ * The very first screen to be displayed.
+ * Allows some data to load in background before app is displayed.
+ */
 @Composable
 fun Splash(
     onComplete: () -> Unit,

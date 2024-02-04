@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.navigation
+package com.oukschub.checkmate.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -11,19 +11,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.oukschub.checkmate.ui.screen.Checklists
-import com.oukschub.checkmate.ui.screen.CreateChecklist
-import com.oukschub.checkmate.ui.screen.Home
-import com.oukschub.checkmate.ui.screen.Profile
-import com.oukschub.checkmate.ui.screen.SignIn
-import com.oukschub.checkmate.ui.screen.SignUp
-import com.oukschub.checkmate.ui.screen.Splash
+import com.oukschub.checkmate.ui.checklists.Checklists
+import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
+import com.oukschub.checkmate.ui.createchecklist.CreateChecklist
+import com.oukschub.checkmate.ui.createchecklist.CreateChecklistViewModel
+import com.oukschub.checkmate.ui.home.Home
+import com.oukschub.checkmate.ui.home.HomeViewModel
+import com.oukschub.checkmate.ui.profile.Profile
+import com.oukschub.checkmate.ui.profile.ProfileViewModel
+import com.oukschub.checkmate.ui.signin.SignIn
+import com.oukschub.checkmate.ui.signup.SignUp
+import com.oukschub.checkmate.ui.splash.Splash
 import com.oukschub.checkmate.util.FirebaseUtil
-import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
-import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
-import com.oukschub.checkmate.viewmodel.HomeViewModel
-import com.oukschub.checkmate.viewmodel.ProfileViewModel
 
+/**
+ * Hosts the content of each screen being displayed.
+ */
 @Composable
 fun CheckMateNavHost(
     startDestination: String,

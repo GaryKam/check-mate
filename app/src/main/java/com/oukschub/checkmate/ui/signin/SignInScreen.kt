@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.signin
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,8 +26,10 @@ import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.Logo
 import com.oukschub.checkmate.util.MessageUtil
-import com.oukschub.checkmate.viewmodel.SignInViewModel
 
+/**
+ * The screen for users to login to an existing account.
+ */
 @Composable
 fun SignIn(
     onSignIn: () -> Unit,

@@ -2,6 +2,9 @@ package com.oukschub.checkmate.util
 
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Utilities to interact with Firebase.
+ */
 object FirebaseUtil {
     private val auth = FirebaseAuth.getInstance()
 

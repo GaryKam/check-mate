@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.checklists
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -37,8 +37,10 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
-import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 
+/**
+ * The screen that displays all existing checklists.
+ */
 @Composable
 fun Checklists(
     viewModel: ChecklistsViewModel,
@@ -148,7 +150,8 @@ private fun Content(
                             } else {
                                 Icons.Default.FavoriteBorder
                             },
-                            contentDescription = stringResource(R.string.desc_favorite_checklist)
+                            contentDescription = stringResource(R.string.desc_favorite_checklist),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }

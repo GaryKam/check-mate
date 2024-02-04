@@ -48,6 +48,9 @@
     <string name="checklists_filter_shared">Shared</string>
     <string name="checklists_filter_favorite">Favorite</string>
 
+    // Home
+    <string name="home_no_favorites">You have no favorite checklists</string>
+
     // Content Description
     <string name="desc_back">Back</string>
     <string name="desc_checklist_options">Checklist options</string>

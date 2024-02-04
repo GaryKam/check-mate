@@ -19,6 +19,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.firebase.ui.auth.R
 
+/**
+ * A text field to input a password.
+ */
 @Composable
 fun PasswordTextField(
     password: String,

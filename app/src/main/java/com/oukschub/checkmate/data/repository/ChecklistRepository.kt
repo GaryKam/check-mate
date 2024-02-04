@@ -7,6 +7,9 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * The single source for checklists.
+ */
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
@@ -17,9 +20,9 @@ class ChecklistRepository @Inject constructor(
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
     ) {
-        val checklist = database.createChecklist(title, items, onSuccess)
-
-        checklists.add(checklist)
+        database.createChecklist(title, items, onSuccess).also {
+            checklists.add(it)
+        }
     }
 
     suspend fun getChecklists() {

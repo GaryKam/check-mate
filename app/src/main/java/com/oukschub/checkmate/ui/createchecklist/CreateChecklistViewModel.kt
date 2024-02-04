@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.createchecklist
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf

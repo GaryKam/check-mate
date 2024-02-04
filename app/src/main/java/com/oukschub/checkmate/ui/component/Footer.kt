@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 
+/**
+ * A composable to be displayed at the bottom of the screen.
+ */
 @Composable
 fun Footer(
     text: AnnotatedString,

@@ -2,8 +2,6 @@ package com.oukschub.checkmate
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,9 +22,12 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.oukschub.checkmate.navigation.CheckMateNavHost
-import com.oukschub.checkmate.navigation.Screen
+import com.oukschub.checkmate.ui.navigation.CheckMateNavHost
+import com.oukschub.checkmate.ui.navigation.Screen
 
+/**
+ * The main app, comprised of the navHost and bottomNavBar.
+ */
 @Composable
 fun CheckMateApp(
     modifier: Modifier = Modifier,
@@ -47,7 +48,6 @@ fun CheckMateApp(
                 },
                 floatingActionButton = {
                     CreateChecklistFab(
-                        navBackStack = navBackStack,
                         onClick = { navController.navigate(Screen.CreateChecklist.route) }
                     )
                 }
@@ -105,24 +105,12 @@ private fun NavigationBar(
 }
 
 @Composable
-private fun CreateChecklistFab(
-    navBackStack: NavBackStackEntry?,
-    onClick: () -> Unit
-) {
-    val showFab = navBackStack.destinationEqualsTo(Screen.Checklists.route) ||
-        navBackStack.destinationEqualsTo(Screen.Home.route)
-
-    AnimatedVisibility(
-        visible = showFab,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        FloatingActionButton(onClick = onClick) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(R.string.desc_create_checklist)
-            )
-        }
+private fun CreateChecklistFab(onClick: () -> Unit) {
+    FloatingActionButton(onClick = onClick) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = stringResource(R.string.desc_create_checklist)
+        )
     }
 }
 

@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.createchecklist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,8 +25,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
-import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
 
+/**
+ * The screen to create a new checklist.
+ */
 @Composable
 fun CreateChecklist(
     viewModel: CreateChecklistViewModel,

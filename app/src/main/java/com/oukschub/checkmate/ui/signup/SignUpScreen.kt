@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.signup
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,8 +29,10 @@ import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
 import com.oukschub.checkmate.ui.component.PasswordTextField
 import com.oukschub.checkmate.util.MessageUtil
-import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
+/**
+ * The screen for users to create a new account.
+ */
 @Composable
 fun SignUp(
     onSignUp: () -> Unit,

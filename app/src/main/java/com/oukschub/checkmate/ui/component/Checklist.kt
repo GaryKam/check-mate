@@ -33,6 +33,9 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
 
+/**
+ * A container that displays information associated to a checklist.
+ */
 @Composable
 fun Checklist(
     header: @Composable () -> Unit,
