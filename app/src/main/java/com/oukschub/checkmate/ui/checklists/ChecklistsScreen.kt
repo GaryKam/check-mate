@@ -161,7 +161,8 @@ private fun Content(
                         header = { /*TODO*/ },
                         items = ImmutableList.copyOf(checklist.items),
                         onItemChange = { _, _, _ -> },
-                        onItemCreate = {}
+                        onItemCreate = {},
+                        onItemLongClick = { _ -> }
                     )
                 }
             }

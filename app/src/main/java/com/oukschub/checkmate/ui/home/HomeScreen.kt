@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -96,20 +98,67 @@ fun HomeScreen(
                             Header(
                                 title = checklist.title,
                                 onTitleFocus = { viewModel.focusChecklistTitle(it) },
-                                onTitleChange = { viewModel.changeChecklistTitle(checklistIndex, it) },
-                                onTitleUpdate = { viewModel.updateChecklistTitle(checklistIndex, it) },
-                                onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
+                                onTitleChange = {
+                                    viewModel.changeChecklistTitle(
+                                        checklistIndex,
+                                        it
+                                    )
+                                },
+                                onTitleUpdate = {
+                                    viewModel.updateChecklistTitle(
+                                        checklistIndex,
+                                        it
+                                    )
+                                },
+                                onChecklistUnfavorite = {
+                                    viewModel.unfavoriteChecklist(
+                                        checklistIndex
+                                    )
+                                },
                                 onChecklistDelete = { viewModel.deleteChecklist(checklist) }
                             )
                         },
                         items = ImmutableList.copyOf(checklist.items),
                         onItemChange = { itemIndex, name, isChecked ->
-                            viewModel.changeChecklistItem(checklistIndex, itemIndex, name, isChecked)
+                            viewModel.changeChecklistItem(
+                                checklistIndex,
+                                itemIndex,
+                                name,
+                                isChecked
+                            )
                         },
-                        onItemCreate = { viewModel.createChecklistItem(checklistIndex, it) }
+                        onItemCreate = { viewModel.createChecklistItem(checklistIndex, it) },
+                        onItemLongClick = { itemIndex ->
+                            viewModel.showDeleteChecklistItemDialog(checklistIndex, itemIndex)
+                        }
                     )
                 }
             }
+        }
+
+        if (viewModel.isDeleteChecklistItemDialogVisible) {
+            AlertDialog(
+                onDismissRequest = { viewModel.hideDeleteChecklistItemDialog() },
+                confirmButton = {
+                    Button(onClick = { viewModel.deleteChecklistItem() }) {
+                        Text(text = stringResource(R.string.confirm))
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { viewModel.hideDeleteChecklistItemDialog() }) {
+                        Text(text = stringResource(R.string.cancel))
+                    }
+                },
+                title = { Text(text = stringResource(R.string.home_delete_dialog_title)) },
+                text = {
+                    Text(
+                        text = stringResource(
+                            R.string.home_delete_dialog_prompt,
+                            viewModel.itemToBeDeleted
+                        )
+                    )
+                }
+            )
         }
     }
 }

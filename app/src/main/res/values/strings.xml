@@ -9,6 +9,8 @@
     <string name="password">Password</string>
     <string name="red_x">\u274C</string>
     <string name="blank" />
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
 
     // Sign In
     <string name="sign_in">Sign In</string>
@@ -50,6 +52,8 @@
 
     // Home
     <string name="home_no_favorites">You have no favorite checklists</string>
+    <string name="home_delete_dialog_title">Delete Item</string>
+    <string name="home_delete_dialog_prompt">Do you want to delete the following item?\n%1$s</string>
 
     // Content Description
     <string name="desc_back">Back</string>

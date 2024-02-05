@@ -62,6 +62,7 @@ fun CreateChecklistScreen(
                     viewModel.changeChecklistItem(index, name, isChecked)
                 },
                 onItemCreate = { viewModel.createChecklistItem(it) },
+                onItemLongClick = { _ -> }
             )
 
             if (viewModel.isCreatingChecklist) {

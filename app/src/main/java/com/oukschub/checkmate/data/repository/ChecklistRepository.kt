@@ -25,6 +25,13 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    fun createChecklistItem(
+        id: String,
+        name: String
+    ) {
+        database.createChecklistItem(id, ChecklistItem(name))
+    }
+
     suspend fun getChecklists() {
         Timber.d("Fetching checklists from database")
         checklists.clear()
@@ -37,13 +44,6 @@ class ChecklistRepository @Inject constructor(
         onSuccess: () -> Unit
     ) {
         database.updateChecklistTitle(id, title, onSuccess)
-    }
-
-    fun createChecklistItem(
-        id: String,
-        name: String
-    ) {
-        database.updateChecklistItems(id, name)
     }
 
     fun updateChecklistItems(
@@ -65,5 +65,12 @@ class ChecklistRepository @Inject constructor(
         onSuccess: () -> Unit
     ) {
         database.deleteChecklist(id, onSuccess)
+    }
+
+    fun deleteChecklistItem(
+        id: String,
+        item: ChecklistItem
+    ) {
+        database.deleteChecklistItem(id, item)
     }
 }

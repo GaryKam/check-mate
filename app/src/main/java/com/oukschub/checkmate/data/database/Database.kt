@@ -54,6 +54,18 @@ class Database {
         return checklist
     }
 
+    fun createChecklistItem(
+        id: String,
+        item: ChecklistItem
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(id)
+            .update(
+                CHECKLIST_ITEMS_FIELD,
+                FieldValue.arrayUnion(item)
+            )
+    }
+
     suspend fun fetchChecklists(): List<Checklist> {
         val result = firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
@@ -106,18 +118,6 @@ class Database {
             .update(CHECKLIST_ITEMS_FIELD, items)
     }
 
-    fun updateChecklistItems(
-        id: String,
-        name: String
-    ) {
-        firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id)
-            .update(
-                CHECKLIST_ITEMS_FIELD,
-                FieldValue.arrayUnion(ChecklistItem(name))
-            )
-    }
-
     fun updateChecklistFavorite(
         id: String,
         isFavorite: Boolean
@@ -147,6 +147,18 @@ class Database {
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(id))
                     .addOnSuccessListener { onSuccess() }
             }
+    }
+
+    fun deleteChecklistItem(
+        id: String,
+        item: ChecklistItem
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(id)
+            .update(
+                CHECKLIST_ITEMS_FIELD,
+                FieldValue.arrayRemove(item)
+            )
     }
 
     companion object {

@@ -20,6 +20,12 @@ class HomeViewModel @Inject constructor(
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
     private var initialTitle: String? = null
+    var isDeleteChecklistItemDialogVisible by mutableStateOf(false)
+        private set
+    private var deleteItemChecklistIndex: Int = -1
+    private var deleteItemIndex: Int = -1
+    val itemToBeDeleted: String
+        get() = _checklists[deleteItemChecklistIndex].items.get(deleteItemIndex).name
 
     fun focusChecklistTitle(title: String) {
         initialTitle = title
@@ -88,6 +94,36 @@ class HomeViewModel @Inject constructor(
             id = _checklists[checklistIndex].id,
             isFavorite = false
         )
+    }
+
+    fun showDeleteChecklistItemDialog(
+        checklistIndex: Int,
+        itemIndex: Int
+    ) {
+        isDeleteChecklistItemDialogVisible = true
+        deleteItemChecklistIndex = checklistIndex
+        deleteItemIndex = itemIndex
+    }
+
+    fun hideDeleteChecklistItemDialog() {
+        isDeleteChecklistItemDialogVisible = false
+        deleteItemChecklistIndex = -1
+        deleteItemIndex = -1
+    }
+
+    fun deleteChecklistItem() {
+        val checklist = checklists[deleteItemChecklistIndex]
+        val items = checklist.items.toMutableList()
+
+        items.removeAt(deleteItemIndex)
+        _checklists[deleteItemChecklistIndex] = _checklists[deleteItemChecklistIndex].copy(items = items)
+
+        repository.deleteChecklistItem(
+            id = checklist.id,
+            item = checklist.items[deleteItemIndex]
+        )
+
+        hideDeleteChecklistItemDialog()
     }
 
     fun deleteChecklist(checklist: Checklist) {

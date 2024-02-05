@@ -1,6 +1,8 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +44,7 @@ fun Checklist(
     items: ImmutableList<ChecklistItem>,
     onItemChange: (Int, String, Boolean) -> Unit,
     onItemCreate: (String) -> Unit,
+    onItemLongClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -51,15 +54,21 @@ fun Checklist(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
     ) {
         header()
-        Checkboxes(items = items, onItemChange = onItemChange)
+        Checkboxes(
+            items = items,
+            onItemChange = onItemChange,
+            onItemLongClick = onItemLongClick
+        )
         InputField(onItemCreate = onItemCreate)
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
-    onItemChange: (Int, String, Boolean) -> Unit
+    onItemChange: (Int, String, Boolean) -> Unit,
+    onItemLongClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -73,6 +82,10 @@ private fun Checkboxes(
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
+                    .combinedClickable(
+                        onLongClick = { onItemLongClick(index) },
+                        onClick = {}
+                    )
             ) {
                 Checkbox(
                     checked = item.isChecked,
@@ -83,7 +96,13 @@ private fun Checkboxes(
                     value = item.name,
                     onValueChange = { onItemChange(index, it, item.isChecked) },
                     enabled = !item.isChecked,
-                    textStyle = TextStyle(textDecoration = if (item.isChecked) TextDecoration.LineThrough else TextDecoration.None)
+                    textStyle = TextStyle(
+                        textDecoration = if (item.isChecked) {
+                            TextDecoration.LineThrough
+                        } else {
+                            TextDecoration.None
+                        }
+                    )
                 )
             }
         }
