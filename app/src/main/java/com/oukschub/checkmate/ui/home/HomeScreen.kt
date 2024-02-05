@@ -97,37 +97,20 @@ fun HomeScreen(
                         header = {
                             Header(
                                 title = checklist.title,
-                                onTitleFocus = { viewModel.focusChecklistTitle(it) },
-                                onTitleChange = {
-                                    viewModel.changeChecklistTitle(
-                                        checklistIndex,
-                                        it
-                                    )
-                                },
-                                onTitleUpdate = {
-                                    viewModel.updateChecklistTitle(
-                                        checklistIndex,
-                                        it
-                                    )
-                                },
-                                onChecklistUnfavorite = {
-                                    viewModel.unfavoriteChecklist(
-                                        checklistIndex
-                                    )
-                                },
-                                onChecklistDelete = { viewModel.deleteChecklist(checklist) }
+                                onTitleFocus = { title -> viewModel.focusChecklistTitle(title) },
+                                onTitleChange = { title -> viewModel.changeChecklistTitle(checklistIndex, title) },
+                                onTitleUpdate = { title -> viewModel.updateChecklistTitle(checklistIndex, title) },
+                                onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
+                                onChecklistDelete = { viewModel.deleteChecklist(checklistIndex) }
                             )
                         },
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemChange = { itemIndex, name, isChecked ->
-                            viewModel.changeChecklistItem(
-                                checklistIndex,
-                                itemIndex,
-                                name,
-                                isChecked
-                            )
+                        onItemChange = { itemIndex, itemName, isChecked ->
+                            viewModel.changeChecklistItem(checklistIndex, itemIndex, itemName, isChecked)
                         },
-                        onItemCreate = { viewModel.createChecklistItem(checklistIndex, it) },
+                        onItemCreate = { itemName ->
+                            viewModel.createChecklistItem(checklistIndex, itemName)
+                        },
                         onItemLongClick = { itemIndex ->
                             viewModel.showDeleteChecklistItemDialog(checklistIndex, itemIndex)
                         }
@@ -150,14 +133,7 @@ fun HomeScreen(
                     }
                 },
                 title = { Text(text = stringResource(R.string.home_delete_dialog_title)) },
-                text = {
-                    Text(
-                        text = stringResource(
-                            R.string.home_delete_dialog_prompt,
-                            viewModel.itemToBeDeleted
-                        )
-                    )
-                }
+                text = { Text(text = stringResource(R.string.home_delete_dialog_prompt, viewModel.itemToBeDeleted)) }
             )
         }
     }
@@ -213,19 +189,21 @@ private fun Header(
                 expanded = isDropdownVisible,
                 onDismissRequest = { isDropdownVisible = false }
             ) {
-                DropdownMenuItem(text = {
-                    Text(stringResource(R.string.checklist_unfavorite))
-                }, onClick = {
-                    isDropdownVisible = false
-                    onChecklistUnfavorite()
-                })
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.checklist_unfavorite)) },
+                    onClick = {
+                        isDropdownVisible = false
+                        onChecklistUnfavorite()
+                    }
+                )
 
-                DropdownMenuItem(text = {
-                    Text(stringResource(R.string.checklist_delete))
-                }, onClick = {
-                    isDropdownVisible = false
-                    onChecklistDelete()
-                })
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.checklist_delete)) },
+                    onClick = {
+                        isDropdownVisible = false
+                        onChecklistDelete()
+                    }
+                )
             }
         }
     }

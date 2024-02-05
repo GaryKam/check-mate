@@ -55,11 +55,11 @@ class Database {
     }
 
     fun createChecklistItem(
-        id: String,
+        checklistId: String,
         item: ChecklistItem
     ) {
         firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id)
+            .document(checklistId)
             .update(
                 CHECKLIST_ITEMS_FIELD,
                 FieldValue.arrayUnion(item)
@@ -99,27 +99,25 @@ class Database {
     }
 
     fun updateChecklistTitle(
-        id: String,
-        title: String,
-        onSuccess: () -> Unit
+        checklistId: String,
+        title: String
     ) {
         firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id)
+            .document(checklistId)
             .update(CHECKLIST_TITLE_FIELD, title)
-            .addOnSuccessListener { onSuccess() }
     }
 
     fun updateChecklistItems(
-        id: String,
+        checklistId: String,
         items: List<ChecklistItem>
     ) {
         firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id)
+            .document(checklistId)
             .update(CHECKLIST_ITEMS_FIELD, items)
     }
 
     fun updateChecklistFavorite(
-        id: String,
+        checklistId: String,
         isFavorite: Boolean
     ) {
         firestore.collection(USERS_COLLECTION)
@@ -127,34 +125,34 @@ class Database {
             .update(
                 USER_CHECKLIST_FAVORITES_FIELD,
                 if (isFavorite) {
-                    FieldValue.arrayUnion(id)
+                    FieldValue.arrayUnion(checklistId)
                 } else {
-                    FieldValue.arrayRemove(id)
+                    FieldValue.arrayRemove(checklistId)
                 }
             )
     }
 
-    fun deleteChecklist(
-        id: String,
-        onSuccess: () -> Unit
-    ) {
+    fun deleteChecklist(checklistId: String) {
         firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id)
+            .document(checklistId)
             .delete()
             .addOnSuccessListener {
                 firestore.collection(USERS_COLLECTION)
                     .document(FirebaseUtil.getUserId())
-                    .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(id))
-                    .addOnSuccessListener { onSuccess() }
+                    .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(checklistId))
+
+                firestore.collection(USERS_COLLECTION)
+                    .document(FirebaseUtil.getUserId())
+                    .update(USER_CHECKLIST_FAVORITES_FIELD, FieldValue.arrayRemove(checklistId))
             }
     }
 
     fun deleteChecklistItem(
-        id: String,
+        checklistId: String,
         item: ChecklistItem
     ) {
         firestore.collection(CHECKLISTS_COLLECTION)
-            .document(id)
+            .document(checklistId)
             .update(
                 CHECKLIST_ITEMS_FIELD,
                 FieldValue.arrayRemove(item)

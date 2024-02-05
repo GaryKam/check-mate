@@ -1,6 +1,7 @@
 package com.oukschub.checkmate.data.repository
 
 import androidx.compose.runtime.mutableStateListOf
+import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
@@ -13,64 +14,93 @@ import javax.inject.Inject
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
-    val checklists = mutableStateListOf<Checklist>()
+    private val _checklists = mutableStateListOf<Checklist>()
+    val checklists: ImmutableList<Checklist>
+        get() = ImmutableList.copyOf(_checklists)
+
+    fun changeChecklistTitle(
+        checklistIndex: Int,
+        title: String
+    ) {
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
+    }
 
     fun createChecklist(
         title: String,
         items: List<ChecklistItem>,
         onSuccess: () -> Unit
     ) {
-        database.createChecklist(title, items, onSuccess).also {
-            checklists.add(it)
+        database.createChecklist(title, items, onSuccess).also { checklist ->
+            _checklists.add(checklist)
         }
     }
 
     fun createChecklistItem(
-        id: String,
-        name: String
+        checklistIndex: Int,
+        itemName: String
     ) {
-        database.createChecklistItem(id, ChecklistItem(name))
+        val item = ChecklistItem(itemName)
+        _checklists[checklistIndex].items.toMutableList().apply {
+            add(item)
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.createChecklistItem(_checklists[checklistIndex].id, item)
+        }
     }
 
     suspend fun getChecklists() {
         Timber.d("Fetching checklists from database")
-        checklists.clear()
-        checklists.addAll(database.fetchChecklists())
+        _checklists.clear()
+        _checklists.addAll(database.fetchChecklists())
     }
 
     fun updateChecklistTitle(
-        id: String,
-        title: String,
-        onSuccess: () -> Unit
+        checklistIndex: Int,
+        title: String
     ) {
-        database.updateChecklistTitle(id, title, onSuccess)
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
+        database.updateChecklistTitle(_checklists[checklistIndex].id, title)
     }
 
-    fun updateChecklistItems(
-        id: String,
-        items: List<ChecklistItem>
+    fun updateChecklistItem(
+        checklistIndex: Int,
+        itemIndex: Int,
+        itemName: String,
+        isChecked: Boolean
     ) {
-        database.updateChecklistItems(id, items)
+        _checklists[checklistIndex].items.toMutableList().apply {
+            this[itemIndex] = ChecklistItem(itemName, isChecked)
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
+        }
     }
 
     fun updateChecklistFavorite(
-        id: String,
+        checklistIndex: Int,
         isFavorite: Boolean
     ) {
-        database.updateChecklistFavorite(id, isFavorite)
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(isFavorite = isFavorite)
+        database.updateChecklistFavorite(_checklists[checklistIndex].id, isFavorite)
     }
 
-    fun deleteChecklist(
-        id: String,
-        onSuccess: () -> Unit
-    ) {
-        database.deleteChecklist(id, onSuccess)
+    fun deleteChecklist(checklistIndex: Int) {
+        _checklists[checklistIndex].run {
+            _checklists.remove(this)
+            database.deleteChecklist(id)
+        }
     }
 
     fun deleteChecklistItem(
-        id: String,
-        item: ChecklistItem
+        checklistIndex: Int,
+        itemIndex: Int
     ) {
-        database.deleteChecklistItem(id, item)
+        val item = _checklists[checklistIndex].items[itemIndex]
+        _checklists[checklistIndex].items.toMutableList().apply {
+            remove(item)
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.deleteChecklistItem(_checklists[checklistIndex].id, item)
+        }
     }
 }
