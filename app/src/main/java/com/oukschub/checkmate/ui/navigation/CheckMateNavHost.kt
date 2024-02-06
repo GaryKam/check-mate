@@ -124,7 +124,7 @@ fun CheckMateNavHost(
             AddChecklistScreen(
                 viewModel = createChecklistViewModel,
                 onBack = { navController.popBackStack() },
-                onChecklistAdd = { navController.navigate(Screen.Home.route) }
+                onSuccess = { navController.navigate(Screen.Home.route) }
             )
         }
     }

@@ -42,13 +42,9 @@ exit $gradle_command_exit_code
 ### View Model
 - Use simple and straightforward language
    - `get<object>`, `set<object>`, `add<object>`, `delete<object>`, `show<object>`
-- Ensure Composables display their latest values
-   - `change<object>`
 ### Repository
 - Operations that may take some time
    - `create<object>`, `fetch<object>`, `update<object>`, `delete<object>`
-- Ensure Composables display their latest values
-   - `change<object>`
 ### Database
 - Follow CRUD paradigm
    - `create<object>`, `read<object>`, `update<object>`, `delete<object>`
