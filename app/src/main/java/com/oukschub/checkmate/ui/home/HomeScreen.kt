@@ -97,43 +97,43 @@ fun HomeScreen(
                         header = {
                             Header(
                                 title = checklist.title,
-                                onTitleFocus = { title -> viewModel.focusChecklistTitle(title) },
-                                onTitleSet = { title -> viewModel.setChecklistTitle(checklistIndex, title) },
+                                onTitleFocus = { title -> viewModel.focusTitle(title) },
+                                onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
                                 onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
                                 onChecklistDelete = { viewModel.deleteChecklist(checklistIndex) }
                             )
                         },
                         items = ImmutableList.copyOf(checklist.items),
                         onItemCheck = { itemIndex, isChecked ->
-                            viewModel.setChecklistItemChecked(checklistIndex, itemIndex, isChecked)
+                            viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
                         },
                         onItemNameFocus = { itemName ->
-                            viewModel.focusChecklistItem(itemName)
+                            viewModel.focusItem(itemName)
                         },
                         onItemNameSet = { itemIndex, itemName ->
-                            viewModel.setChecklistItemName(checklistIndex, itemIndex, itemName)
+                            viewModel.setItemName(checklistIndex, itemIndex, itemName)
                         },
                         onItemAdd = { itemName ->
-                            viewModel.addChecklistItem(checklistIndex, itemName)
+                            viewModel.addItem(checklistIndex, itemName)
                         },
                         onItemLongClick = { itemIndex ->
-                            viewModel.showDeleteChecklistItemDialog(checklistIndex, itemIndex)
+                            viewModel.showDeleteItemDialog(checklistIndex, itemIndex)
                         }
                     )
                 }
             }
         }
 
-        if (viewModel.isRemoveChecklistItemDialogVisible) {
+        if (viewModel.isDeleteItemDialogVisible) {
             AlertDialog(
-                onDismissRequest = { viewModel.hideDeleteChecklistItemDialog() },
+                onDismissRequest = { viewModel.hideDeleteItemDialog() },
                 confirmButton = {
-                    Button(onClick = { viewModel.deleteChecklistItem() }) {
+                    Button(onClick = { viewModel.deleteItem() }) {
                         Text(text = stringResource(R.string.confirm))
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { viewModel.hideDeleteChecklistItemDialog() }) {
+                    Button(onClick = { viewModel.hideDeleteItemDialog() }) {
                         Text(text = stringResource(R.string.cancel))
                     }
                 },

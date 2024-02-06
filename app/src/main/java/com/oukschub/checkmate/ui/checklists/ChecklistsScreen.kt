@@ -53,11 +53,11 @@ fun ChecklistsScreen(
     ) {
         SearchBar(
             query = viewModel.query,
-            onQueryChange = { viewModel.changeQuery(it) }
+            onQueryChange = { query -> viewModel.query = query }
         )
         ChipFilters(
             filters = viewModel.filters,
-            onFilterChange = { viewModel.changeFilter(it) }
+            onFilterChange = { filterIndex -> viewModel.toggleFilter(filterIndex) }
         )
         Spacer(
             modifier = Modifier
@@ -67,7 +67,21 @@ fun ChecklistsScreen(
         )
         Content(
             checklists = viewModel.checklists,
-            onChecklistFavorite = { viewModel.favoriteChecklist(it) }
+            onChecklistFavorite = { checklistIndex ->
+                viewModel.favoriteChecklist(checklistIndex)
+            },
+            onItemCheck = { checklistIndex, itemIndex, isChecked ->
+                viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
+            },
+            onItemNameFocus = { itemName ->
+                viewModel.focusItem(itemName)
+            },
+            onItemNameSet = { checklistIndex, itemIndex, itemName ->
+                viewModel.setItemName(checklistIndex, itemIndex, itemName)
+            },
+            onItemAdd = { checklistIndex, itemName ->
+                viewModel.addItem(checklistIndex, itemName)
+            }
         )
     }
 }
@@ -119,10 +133,14 @@ private fun ChipFilters(
 @Composable
 private fun Content(
     checklists: ImmutableList<Checklist>,
-    onChecklistFavorite: (Int) -> Unit
+    onChecklistFavorite: (Int) -> Unit,
+    onItemCheck: (Int, Int, Boolean) -> Unit,
+    onItemNameFocus: (String) -> Unit,
+    onItemNameSet: (Int, Int, String) -> Unit,
+    onItemAdd: (Int, String) -> Unit
 ) {
     LazyColumn {
-        itemsIndexed(items = checklists) { index, checklist ->
+        itemsIndexed(items = checklists) { checklistIndex, checklist ->
             var isExpanded by remember { mutableStateOf(false) }
 
             Column(
@@ -142,7 +160,7 @@ private fun Content(
                     )
 
                     IconButton(
-                        onClick = { onChecklistFavorite(index) }
+                        onClick = { onChecklistFavorite(checklistIndex) }
                     ) {
                         Icon(
                             imageVector = if (checklist.isFavorite) {
@@ -158,11 +176,13 @@ private fun Content(
 
                 AnimatedVisibility(visible = isExpanded) {
                     Checklist(
-                        header = { /*TODO*/ },
+                        header = {},
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemSet = { _, _, _ -> },
-                        onItemAdd = {},
-                        onItemLongClick = { _ -> }
+                        onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
+                        onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
+                        onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
+                        onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
+                        onItemLongClick = {}
                     )
                 }
             }

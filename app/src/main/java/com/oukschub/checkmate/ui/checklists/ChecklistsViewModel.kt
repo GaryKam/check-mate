@@ -34,7 +34,6 @@ class ChecklistsViewModel @Inject constructor(
             return ImmutableList.copyOf(checklists)
         }
     var query by mutableStateOf("")
-        private set
     private val _filters = mutableStateListOf<Triple<Int, Boolean, (Checklist) -> Boolean>>(
         Triple(R.string.checklists_filter_private, false) { it.isPrivate },
         Triple(R.string.checklists_filter_shared, false) { it.isShared },
@@ -42,14 +41,15 @@ class ChecklistsViewModel @Inject constructor(
     )
     val filters: ImmutableList<Triple<Int, Boolean, (Checklist) -> Boolean>>
         get() = ImmutableList.copyOf(_filters)
+    private var initialItemName: String? = null
 
-    fun changeQuery(query: String) {
-        this.query = query
-    }
-
-    fun changeFilter(filterIndex: Int) {
+    fun toggleFilter(filterIndex: Int) {
         val filter = _filters[filterIndex]
         _filters[filterIndex] = filter.copy(second = !filter.second)
+    }
+
+    fun focusItem(itemName: String) {
+        initialItemName = itemName
     }
 
     fun favoriteChecklist(filteredChecklistIndex: Int) {
@@ -58,5 +58,28 @@ class ChecklistsViewModel @Inject constructor(
         val checklistIndex = _checklists.indexOfFirst { it.id == checklist.id }
 
         repository.updateChecklistFavorite(checklistIndex, isFavorite)
+    }
+
+    fun addItem(
+        checklistIndex: Int,
+        itemName: String
+    ) {
+        repository.createChecklistItem(checklistIndex, itemName)
+    }
+
+    fun setItemChecked(
+        checklistIndex: Int,
+        itemIndex: Int,
+        isChecked: Boolean
+    ) {
+        repository.updateChecklistItem(checklistIndex, itemIndex, isChecked)
+    }
+
+    fun setItemName(
+        checklistIndex: Int,
+        itemIndex: Int,
+        itemName: String
+    ) {
+        repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
     }
 }

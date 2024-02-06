@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,47 +15,47 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     val checklists get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
-    var isRemoveChecklistItemDialogVisible by mutableStateOf(false)
+    var isDeleteItemDialogVisible by mutableStateOf(false)
         private set
     val itemToBeDeleted: String
         get() = checklists[deleteItemChecklistIndex].items[deleteItemIndex].name
 
     private var initialTitle: String? = null
+    private var initialItemName: String? = null
     private var deleteItemChecklistIndex: Int = -1
     private var deleteItemIndex: Int = -1
-    private var initialItemName: String? = null
 
-    fun focusChecklistTitle(title: String) {
+    fun focusTitle(title: String) {
         initialTitle = title
     }
 
-    fun focusChecklistItem(itemName: String) {
+    fun focusItem(itemName: String) {
         initialItemName = itemName
     }
 
-    fun showDeleteChecklistItemDialog(
+    fun showDeleteItemDialog(
         checklistIndex: Int,
         itemIndex: Int
     ) {
-        isRemoveChecklistItemDialogVisible = true
+        isDeleteItemDialogVisible = true
         deleteItemChecklistIndex = checklistIndex
         deleteItemIndex = itemIndex
     }
 
-    fun hideDeleteChecklistItemDialog() {
-        isRemoveChecklistItemDialogVisible = false
+    fun hideDeleteItemDialog() {
+        isDeleteItemDialogVisible = false
         deleteItemChecklistIndex = -1
         deleteItemIndex = -1
     }
 
-    fun addChecklistItem(
+    fun addItem(
         checklistIndex: Int,
         itemName: String
     ) {
         repository.createChecklistItem(checklistIndex, itemName)
     }
 
-    fun setChecklistItemChecked(
+    fun setItemChecked(
         checklistIndex: Int,
         itemIndex: Int,
         isChecked: Boolean
@@ -62,15 +63,16 @@ class HomeViewModel @Inject constructor(
         repository.updateChecklistItem(checklistIndex, itemIndex, isChecked)
     }
 
-    fun setChecklistItemName(
+    fun setItemName(
         checklistIndex: Int,
         itemIndex: Int,
         itemName: String
     ) {
+        Timber.d("setItemName $itemName")
         repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
     }
 
-    fun setChecklistTitle(
+    fun setTitle(
         checklistIndex: Int,
         title: String
     ) {
@@ -84,9 +86,9 @@ class HomeViewModel @Inject constructor(
         repository.updateChecklistFavorite(checklistIndex, false)
     }
 
-    fun deleteChecklistItem() {
+    fun deleteItem() {
         repository.deleteChecklistItem(deleteItemChecklistIndex, deleteItemIndex)
-        hideDeleteChecklistItemDialog()
+        hideDeleteItemDialog()
     }
 
     fun deleteChecklist(checklistIndex: Int) {

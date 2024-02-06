@@ -83,20 +83,20 @@ private fun Checkboxes(
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 20.dp)
     ) {
-        for ((index, item) in items.withIndex()) {
+        for ((itemIndex, item) in items.withIndex()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
                     .combinedClickable(
-                        onLongClick = { onItemLongClick(index) },
+                        onLongClick = { onItemLongClick(itemIndex) },
                         onClick = {}
                     )
             ) {
                 Checkbox(
                     checked = item.isChecked,
-                    onCheckedChange = { onItemCheck(index, it) }
+                    onCheckedChange = { onItemCheck(itemIndex, it) }
                 )
 
                 var itemName by remember { mutableStateOf(item.name) }
@@ -107,7 +107,7 @@ private fun Checkboxes(
                         if (focusState.isFocused) {
                             onItemFocus(itemName)
                         } else {
-                            onItemNameSet(index, itemName)
+                            onItemNameSet(itemIndex, itemName)
                         }
                     },
                     enabled = !item.isChecked,
