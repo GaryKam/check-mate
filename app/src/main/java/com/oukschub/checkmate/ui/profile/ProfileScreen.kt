@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.oukschub.checkmate.viewmodel.ProfileViewModel
 
+/**
+ * The screen for users to update their account information and logout.
+ */
 @Composable
-fun Profile(
+fun ProfileScreen(
     viewModel: ProfileViewModel,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,

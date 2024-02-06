@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.signin
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,7 +35,7 @@ class SignInViewModel @Inject constructor(
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     viewModelScope.launch {
-                        repository.getChecklists()
+                        repository.fetchChecklists()
                         onSuccess()
                     }
                 }

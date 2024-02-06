@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.createchecklist
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -42,7 +42,7 @@ class CreateChecklistViewModel @Inject constructor(
         }
     }
 
-    fun createChecklist(onSuccess: () -> Unit) {
+    fun addChecklist(onSuccess: () -> Unit) {
         isCreatingChecklist = true
 
         repository.createChecklist(title, _items) {

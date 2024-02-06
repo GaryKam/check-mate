@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.checklists
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -37,10 +37,12 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
-import com.oukschub.checkmate.viewmodel.ChecklistsViewModel
 
+/**
+ * The screen that displays all existing checklists.
+ */
 @Composable
-fun Checklists(
+fun ChecklistsScreen(
     viewModel: ChecklistsViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -55,7 +57,7 @@ fun Checklists(
         )
         ChipFilters(
             filters = viewModel.filters,
-            onFilterClick = { viewModel.changeFilter(it) }
+            onFilterChange = { viewModel.changeFilter(it) }
         )
         Spacer(
             modifier = Modifier
@@ -65,7 +67,7 @@ fun Checklists(
         )
         Content(
             checklists = viewModel.checklists,
-            onChecklistFavorite = { viewModel.updateFavoriteChecklist(it) }
+            onChecklistFavorite = { viewModel.favoriteChecklist(it) }
         )
     }
 }
@@ -96,7 +98,7 @@ private fun SearchBar(
 @Composable
 private fun ChipFilters(
     filters: ImmutableList<Triple<Int, Boolean, (Checklist) -> Boolean>>,
-    onFilterClick: (Int) -> Unit
+    onFilterChange: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -107,7 +109,7 @@ private fun ChipFilters(
         for ((index, status) in filters.withIndex()) {
             FilterChip(
                 selected = status.second,
-                onClick = { onFilterClick(index) },
+                onClick = { onFilterChange(index) },
                 label = { Text(stringResource(status.first)) }
             )
         }
@@ -148,7 +150,8 @@ private fun Content(
                             } else {
                                 Icons.Default.FavoriteBorder
                             },
-                            contentDescription = stringResource(R.string.desc_favorite_checklist)
+                            contentDescription = stringResource(R.string.desc_favorite_checklist),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -157,8 +160,9 @@ private fun Content(
                     Checklist(
                         header = { /*TODO*/ },
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemChange = { _, _, _ -> },
-                        onItemCreate = {}
+                        onItemSet = { _, _, _ -> },
+                        onItemAdd = {},
+                        onItemLongClick = { _ -> }
                     )
                 }
             }

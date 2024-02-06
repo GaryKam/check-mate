@@ -2,6 +2,9 @@ package com.oukschub.checkmate.data.model
 
 import com.google.firebase.firestore.PropertyName
 
+/**
+ * An item inside a [Checklist].
+ */
 data class ChecklistItem(
     val name: String = "",
     @get:PropertyName("isChecked")

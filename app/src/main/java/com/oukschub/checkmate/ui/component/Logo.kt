@@ -11,14 +11,18 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import com.oukschub.checkmate.R
 
+/**
+ * The CheckMate logo.
+ */
 @Composable
 fun Logo(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(R.drawable.ic_launcher),
+        painter = painterResource(R.drawable.ic_checkmate),
         contentDescription = null,
         modifier = modifier
             .clip(CircleShape)
-            .scale(1.5F)
             .background(colorResource(R.color.logo_background))
+            .scale(0.8F)
+            .clip(CircleShape)
     )
 }

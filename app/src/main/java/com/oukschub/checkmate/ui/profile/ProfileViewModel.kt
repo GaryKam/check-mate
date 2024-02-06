@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.profile
 
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.util.FirebaseUtil

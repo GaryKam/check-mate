@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.createchecklist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,21 +25,23 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
-import com.oukschub.checkmate.viewmodel.CreateChecklistViewModel
 
+/**
+ * The screen to create a new checklist.
+ */
 @Composable
-fun CreateChecklist(
+fun AddChecklistScreen(
     viewModel: CreateChecklistViewModel,
     onBack: () -> Unit,
-    onChecklistCreate: () -> Unit,
-    modifier: Modifier = Modifier,
+    onChecklistAdd: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
                 onBack = onBack,
-                onChecklistCreate = { viewModel.createChecklist { onChecklistCreate() } }
+                onChecklistAdd = { viewModel.addChecklist { onChecklistAdd() } }
             )
         }
     ) { paddingValues ->
@@ -56,10 +58,11 @@ fun CreateChecklist(
                     )
                 },
                 items = viewModel.items,
-                onItemChange = { index, name, isChecked ->
+                onItemSet = { index, name, isChecked ->
                     viewModel.changeChecklistItem(index, name, isChecked)
                 },
-                onItemCreate = { viewModel.addChecklistItem(it) },
+                onItemAdd = { viewModel.addChecklistItem(it) },
+                onItemLongClick = { _ -> }
             )
 
             if (viewModel.isCreatingChecklist) {
@@ -73,7 +76,7 @@ fun CreateChecklist(
 @Composable
 private fun TopBar(
     onBack: () -> Unit,
-    onChecklistCreate: () -> Unit
+    onChecklistAdd: () -> Unit
 ) {
     TopAppBar(
         title = { Text(stringResource(R.string.checklist_create)) },
@@ -86,7 +89,7 @@ private fun TopBar(
             }
         },
         actions = {
-            IconButton(onClick = onChecklistCreate) {
+            IconButton(onClick = onChecklistAdd) {
                 Icon(
                     imageVector = Icons.Default.Create,
                     contentDescription = stringResource(R.string.desc_create_checklist)

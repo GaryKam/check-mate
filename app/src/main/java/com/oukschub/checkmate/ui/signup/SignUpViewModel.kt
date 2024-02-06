@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.signup
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf

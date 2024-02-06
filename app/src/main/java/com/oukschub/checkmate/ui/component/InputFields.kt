@@ -16,6 +16,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.oukschub.checkmate.R
 
+/**
+ * A combination of a [DisplayNameTextField] above a [PasswordTextField].
+ */
 @Composable
 fun InputFields(
     email: String,

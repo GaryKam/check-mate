@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.checklists
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ChecklistsViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : ViewModel() {
-    private val _checklists = repository.checklists
+    private val _checklists get() = repository.checklists
     val checklists: ImmutableList<Checklist>
         get() {
             var checklists = if (query.isBlank()) {
@@ -52,16 +52,11 @@ class ChecklistsViewModel @Inject constructor(
         _filters[filterIndex] = filter.copy(second = !filter.second)
     }
 
-    fun updateFavoriteChecklist(checklistIndex: Int) {
-        val checklist = checklists[checklistIndex]
+    fun favoriteChecklist(filteredChecklistIndex: Int) {
+        val checklist = checklists[filteredChecklistIndex]
         val isFavorite = !checklist.isFavorite
+        val checklistIndex = _checklists.indexOfFirst { it.id == checklist.id }
 
-        val index = _checklists.indexOfFirst { it.id == checklist.id }
-        _checklists[index] = checklist.copy(isFavorite = isFavorite)
-
-        repository.updateChecklistFavorite(
-            id = checklist.id,
-            isFavorite = isFavorite
-        )
+        repository.updateChecklistFavorite(checklistIndex, isFavorite)
     }
 }

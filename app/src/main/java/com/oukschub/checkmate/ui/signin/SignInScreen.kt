@@ -1,16 +1,16 @@
-package com.oukschub.checkmate.ui.screen
+package com.oukschub.checkmate.ui.signin
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -20,23 +20,22 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.ui.component.DisplayNameTextField
 import com.oukschub.checkmate.ui.component.Footer
 import com.oukschub.checkmate.ui.component.InputFields
-import com.oukschub.checkmate.ui.component.PasswordTextField
+import com.oukschub.checkmate.ui.component.Logo
 import com.oukschub.checkmate.util.MessageUtil
-import com.oukschub.checkmate.viewmodel.SignUpViewModel
 
+/**
+ * The screen for users to login to an existing account.
+ */
 @Composable
-fun SignUp(
-    onSignUp: () -> Unit,
+fun SignInScreen(
+    onSignIn: () -> Unit,
     onFooterClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignInViewModel = hiltViewModel(),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -48,88 +47,53 @@ fun SignUp(
                 .weight(.85F),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val focusManager = LocalFocusManager.current
-
-            DisplayNameTextField(
-                displayName = viewModel.displayName,
-                errorIds = viewModel.displayNameErrors,
-                focusManager = focusManager,
-                onDisplayNameChange = { viewModel.changeDisplayName(it) }
-            )
-
-            InputFields(
-                email = viewModel.email,
-                password = viewModel.password,
-                passwordImeAction = ImeAction.Next,
-                emailError = stringResource(viewModel.emailError),
-                passwordError = "",
-                focusManager = focusManager,
-                onEmailChange = { viewModel.changeEmail(it) },
-                onPasswordChange = { viewModel.changePassword(it) },
-                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
+            Logo(
+                modifier = Modifier
+                    .padding(30.dp)
+                    .size(200.dp)
             )
 
             val context = LocalContext.current
-            PasswordTextField(
-                password = viewModel.passwordMatch,
-                imeAction = ImeAction.Done,
-                errorMessage = "",
-                placeholder = stringResource(R.string.sign_up_repeat_password),
-                onPasswordChange = { viewModel.changePasswordMatch(it) },
+            InputFields(
+                email = viewModel.email,
+                password = viewModel.password,
+                passwordImeAction = ImeAction.Done,
+                emailError = stringResource(viewModel.emailError),
+                passwordError = stringResource(viewModel.passwordError),
+                focusManager = LocalFocusManager.current,
+                onEmailChange = { viewModel.changeEmail(it) },
+                onPasswordChange = { viewModel.changePassword(it) },
                 onImeAction = {
-                    viewModel.signUp(
-                        onSuccess = { onSignUp() },
+                    viewModel.signIn(
+                        onSuccess = { onSignIn() },
                         onFailure = { MessageUtil.displayToast(context, it) }
                     )
                 }
             )
-
-            PasswordCheckText(passwordChecks = viewModel.passwordChecks)
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
-                modifier = Modifier,
                 onClick = {
-                    viewModel.signUp(
-                        onSuccess = { onSignUp() },
+                    viewModel.signIn(
+                        onSuccess = { onSignIn() },
                         onFailure = { MessageUtil.displayToast(context, it) }
                     )
                 }
             ) {
-                Text(stringResource(R.string.sign_up))
+                Text(stringResource(R.string.sign_in))
             }
         }
 
         Footer(
             text = buildAnnotatedString {
-                append(stringResource(R.string.sign_up_prompt_to_sign_in))
+                append(stringResource(R.string.sign_in_prompt_to_sign_up))
                 append(" ")
                 pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
-                append(stringResource(R.string.sign_in))
+                append(stringResource(R.string.sign_up))
             },
             onClick = { onFooterClick() },
             modifier = Modifier.weight(.15F)
         )
     }
-}
-
-@Composable
-private fun PasswordCheckText(passwordChecks: ImmutableList<Pair<Boolean, Int>>) {
-    Text(
-        text = buildAnnotatedString {
-            for ((checkStatus, resId) in passwordChecks) {
-                if (checkStatus) {
-                    pushStyle(SpanStyle(color = Color.Gray))
-                    append(stringResource(resId))
-                    pop()
-                } else {
-                    append(stringResource(R.string.red_x))
-                    append(" ")
-                    append(stringResource(resId))
-                }
-            }
-        },
-        fontSize = 12.sp
-    )
 }

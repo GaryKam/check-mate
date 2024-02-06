@@ -13,6 +13,9 @@ import androidx.compose.ui.text.input.ImeAction
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 
+/**
+ * A text field to input a username.
+ */
 @Composable
 fun DisplayNameTextField(
     displayName: String,

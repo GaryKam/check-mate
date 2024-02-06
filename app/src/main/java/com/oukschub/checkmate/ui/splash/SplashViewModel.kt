@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.viewmodel
+package com.oukschub.checkmate.ui.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +15,7 @@ class SplashViewModel @Inject constructor(
     fun runTasks(onComplete: () -> Unit) {
         if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
-                repository.getChecklists()
+                repository.fetchChecklists()
                 onComplete()
             }
         } else {
