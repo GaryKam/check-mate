@@ -12,18 +12,24 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : ViewModel() {
-    var isContentVisible by mutableStateOf(false)
     val checklists get() = repository.checklists
-    private var initialTitle: String? = null
+    var isContentVisible by mutableStateOf(false)
     var isRemoveChecklistItemDialogVisible by mutableStateOf(false)
         private set
-    private var deleteItemChecklistIndex: Int = -1
-    private var deleteItemIndex: Int = -1
     val itemToBeDeleted: String
         get() = checklists[deleteItemChecklistIndex].items[deleteItemIndex].name
 
+    private var initialTitle: String? = null
+    private var deleteItemChecklistIndex: Int = -1
+    private var deleteItemIndex: Int = -1
+    private var initialItemName: String? = null
+
     fun focusChecklistTitle(title: String) {
         initialTitle = title
+    }
+
+    fun focusChecklistItem(itemName: String) {
+        initialItemName = itemName
     }
 
     fun showDeleteChecklistItemDialog(
@@ -41,27 +47,27 @@ class HomeViewModel @Inject constructor(
         deleteItemIndex = -1
     }
 
-    fun changeChecklistTitle(
-        checklistIndex: Int,
-        title: String
-    ) {
-        repository.changeChecklistTitle(checklistIndex, title)
-    }
-
-    fun setChecklistItem(
-        checklistIndex: Int,
-        itemIndex: Int,
-        itemName: String,
-        isChecked: Boolean
-    ) {
-        repository.updateChecklistItem(checklistIndex, itemIndex, itemName, isChecked)
-    }
-
     fun addChecklistItem(
         checklistIndex: Int,
         itemName: String
     ) {
         repository.createChecklistItem(checklistIndex, itemName)
+    }
+
+    fun setChecklistItemChecked(
+        checklistIndex: Int,
+        itemIndex: Int,
+        isChecked: Boolean
+    ) {
+        repository.updateChecklistItem(checklistIndex, itemIndex, isChecked)
+    }
+
+    fun setChecklistItemName(
+        checklistIndex: Int,
+        itemIndex: Int,
+        itemName: String
+    ) {
+        repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
     }
 
     fun setChecklistTitle(

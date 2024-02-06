@@ -98,15 +98,20 @@ fun HomeScreen(
                             Header(
                                 title = checklist.title,
                                 onTitleFocus = { title -> viewModel.focusChecklistTitle(title) },
-                                onTitleChange = { title -> viewModel.changeChecklistTitle(checklistIndex, title) },
                                 onTitleSet = { title -> viewModel.setChecklistTitle(checklistIndex, title) },
                                 onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
                                 onChecklistDelete = { viewModel.deleteChecklist(checklistIndex) }
                             )
                         },
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemSet = { itemIndex, itemName, isChecked ->
-                            viewModel.setChecklistItem(checklistIndex, itemIndex, itemName, isChecked)
+                        onItemCheck = { itemIndex, isChecked ->
+                            viewModel.setChecklistItemChecked(checklistIndex, itemIndex, isChecked)
+                        },
+                        onItemNameFocus = { itemName ->
+                            viewModel.focusChecklistItem(itemName)
+                        },
+                        onItemNameSet = { itemIndex, itemName ->
+                            viewModel.setChecklistItemName(checklistIndex, itemIndex, itemName)
                         },
                         onItemAdd = { itemName ->
                             viewModel.addChecklistItem(checklistIndex, itemName)
@@ -143,7 +148,6 @@ fun HomeScreen(
 private fun Header(
     title: String,
     onTitleFocus: (String) -> Unit,
-    onTitleChange: (String) -> Unit,
     onTitleSet: (String) -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
@@ -156,9 +160,10 @@ private fun Header(
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(start = 20.dp, top = 5.dp, end = 5.dp)
     ) {
+        var checklistTitle by remember { mutableStateOf(title) }
         TextField(
-            value = title,
-            onValueChange = { onTitleChange(it) },
+            value = checklistTitle,
+            onValueChange = { checklistTitle = it },
             textStyle = TextStyle(fontSize = 18.sp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -168,9 +173,9 @@ private fun Header(
             ),
             modifier = Modifier.onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    onTitleFocus(title)
+                    onTitleFocus(checklistTitle)
                 } else {
-                    onTitleSet(title)
+                    onTitleSet(checklistTitle)
                 }
             }
         )

@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -42,7 +43,9 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 fun Checklist(
     header: @Composable () -> Unit,
     items: ImmutableList<ChecklistItem>,
-    onItemSet: (Int, String, Boolean) -> Unit,
+    onItemCheck: (Int, Boolean) -> Unit,
+    onItemNameFocus: (String) -> Unit,
+    onItemNameSet: (Int, String) -> Unit,
     onItemAdd: (String) -> Unit,
     onItemLongClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -56,7 +59,9 @@ fun Checklist(
         header()
         Checkboxes(
             items = items,
-            onItemSet = onItemSet,
+            onItemFocus = onItemNameFocus,
+            onItemCheck = onItemCheck,
+            onItemNameSet = onItemNameSet,
             onItemLongClick = onItemLongClick
         )
         InputField(onItemAdd = onItemAdd)
@@ -67,7 +72,9 @@ fun Checklist(
 @Composable
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
-    onItemSet: (Int, String, Boolean) -> Unit,
+    onItemFocus: (String) -> Unit,
+    onItemCheck: (Int, Boolean) -> Unit,
+    onItemNameSet: (Int, String) -> Unit,
     onItemLongClick: (Int) -> Unit
 ) {
     Column(
@@ -89,12 +96,20 @@ private fun Checkboxes(
             ) {
                 Checkbox(
                     checked = item.isChecked,
-                    onCheckedChange = { onItemSet(index, item.name, it) }
+                    onCheckedChange = { onItemCheck(index, it) }
                 )
 
+                var itemName by remember { mutableStateOf(item.name) }
                 BasicTextField(
-                    value = item.name,
-                    onValueChange = { onItemSet(index, it, item.isChecked) },
+                    value = itemName,
+                    onValueChange = { itemName = it },
+                    modifier = Modifier.onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            onItemFocus(itemName)
+                        } else {
+                            onItemNameSet(index, itemName)
+                        }
+                    },
                     enabled = !item.isChecked,
                     textStyle = TextStyle(
                         textDecoration = if (item.isChecked) {
