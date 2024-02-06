@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
+import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
 
 /**
@@ -62,84 +63,83 @@ fun HomeScreen(
     }
 
     if (viewModel.checklists.none { it.isFavorite }) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_checkmate_sad),
-                contentDescription = null,
-                modifier = Modifier.scale(0.8F),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-            )
-
-            Text(text = stringResource(R.string.home_no_favorites))
-        }
+        SadCheckmate(modifier = modifier)
     } else {
-        LazyColumn(modifier = modifier.fillMaxSize()) {
-            itemsIndexed(items = viewModel.checklists) { checklistIndex, checklist ->
-                if (!checklist.isFavorite) {
-                    return@itemsIndexed
-                }
-
-                AnimatedVisibility(
-                    visible = viewModel.isContentVisible,
-                    enter = fadeIn(tween(200, 80 * checklistIndex)) +
-                        slideInVertically(
-                            tween(200, 80 * checklistIndex),
-                            initialOffsetY = { it / 2 }
-                        )
-                ) {
-                    Checklist(
-                        header = {
-                            Header(
-                                title = checklist.title,
-                                onTitleFocus = { title -> viewModel.focusTitle(title) },
-                                onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
-                                onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
-                                onChecklistDelete = { viewModel.deleteChecklist(checklistIndex) }
-                            )
-                        },
-                        items = ImmutableList.copyOf(checklist.items),
-                        onItemCheck = { itemIndex, isChecked ->
-                            viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-                        },
-                        onItemNameFocus = { itemName ->
-                            viewModel.focusItem(itemName)
-                        },
-                        onItemNameSet = { itemIndex, itemName ->
-                            viewModel.setItemName(checklistIndex, itemIndex, itemName)
-                        },
-                        onItemAdd = { itemName ->
-                            viewModel.addItem(checklistIndex, itemName)
-                        },
-                        onItemLongClick = { itemIndex ->
-                            viewModel.showDeleteItemDialog(checklistIndex, itemIndex)
-                        }
-                    )
-                }
-            }
-        }
+        Content(
+            checklists = viewModel.checklists,
+            isContentVisible = viewModel.isContentVisible,
+            onTitleFocus = { title -> viewModel.focusTitle(title) },
+            onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
+            onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
+            onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
+            onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
+            onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
+            onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+            onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
+            onItemLongClick = { checklistIndex, itemIndex -> viewModel.showDeleteItemDialog(checklistIndex, itemIndex) },
+            modifier = modifier
+        )
 
         if (viewModel.isDeleteItemDialogVisible) {
-            AlertDialog(
-                onDismissRequest = { viewModel.hideDeleteItemDialog() },
-                confirmButton = {
-                    Button(onClick = { viewModel.deleteItem() }) {
-                        Text(text = stringResource(R.string.confirm))
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = { viewModel.hideDeleteItemDialog() }) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
-                },
-                title = { Text(text = stringResource(R.string.home_delete_dialog_title)) },
-                text = { Text(text = stringResource(R.string.home_delete_dialog_prompt, viewModel.itemToBeDeleted)) }
+            DeleteItemDialog(
+                itemName = viewModel.itemToBeDeleted,
+                onDismiss = { viewModel.hideDeleteItemDialog() },
+                onConfirm = { viewModel.deleteItem() }
             )
+        }
+    }
+}
+
+@Composable
+private fun Content(
+    checklists: ImmutableList<Checklist>,
+    isContentVisible: Boolean,
+    onTitleFocus: (String) -> Unit,
+    onTitleSet: (Int, String) -> Unit,
+    onChecklistUnfavorite: (Int) -> Unit,
+    onChecklistDelete: (Int) -> Unit,
+    onItemCheck: (Int, Int, Boolean) -> Unit,
+    onItemNameFocus: (String) -> Unit,
+    onItemNameSet: (Int, Int, String) -> Unit,
+    onItemAdd: (Int, String) -> Unit,
+    onItemLongClick: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+        itemsIndexed(
+            items = checklists,
+            key = { _, checklist -> checklist.id }
+        ) { checklistIndex, checklist ->
+            if (!checklist.isFavorite) {
+                return@itemsIndexed
+            }
+
+            AnimatedVisibility(
+                visible = isContentVisible,
+                enter = fadeIn(tween(200, 80 * checklistIndex)) +
+                    slideInVertically(
+                        tween(200, 80 * checklistIndex),
+                        initialOffsetY = { it / 2 }
+                    )
+            ) {
+                Checklist(
+                    header = {
+                        Header(
+                            title = checklist.title,
+                            onTitleFocus = { title -> onTitleFocus(title) },
+                            onTitleSet = { title -> onTitleSet(checklistIndex, title) },
+                            onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
+                            onChecklistDelete = { onChecklistDelete(checklistIndex) }
+                        )
+                    },
+                    items = ImmutableList.copyOf(checklist.items),
+                    onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
+                    onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
+                    onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
+                    onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
+                    onItemLongClick = { itemIndex -> onItemLongClick(checklistIndex, itemIndex) }
+                )
+            }
         }
     }
 }
@@ -211,5 +211,48 @@ private fun Header(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun DeleteItemDialog(
+    itemName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        },
+        title = { Text(text = stringResource(R.string.home_delete_dialog_title)) },
+        text = { Text(text = stringResource(R.string.home_delete_dialog_prompt, itemName)) }
+    )
+}
+
+@Composable
+private fun SadCheckmate(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_checkmate_sad),
+            contentDescription = null,
+            modifier = Modifier.scale(0.8F),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+        )
+
+        Text(text = stringResource(R.string.home_no_favorites))
     }
 }

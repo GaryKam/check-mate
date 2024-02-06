@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: ChecklistRepository
+    val repository: ChecklistRepository
 ) : ViewModel() {
     val checklists get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
