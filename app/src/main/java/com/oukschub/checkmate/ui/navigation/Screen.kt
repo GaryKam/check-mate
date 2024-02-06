@@ -22,5 +22,5 @@ sealed class Screen(
     data object Checklists : Screen("checklists", R.string.checklists, Icons.Default.List)
     data object Home : Screen("home", R.string.home, Icons.Default.Home)
     data object Profile : Screen("profile", R.string.profile, Icons.Default.Person)
-    data object CreateChecklist : Screen("create_checklist")
+    data object AddChecklist : Screen("add_checklist")
 }

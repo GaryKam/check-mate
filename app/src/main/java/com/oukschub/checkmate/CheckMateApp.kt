@@ -48,7 +48,7 @@ fun CheckMateApp(
                 },
                 floatingActionButton = {
                     CreateChecklistFab(
-                        onClick = { navController.navigate(Screen.CreateChecklist.route) }
+                        onClick = { navController.navigate(Screen.AddChecklist.route) }
                     )
                 }
             )

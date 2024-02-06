@@ -99,17 +99,17 @@ fun HomeScreen(
                                 title = checklist.title,
                                 onTitleFocus = { title -> viewModel.focusChecklistTitle(title) },
                                 onTitleChange = { title -> viewModel.changeChecklistTitle(checklistIndex, title) },
-                                onTitleUpdate = { title -> viewModel.updateChecklistTitle(checklistIndex, title) },
+                                onTitleSet = { title -> viewModel.setChecklistTitle(checklistIndex, title) },
                                 onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
                                 onChecklistDelete = { viewModel.deleteChecklist(checklistIndex) }
                             )
                         },
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemChange = { itemIndex, itemName, isChecked ->
-                            viewModel.changeChecklistItem(checklistIndex, itemIndex, itemName, isChecked)
+                        onItemSet = { itemIndex, itemName, isChecked ->
+                            viewModel.setChecklistItem(checklistIndex, itemIndex, itemName, isChecked)
                         },
-                        onItemCreate = { itemName ->
-                            viewModel.createChecklistItem(checklistIndex, itemName)
+                        onItemAdd = { itemName ->
+                            viewModel.addChecklistItem(checklistIndex, itemName)
                         },
                         onItemLongClick = { itemIndex ->
                             viewModel.showDeleteChecklistItemDialog(checklistIndex, itemIndex)
@@ -119,7 +119,7 @@ fun HomeScreen(
             }
         }
 
-        if (viewModel.isDeleteChecklistItemDialogVisible) {
+        if (viewModel.isRemoveChecklistItemDialogVisible) {
             AlertDialog(
                 onDismissRequest = { viewModel.hideDeleteChecklistItemDialog() },
                 confirmButton = {
@@ -144,7 +144,7 @@ private fun Header(
     title: String,
     onTitleFocus: (String) -> Unit,
     onTitleChange: (String) -> Unit,
-    onTitleUpdate: (String) -> Unit,
+    onTitleSet: (String) -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
 ) {
@@ -164,13 +164,13 @@ private fun Header(
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
             ),
             modifier = Modifier.onFocusChanged { focusState ->
                 if (focusState.isFocused) {
                     onTitleFocus(title)
                 } else {
-                    onTitleUpdate(title)
+                    onTitleSet(title)
                 }
             }
         )

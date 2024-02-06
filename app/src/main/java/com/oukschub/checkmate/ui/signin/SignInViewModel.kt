@@ -35,7 +35,7 @@ class SignInViewModel @Inject constructor(
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     viewModelScope.launch {
-                        repository.getChecklists()
+                        repository.fetchChecklists()
                         onSuccess()
                     }
                 }

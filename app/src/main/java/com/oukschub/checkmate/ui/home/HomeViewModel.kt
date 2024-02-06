@@ -15,7 +15,7 @@ class HomeViewModel @Inject constructor(
     var isContentVisible by mutableStateOf(false)
     val checklists get() = repository.checklists
     private var initialTitle: String? = null
-    var isDeleteChecklistItemDialogVisible by mutableStateOf(false)
+    var isRemoveChecklistItemDialogVisible by mutableStateOf(false)
         private set
     private var deleteItemChecklistIndex: Int = -1
     private var deleteItemIndex: Int = -1
@@ -30,25 +30,25 @@ class HomeViewModel @Inject constructor(
         checklistIndex: Int,
         itemIndex: Int
     ) {
-        isDeleteChecklistItemDialogVisible = true
+        isRemoveChecklistItemDialogVisible = true
         deleteItemChecklistIndex = checklistIndex
         deleteItemIndex = itemIndex
     }
 
     fun hideDeleteChecklistItemDialog() {
-        isDeleteChecklistItemDialogVisible = false
+        isRemoveChecklistItemDialogVisible = false
         deleteItemChecklistIndex = -1
         deleteItemIndex = -1
     }
 
     fun changeChecklistTitle(
         checklistIndex: Int,
-        title: String,
+        title: String
     ) {
         repository.changeChecklistTitle(checklistIndex, title)
     }
 
-    fun changeChecklistItem(
+    fun setChecklistItem(
         checklistIndex: Int,
         itemIndex: Int,
         itemName: String,
@@ -57,14 +57,14 @@ class HomeViewModel @Inject constructor(
         repository.updateChecklistItem(checklistIndex, itemIndex, itemName, isChecked)
     }
 
-    fun createChecklistItem(
+    fun addChecklistItem(
         checklistIndex: Int,
         itemName: String
     ) {
         repository.createChecklistItem(checklistIndex, itemName)
     }
 
-    fun updateChecklistTitle(
+    fun setChecklistTitle(
         checklistIndex: Int,
         title: String
     ) {

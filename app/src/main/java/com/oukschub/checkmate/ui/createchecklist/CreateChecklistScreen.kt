@@ -30,18 +30,18 @@ import com.oukschub.checkmate.ui.component.Checklist
  * The screen to create a new checklist.
  */
 @Composable
-fun CreateChecklistScreen(
+fun AddChecklistScreen(
     viewModel: CreateChecklistViewModel,
     onBack: () -> Unit,
-    onChecklistCreate: () -> Unit,
-    modifier: Modifier = Modifier,
+    onChecklistAdd: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
                 onBack = onBack,
-                onChecklistCreate = { viewModel.createChecklist { onChecklistCreate() } }
+                onChecklistAdd = { viewModel.addChecklist { onChecklistAdd() } }
             )
         }
     ) { paddingValues ->
@@ -58,10 +58,10 @@ fun CreateChecklistScreen(
                     )
                 },
                 items = viewModel.items,
-                onItemChange = { index, name, isChecked ->
+                onItemSet = { index, name, isChecked ->
                     viewModel.changeChecklistItem(index, name, isChecked)
                 },
-                onItemCreate = { viewModel.createChecklistItem(it) },
+                onItemAdd = { viewModel.addChecklistItem(it) },
                 onItemLongClick = { _ -> }
             )
 
@@ -76,7 +76,7 @@ fun CreateChecklistScreen(
 @Composable
 private fun TopBar(
     onBack: () -> Unit,
-    onChecklistCreate: () -> Unit
+    onChecklistAdd: () -> Unit
 ) {
     TopAppBar(
         title = { Text(stringResource(R.string.checklist_create)) },
@@ -89,7 +89,7 @@ private fun TopBar(
             }
         },
         actions = {
-            IconButton(onClick = onChecklistCreate) {
+            IconButton(onClick = onChecklistAdd) {
                 Icon(
                     imageVector = Icons.Default.Create,
                     contentDescription = stringResource(R.string.desc_create_checklist)

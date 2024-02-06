@@ -66,7 +66,7 @@ class Database {
             )
     }
 
-    suspend fun fetchChecklists(): List<Checklist> {
+    suspend fun readChecklists(): List<Checklist> {
         val result = firestore.collection(USERS_COLLECTION)
             .document(FirebaseUtil.getUserId())
             .get()

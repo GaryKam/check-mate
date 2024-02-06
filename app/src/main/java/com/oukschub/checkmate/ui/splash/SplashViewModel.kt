@@ -15,7 +15,7 @@ class SplashViewModel @Inject constructor(
     fun runTasks(onComplete: () -> Unit) {
         if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
-                repository.getChecklists()
+                repository.fetchChecklists()
                 onComplete()
             }
         } else {

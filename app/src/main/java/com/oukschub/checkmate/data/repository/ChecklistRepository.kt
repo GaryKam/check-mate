@@ -48,10 +48,10 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
-    suspend fun getChecklists() {
+    suspend fun fetchChecklists() {
         Timber.d("Fetching checklists from database")
         _checklists.clear()
-        _checklists.addAll(database.fetchChecklists())
+        _checklists.addAll(database.readChecklists())
     }
 
     fun updateChecklistTitle(

@@ -42,8 +42,8 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 fun Checklist(
     header: @Composable () -> Unit,
     items: ImmutableList<ChecklistItem>,
-    onItemChange: (Int, String, Boolean) -> Unit,
-    onItemCreate: (String) -> Unit,
+    onItemSet: (Int, String, Boolean) -> Unit,
+    onItemAdd: (String) -> Unit,
     onItemLongClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,10 +56,10 @@ fun Checklist(
         header()
         Checkboxes(
             items = items,
-            onItemChange = onItemChange,
+            onItemSet = onItemSet,
             onItemLongClick = onItemLongClick
         )
-        InputField(onItemCreate = onItemCreate)
+        InputField(onItemAdd = onItemAdd)
     }
 }
 
@@ -67,7 +67,7 @@ fun Checklist(
 @Composable
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
-    onItemChange: (Int, String, Boolean) -> Unit,
+    onItemSet: (Int, String, Boolean) -> Unit,
     onItemLongClick: (Int) -> Unit
 ) {
     Column(
@@ -89,12 +89,12 @@ private fun Checkboxes(
             ) {
                 Checkbox(
                     checked = item.isChecked,
-                    onCheckedChange = { onItemChange(index, item.name, it) }
+                    onCheckedChange = { onItemSet(index, item.name, it) }
                 )
 
                 BasicTextField(
                     value = item.name,
-                    onValueChange = { onItemChange(index, it, item.isChecked) },
+                    onValueChange = { onItemSet(index, it, item.isChecked) },
                     enabled = !item.isChecked,
                     textStyle = TextStyle(
                         textDecoration = if (item.isChecked) {
@@ -110,7 +110,7 @@ private fun Checkboxes(
 }
 
 @Composable
-private fun InputField(onItemCreate: (String) -> Unit) {
+private fun InputField(onItemAdd: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
 
     TextField(
@@ -120,7 +120,7 @@ private fun InputField(onItemCreate: (String) -> Unit) {
         placeholder = { Text(stringResource(R.string.type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
-                onItemCreate(text)
+                onItemAdd(text)
                 text = ""
             }) {
                 Icon(

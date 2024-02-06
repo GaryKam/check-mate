@@ -41,7 +41,7 @@ exit $gradle_command_exit_code
 # Code Style
 ### View Model
 - Use simple and straightforward language
-   - `get<object>`, `set<object>`, `add<object>`, `remove<object>`, `show<object>`
+   - `get<object>`, `set<object>`, `add<object>`, `delete<object>`, `show<object>`
 - Ensure Composables display their latest values
    - `change<object>`
 ### Repository

@@ -36,13 +36,13 @@ class CreateChecklistViewModel @Inject constructor(
         _items[index] = _items[index].copy(name = name, isChecked = isChecked)
     }
 
-    fun createChecklistItem(text: String) {
+    fun addChecklistItem(text: String) {
         if (text.isNotBlank()) {
             _items.add(ChecklistItem(text, false))
         }
     }
 
-    fun createChecklist(onSuccess: () -> Unit) {
+    fun addChecklist(onSuccess: () -> Unit) {
         isCreatingChecklist = true
 
         repository.createChecklist(title, _items) {
