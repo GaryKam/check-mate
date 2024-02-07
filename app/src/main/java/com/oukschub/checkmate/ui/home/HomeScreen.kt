@@ -73,12 +73,21 @@ fun HomeScreen(
             onItemCheck = { checklistIndex, itemIndex, isChecked ->
                 viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
             },
-            onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
+            onItemNameFocus = { itemName ->
+                viewModel.focusItem(itemName)
+            },
+            onItemNameChange = { checklistIndex, itemIndex, itemName ->
+                viewModel.changeItemName(checklistIndex, itemIndex, itemName)
+            },
             onItemNameSet = { checklistIndex, itemIndex, itemName ->
                 viewModel.setItemName(checklistIndex, itemIndex, itemName)
             },
-            onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
-            onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+            onItemAdd = { checklistIndex, itemName ->
+                viewModel.addItem(checklistIndex, itemName)
+            },
+            onItemDelete = { checklistIndex, itemIndex ->
+                viewModel.deleteItem(checklistIndex, itemIndex)
+            },
             modifier = modifier
         )
     }
@@ -94,6 +103,7 @@ private fun Content(
     onChecklistDelete: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
+    onItemNameChange: (Int, Int, String) -> Unit,
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
@@ -129,6 +139,7 @@ private fun Content(
                     items = ImmutableList.copyOf(checklist.items),
                     onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
                     onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
+                    onItemNameChange = { itemIndex, itemName -> onItemNameChange(checklistIndex, itemIndex, itemName) },
                     onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) }

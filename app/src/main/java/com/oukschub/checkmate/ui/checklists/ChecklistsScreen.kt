@@ -76,11 +76,17 @@ fun ChecklistsScreen(
             onItemNameFocus = { itemName ->
                 viewModel.focusItem(itemName)
             },
+            onItemNameChange = { checklistIndex, itemIndex, itemName ->
+                viewModel.changeItemName(checklistIndex, itemIndex, itemName)
+            },
             onItemNameSet = { checklistIndex, itemIndex, itemName ->
                 viewModel.setItemName(checklistIndex, itemIndex, itemName)
             },
             onItemAdd = { checklistIndex, itemName ->
                 viewModel.addItem(checklistIndex, itemName)
+            },
+            onItemDelete = { checklistIndex, itemIndex ->
+                viewModel.deleteItem(checklistIndex, itemIndex)
             }
         )
     }
@@ -136,8 +142,10 @@ private fun Content(
     onChecklistFavorite: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
+    onItemNameChange: (Int, Int, String) -> Unit,
     onItemNameSet: (Int, Int, String) -> Unit,
-    onItemAdd: (Int, String) -> Unit
+    onItemAdd: (Int, String) -> Unit,
+    onItemDelete: (Int, Int) -> Unit
 ) {
     LazyColumn {
         itemsIndexed(items = checklists) { checklistIndex, checklist ->
@@ -178,11 +186,24 @@ private fun Content(
                     Checklist(
                         header = {},
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
-                        onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
-                        onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
-                        onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
-                        onItemDelete = {}
+                        onItemCheck = { itemIndex, isChecked ->
+                            onItemCheck(checklistIndex, itemIndex, isChecked)
+                        },
+                        onItemNameFocus = { itemName ->
+                            onItemNameFocus(itemName)
+                        },
+                        onItemNameChange = { itemIndex, itemName ->
+                            onItemNameChange(checklistIndex, itemIndex, itemName)
+                        },
+                        onItemNameSet = { itemIndex, itemName ->
+                            onItemNameSet(checklistIndex, itemIndex, itemName)
+                        },
+                        onItemAdd = { itemName ->
+                            onItemAdd(checklistIndex, itemName)
+                        },
+                        onItemDelete = { itemIndex ->
+                            onItemDelete(checklistIndex, itemIndex)
+                        }
                     )
                 }
             }

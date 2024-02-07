@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.createchecklist
+package com.oukschub.checkmate.ui.addchecklist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,7 @@ import com.oukschub.checkmate.ui.component.Checklist
  */
 @Composable
 fun AddChecklistScreen(
-    viewModel: CreateChecklistViewModel,
+    viewModel: AddChecklistViewModel,
     onBack: () -> Unit,
     onSuccess: () -> Unit,
     modifier: Modifier = Modifier
@@ -64,9 +64,10 @@ fun AddChecklistScreen(
                 items = viewModel.items,
                 onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(itemIndex, isChecked) },
                 onItemNameFocus = {},
-                onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(itemIndex, itemName) },
+                onItemNameChange = { itemIndex, itemName -> viewModel.setItemName(itemIndex, itemName) },
+                onItemNameSet = { _, _ -> },
                 onItemAdd = { itemName -> viewModel.addItem(itemName) },
-                onItemDelete = {}
+                onItemDelete = { itemIndex -> viewModel.deleteItem(itemIndex) }
             )
 
             if (viewModel.isCreatingChecklist) {

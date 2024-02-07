@@ -1,6 +1,5 @@
 package com.oukschub.checkmate.ui.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,6 +44,7 @@ fun Checklist(
     items: ImmutableList<ChecklistItem>,
     onItemCheck: (Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
+    onItemNameChange: (Int, String) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
     onItemAdd: (String) -> Unit,
     onItemDelete: (Int) -> Unit,
@@ -59,8 +59,9 @@ fun Checklist(
         header()
         Checkboxes(
             items = items,
-            onItemFocus = onItemNameFocus,
             onItemCheck = onItemCheck,
+            onItemNameFocus = onItemNameFocus,
+            onItemNameChange = onItemNameChange,
             onItemNameSet = onItemNameSet,
             onItemDelete = onItemDelete
         )
@@ -68,12 +69,12 @@ fun Checklist(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
-    onItemFocus: (String) -> Unit,
     onItemCheck: (Int, Boolean) -> Unit,
+    onItemNameFocus: (String) -> Unit,
+    onItemNameChange: (Int, String) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
     onItemDelete: (Int) -> Unit
 ) {
@@ -95,17 +96,16 @@ private fun Checkboxes(
                     onCheckedChange = { onItemCheck(itemIndex, it) }
                 )
 
-                var itemName by remember { mutableStateOf(item.name) }
                 BasicTextField(
-                    value = itemName,
-                    onValueChange = { itemName = it },
+                    value = item.name,
+                    onValueChange = { onItemNameChange(itemIndex, it) },
                     modifier = Modifier
                         .weight(1.0F)
                         .onFocusChanged { focusState ->
                             if (focusState.isFocused) {
-                                onItemFocus(itemName)
+                                onItemNameFocus(item.name)
                             } else {
-                                onItemNameSet(itemIndex, itemName)
+                                onItemNameSet(itemIndex, item.name)
                             }
                         },
                     enabled = !item.isChecked,

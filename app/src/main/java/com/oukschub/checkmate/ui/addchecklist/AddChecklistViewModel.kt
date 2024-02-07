@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.createchecklist
+package com.oukschub.checkmate.ui.addchecklist
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateChecklistViewModel @Inject constructor(
+class AddChecklistViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : ViewModel() {
     var title by mutableStateOf("")
@@ -49,5 +49,9 @@ class CreateChecklistViewModel @Inject constructor(
             isCreatingChecklist = false
             onSuccess()
         }
+    }
+
+    fun deleteItem(itemIndex: Int) {
+        _items.removeAt(itemIndex)
     }
 }

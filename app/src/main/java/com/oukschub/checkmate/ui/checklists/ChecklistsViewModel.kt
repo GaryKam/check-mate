@@ -67,6 +67,14 @@ class ChecklistsViewModel @Inject constructor(
         repository.createChecklistItem(checklistIndex, itemName)
     }
 
+    fun changeItemName(
+        checklistIndex: Int,
+        itemIndex: Int,
+        itemName: String
+    ) {
+        repository.changeItemName(checklistIndex, itemIndex, itemName)
+    }
+
     fun setItemChecked(
         checklistIndex: Int,
         itemIndex: Int,
@@ -81,5 +89,12 @@ class ChecklistsViewModel @Inject constructor(
         itemName: String
     ) {
         repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
+    }
+
+    fun deleteItem(
+        checklistIndex: Int,
+        itemIndex: Int
+    ) {
+        repository.deleteChecklistItem(checklistIndex, itemIndex)
     }
 }

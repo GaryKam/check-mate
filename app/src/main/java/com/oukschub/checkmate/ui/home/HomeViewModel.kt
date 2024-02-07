@@ -32,6 +32,14 @@ class HomeViewModel @Inject constructor(
         repository.createChecklistItem(checklistIndex, itemName)
     }
 
+    fun changeItemName(
+        checklistIndex: Int,
+        itemIndex: Int,
+        itemName: String
+    ) {
+        repository.changeItemName(checklistIndex, itemIndex, itemName)
+    }
+
     fun setItemChecked(
         checklistIndex: Int,
         itemIndex: Int,
