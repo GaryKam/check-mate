@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 
@@ -34,10 +35,10 @@ import com.oukschub.checkmate.ui.component.Checklist
  */
 @Composable
 fun AddChecklistScreen(
-    viewModel: AddChecklistViewModel,
     onBack: () -> Unit,
     onSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AddChecklistViewModel = hiltViewModel()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),

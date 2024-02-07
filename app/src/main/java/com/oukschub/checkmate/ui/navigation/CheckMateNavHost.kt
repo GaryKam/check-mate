@@ -12,7 +12,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.ui.addchecklist.AddChecklistScreen
-import com.oukschub.checkmate.ui.addchecklist.AddChecklistViewModel
 import com.oukschub.checkmate.ui.checklists.ChecklistsScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
 import com.oukschub.checkmate.ui.home.HomeScreen
@@ -34,8 +33,7 @@ fun CheckMateNavHost(
     navController: NavHostController = rememberNavController(),
     checklistViewModel: ChecklistsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel(),
-    addChecklistViewModel: AddChecklistViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -122,9 +120,14 @@ fun CheckMateNavHost(
 
         composable(Screen.AddChecklist.route) {
             AddChecklistScreen(
-                viewModel = addChecklistViewModel,
                 onBack = { navController.popBackStack() },
-                onSuccess = { navController.navigate(Screen.Home.route) }
+                onSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }
