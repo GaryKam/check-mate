@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.oukschub.checkmate.R
 
@@ -29,8 +30,8 @@ fun InputFields(
     focusManager: FocusManager,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    onImeAction: () -> Unit = {}
+    onImeAction: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         EmailTextField(
@@ -70,7 +71,10 @@ private fun EmailTextField(
             }
         },
         isError = errorMessage.isNotBlank(),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
         singleLine = true
     )

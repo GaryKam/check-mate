@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.ui.signin
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -35,10 +37,16 @@ fun SignInScreen(
     onSignIn: () -> Unit,
     onFooterClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SignInViewModel = hiltViewModel(),
+    viewModel: SignInViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
@@ -60,7 +68,7 @@ fun SignInScreen(
                 passwordImeAction = ImeAction.Done,
                 emailError = stringResource(viewModel.emailError),
                 passwordError = stringResource(viewModel.passwordError),
-                focusManager = LocalFocusManager.current,
+                focusManager = focusManager,
                 onEmailChange = { viewModel.changeEmail(it) },
                 onPasswordChange = { viewModel.changePassword(it) },
                 onImeAction = {
