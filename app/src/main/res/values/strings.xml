@@ -49,6 +49,7 @@
     <string name="checklists_filter_private">Private</string>
     <string name="checklists_filter_shared">Shared</string>
     <string name="checklists_filter_favorite">Favorite</string>
+    <string name="checklists_none_found">No checklists found</string>
 
     // Home
     <string name="home_no_favorites">You have no favorite checklists</string>

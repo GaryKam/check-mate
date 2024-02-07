@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
@@ -15,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChecklistsViewModel @Inject constructor(
     private val repository: ChecklistRepository
-) : ViewModel() {
+) : CommonChecklistViewModel(repository) {
     private val _checklists get() = repository.checklists
     val checklists: ImmutableList<Checklist>
         get() {
@@ -58,43 +57,5 @@ class ChecklistsViewModel @Inject constructor(
         val checklistIndex = _checklists.indexOfFirst { it.id == checklist.id }
 
         repository.updateChecklistFavorite(checklistIndex, isFavorite)
-    }
-
-    fun addItem(
-        checklistIndex: Int,
-        itemName: String
-    ) {
-        repository.createChecklistItem(checklistIndex, itemName)
-    }
-
-    fun changeItemName(
-        checklistIndex: Int,
-        itemIndex: Int,
-        itemName: String
-    ) {
-        repository.changeItemName(checklistIndex, itemIndex, itemName)
-    }
-
-    fun setItemChecked(
-        checklistIndex: Int,
-        itemIndex: Int,
-        isChecked: Boolean
-    ) {
-        repository.updateChecklistItem(checklistIndex, itemIndex, isChecked)
-    }
-
-    fun setItemName(
-        checklistIndex: Int,
-        itemIndex: Int,
-        itemName: String
-    ) {
-        repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
-    }
-
-    fun deleteItem(
-        checklistIndex: Int,
-        itemIndex: Int
-    ) {
-        repository.deleteChecklistItem(checklistIndex, itemIndex)
     }
 }

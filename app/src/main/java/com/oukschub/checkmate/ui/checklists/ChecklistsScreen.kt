@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
+import com.oukschub.checkmate.ui.component.Logo
 
 /**
  * The screen that displays all existing checklists.
@@ -65,30 +67,42 @@ fun ChecklistsScreen(
                 .background(Color.Black)
                 .height(1.dp)
         )
-        Content(
-            checklists = viewModel.checklists,
-            onChecklistFavorite = { checklistIndex ->
-                viewModel.favoriteChecklist(checklistIndex)
-            },
-            onItemCheck = { checklistIndex, itemIndex, isChecked ->
-                viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-            },
-            onItemNameFocus = { itemName ->
-                viewModel.focusItem(itemName)
-            },
-            onItemNameChange = { checklistIndex, itemIndex, itemName ->
-                viewModel.changeItemName(checklistIndex, itemIndex, itemName)
-            },
-            onItemNameSet = { checklistIndex, itemIndex, itemName ->
-                viewModel.setItemName(checklistIndex, itemIndex, itemName)
-            },
-            onItemAdd = { checklistIndex, itemName ->
-                viewModel.addItem(checklistIndex, itemName)
-            },
-            onItemDelete = { checklistIndex, itemIndex ->
-                viewModel.deleteItem(checklistIndex, itemIndex)
+
+        if (viewModel.checklists.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Logo(isSad = true)
+                Text(text = stringResource(R.string.checklists_none_found))
             }
-        )
+        } else {
+            Content(
+                checklists = viewModel.checklists,
+                onChecklistFavorite = { checklistIndex ->
+                    viewModel.favoriteChecklist(checklistIndex)
+                },
+                onItemCheck = { checklistIndex, itemIndex, isChecked ->
+                    viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
+                },
+                onItemNameFocus = { itemName ->
+                    viewModel.focusItem(itemName)
+                },
+                onItemNameChange = { checklistIndex, itemIndex, itemName ->
+                    viewModel.changeItemName(checklistIndex, itemIndex, itemName)
+                },
+                onItemNameSet = { checklistIndex, itemIndex, itemName ->
+                    viewModel.setItemName(checklistIndex, itemIndex, itemName)
+                },
+                onItemAdd = { checklistIndex, itemName ->
+                    viewModel.addItem(checklistIndex, itemName)
+                },
+                onItemDelete = { checklistIndex, itemIndex ->
+                    viewModel.deleteItem(checklistIndex, itemIndex)
+                }
+            )
+        }
     }
 }
 

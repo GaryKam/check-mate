@@ -3,15 +3,15 @@ package com.oukschub.checkmate.ui.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.data.repository.ChecklistRepository
+import com.oukschub.checkmate.ui.checklists.CommonChecklistViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: ChecklistRepository
-) : ViewModel() {
+) : CommonChecklistViewModel(repository) {
     val checklists get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
     private var initialTitle: String? = null
@@ -23,37 +23,6 @@ class HomeViewModel @Inject constructor(
 
     fun focusItem(itemName: String) {
         initialItemName = itemName
-    }
-
-    fun addItem(
-        checklistIndex: Int,
-        itemName: String
-    ) {
-        repository.createChecklistItem(checklistIndex, itemName)
-    }
-
-    fun changeItemName(
-        checklistIndex: Int,
-        itemIndex: Int,
-        itemName: String
-    ) {
-        repository.changeItemName(checklistIndex, itemIndex, itemName)
-    }
-
-    fun setItemChecked(
-        checklistIndex: Int,
-        itemIndex: Int,
-        isChecked: Boolean
-    ) {
-        repository.updateChecklistItem(checklistIndex, itemIndex, isChecked)
-    }
-
-    fun setItemName(
-        checklistIndex: Int,
-        itemIndex: Int,
-        itemName: String
-    ) {
-        repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
     }
 
     fun setTitle(
@@ -68,13 +37,6 @@ class HomeViewModel @Inject constructor(
 
     fun unfavoriteChecklist(checklistIndex: Int) {
         repository.updateChecklistFavorite(checklistIndex, false)
-    }
-
-    fun deleteItem(
-        checklistIndex: Int,
-        itemIndex: Int
-    ) {
-        repository.deleteChecklistItem(checklistIndex, itemIndex)
     }
 
     fun deleteChecklist(checklistIndex: Int) {
