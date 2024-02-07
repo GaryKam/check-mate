@@ -17,8 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -72,21 +70,17 @@ fun HomeScreen(
             onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
             onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
             onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
-            onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
+            onItemCheck = { checklistIndex, itemIndex, isChecked ->
+                viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
+            },
             onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
-            onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+            onItemNameSet = { checklistIndex, itemIndex, itemName ->
+                viewModel.setItemName(checklistIndex, itemIndex, itemName)
+            },
             onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
-            onItemLongClick = { checklistIndex, itemIndex -> viewModel.showDeleteItemDialog(checklistIndex, itemIndex) },
+            onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
             modifier = modifier
         )
-
-        if (viewModel.isDeleteItemDialogVisible) {
-            DeleteItemDialog(
-                itemName = viewModel.itemToBeDeleted,
-                onDismiss = { viewModel.hideDeleteItemDialog() },
-                onConfirm = { viewModel.deleteItem() }
-            )
-        }
     }
 }
 
@@ -102,7 +96,7 @@ private fun Content(
     onItemNameFocus: (String) -> Unit,
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
-    onItemLongClick: (Int, Int) -> Unit,
+    onItemDelete: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -137,7 +131,7 @@ private fun Content(
                     onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
                     onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
-                    onItemLongClick = { itemIndex -> onItemLongClick(checklistIndex, itemIndex) }
+                    onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) }
                 )
             }
         }
@@ -212,29 +206,6 @@ private fun Header(
             }
         }
     }
-}
-
-@Composable
-private fun DeleteItemDialog(
-    itemName: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(text = stringResource(R.string.confirm))
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel))
-            }
-        },
-        title = { Text(text = stringResource(R.string.home_delete_dialog_title)) },
-        text = { Text(text = stringResource(R.string.home_delete_dialog_prompt, itemName)) }
-    )
 }
 
 @Composable

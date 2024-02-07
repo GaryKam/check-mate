@@ -6,24 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val repository: ChecklistRepository
+    private val repository: ChecklistRepository
 ) : ViewModel() {
     val checklists get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
-    var isDeleteItemDialogVisible by mutableStateOf(false)
-        private set
-    val itemToBeDeleted: String
-        get() = checklists[deleteItemChecklistIndex].items[deleteItemIndex].name
-
     private var initialTitle: String? = null
     private var initialItemName: String? = null
-    private var deleteItemChecklistIndex: Int = -1
-    private var deleteItemIndex: Int = -1
 
     fun focusTitle(title: String) {
         initialTitle = title
@@ -31,21 +23,6 @@ class HomeViewModel @Inject constructor(
 
     fun focusItem(itemName: String) {
         initialItemName = itemName
-    }
-
-    fun showDeleteItemDialog(
-        checklistIndex: Int,
-        itemIndex: Int
-    ) {
-        isDeleteItemDialogVisible = true
-        deleteItemChecklistIndex = checklistIndex
-        deleteItemIndex = itemIndex
-    }
-
-    fun hideDeleteItemDialog() {
-        isDeleteItemDialogVisible = false
-        deleteItemChecklistIndex = -1
-        deleteItemIndex = -1
     }
 
     fun addItem(
@@ -68,7 +45,6 @@ class HomeViewModel @Inject constructor(
         itemIndex: Int,
         itemName: String
     ) {
-        Timber.d("setItemName $itemName")
         repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
     }
 
@@ -86,9 +62,11 @@ class HomeViewModel @Inject constructor(
         repository.updateChecklistFavorite(checklistIndex, false)
     }
 
-    fun deleteItem() {
-        repository.deleteChecklistItem(deleteItemChecklistIndex, deleteItemIndex)
-        hideDeleteItemDialog()
+    fun deleteItem(
+        checklistIndex: Int,
+        itemIndex: Int
+    ) {
+        repository.deleteChecklistItem(checklistIndex, itemIndex)
     }
 
     fun deleteChecklist(checklistIndex: Int) {

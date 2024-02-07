@@ -66,7 +66,7 @@ fun AddChecklistScreen(
                 onItemNameFocus = {},
                 onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(itemIndex, itemName) },
                 onItemAdd = { itemName -> viewModel.addItem(itemName) },
-                onItemLongClick = {}
+                onItemDelete = {}
             )
 
             if (viewModel.isCreatingChecklist) {

@@ -2,7 +2,6 @@ package com.oukschub.checkmate.ui.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
@@ -47,7 +47,7 @@ fun Checklist(
     onItemNameFocus: (String) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
     onItemAdd: (String) -> Unit,
-    onItemLongClick: (Int) -> Unit,
+    onItemDelete: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -62,7 +62,7 @@ fun Checklist(
             onItemFocus = onItemNameFocus,
             onItemCheck = onItemCheck,
             onItemNameSet = onItemNameSet,
-            onItemLongClick = onItemLongClick
+            onItemDelete = onItemDelete
         )
         InputField(onItemAdd = onItemAdd)
     }
@@ -75,7 +75,7 @@ private fun Checkboxes(
     onItemFocus: (String) -> Unit,
     onItemCheck: (Int, Boolean) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
-    onItemLongClick: (Int) -> Unit
+    onItemDelete: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -89,10 +89,6 @@ private fun Checkboxes(
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
-                    .combinedClickable(
-                        onLongClick = { onItemLongClick(itemIndex) },
-                        onClick = {}
-                    )
             ) {
                 Checkbox(
                     checked = item.isChecked,
@@ -103,13 +99,15 @@ private fun Checkboxes(
                 BasicTextField(
                     value = itemName,
                     onValueChange = { itemName = it },
-                    modifier = Modifier.onFocusChanged { focusState ->
-                        if (focusState.isFocused) {
-                            onItemFocus(itemName)
-                        } else {
-                            onItemNameSet(itemIndex, itemName)
-                        }
-                    },
+                    modifier = Modifier
+                        .weight(1.0F)
+                        .onFocusChanged { focusState ->
+                            if (focusState.isFocused) {
+                                onItemFocus(itemName)
+                            } else {
+                                onItemNameSet(itemIndex, itemName)
+                            }
+                        },
                     enabled = !item.isChecked,
                     textStyle = TextStyle(
                         textDecoration = if (item.isChecked) {
@@ -119,6 +117,10 @@ private fun Checkboxes(
                         }
                     )
                 )
+
+                IconButton(onClick = { onItemDelete(itemIndex) }) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+                }
             }
         }
     }

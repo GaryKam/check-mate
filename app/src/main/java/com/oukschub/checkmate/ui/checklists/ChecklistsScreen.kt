@@ -182,7 +182,7 @@ private fun Content(
                         onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
                         onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                         onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
-                        onItemLongClick = {}
+                        onItemDelete = {}
                     )
                 }
             }
