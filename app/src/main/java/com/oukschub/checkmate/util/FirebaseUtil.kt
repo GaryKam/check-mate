@@ -16,7 +16,7 @@ object FirebaseUtil {
     fun getDisplayName(): String = auth.currentUser?.displayName ?: ""
 
     fun setDisplayName(displayName: String) {
-        FirebaseAuth.getInstance().currentUser?.updateProfile(
+        auth.currentUser?.updateProfile(
             UserProfileChangeRequest.Builder().setDisplayName(displayName).build()
         )
     }
