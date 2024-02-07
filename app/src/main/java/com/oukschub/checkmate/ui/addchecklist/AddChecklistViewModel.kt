@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.createchecklist
+package com.oukschub.checkmate.ui.addchecklist
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateChecklistViewModel @Inject constructor(
+class AddChecklistViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : ViewModel() {
     var title by mutableStateOf("")
@@ -22,23 +22,23 @@ class CreateChecklistViewModel @Inject constructor(
     val items: ImmutableList<ChecklistItem>
         get() = ImmutableList.copyOf(_items)
 
-    fun changeChecklistTitle(text: String) {
-        if (text.isNotBlank()) {
-            title = text
-        }
-    }
-
-    fun changeChecklistItem(
-        index: Int,
-        name: String,
+    fun setItemChecked(
+        itemIndex: Int,
         isChecked: Boolean
     ) {
-        _items[index] = _items[index].copy(name = name, isChecked = isChecked)
+        _items[itemIndex] = _items[itemIndex].copy(isChecked = isChecked)
     }
 
-    fun addChecklistItem(text: String) {
-        if (text.isNotBlank()) {
-            _items.add(ChecklistItem(text, false))
+    fun setItemName(
+        itemIndex: Int,
+        itemName: String
+    ) {
+        _items[itemIndex] = _items[itemIndex].copy(name = itemName)
+    }
+
+    fun addItem(itemName: String) {
+        if (itemName.isNotBlank()) {
+            _items.add(ChecklistItem(itemName, false))
         }
     }
 
@@ -46,8 +46,12 @@ class CreateChecklistViewModel @Inject constructor(
         isCreatingChecklist = true
 
         repository.createChecklist(title, _items) {
-            onSuccess()
             isCreatingChecklist = false
+            onSuccess()
         }
+    }
+
+    fun deleteItem(itemIndex: Int) {
+        _items.removeAt(itemIndex)
     }
 }

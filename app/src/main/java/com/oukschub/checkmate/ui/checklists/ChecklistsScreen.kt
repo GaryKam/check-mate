@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
+import com.oukschub.checkmate.ui.component.Logo
 
 /**
  * The screen that displays all existing checklists.
@@ -53,11 +55,11 @@ fun ChecklistsScreen(
     ) {
         SearchBar(
             query = viewModel.query,
-            onQueryChange = { viewModel.changeQuery(it) }
+            onQueryChange = { query -> viewModel.query = query }
         )
         ChipFilters(
             filters = viewModel.filters,
-            onFilterChange = { viewModel.changeFilter(it) }
+            onFilterChange = { filterIndex -> viewModel.toggleFilter(filterIndex) }
         )
         Spacer(
             modifier = Modifier
@@ -65,10 +67,42 @@ fun ChecklistsScreen(
                 .background(Color.Black)
                 .height(1.dp)
         )
-        Content(
-            checklists = viewModel.checklists,
-            onChecklistFavorite = { viewModel.favoriteChecklist(it) }
-        )
+
+        if (viewModel.checklists.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Logo(isSad = true)
+                Text(text = stringResource(R.string.checklists_none_found))
+            }
+        } else {
+            Content(
+                checklists = viewModel.checklists,
+                onChecklistFavorite = { checklistIndex ->
+                    viewModel.favoriteChecklist(checklistIndex)
+                },
+                onItemCheck = { checklistIndex, itemIndex, isChecked ->
+                    viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
+                },
+                onItemNameFocus = { itemName ->
+                    viewModel.focusItem(itemName)
+                },
+                onItemNameChange = { checklistIndex, itemIndex, itemName ->
+                    viewModel.changeItemName(checklistIndex, itemIndex, itemName)
+                },
+                onItemNameSet = { checklistIndex, itemIndex, itemName ->
+                    viewModel.setItemName(checklistIndex, itemIndex, itemName)
+                },
+                onItemAdd = { checklistIndex, itemName ->
+                    viewModel.addItem(checklistIndex, itemName)
+                },
+                onItemDelete = { checklistIndex, itemIndex ->
+                    viewModel.deleteItem(checklistIndex, itemIndex)
+                }
+            )
+        }
     }
 }
 
@@ -119,10 +153,16 @@ private fun ChipFilters(
 @Composable
 private fun Content(
     checklists: ImmutableList<Checklist>,
-    onChecklistFavorite: (Int) -> Unit
+    onChecklistFavorite: (Int) -> Unit,
+    onItemCheck: (Int, Int, Boolean) -> Unit,
+    onItemNameFocus: (String) -> Unit,
+    onItemNameChange: (Int, Int, String) -> Unit,
+    onItemNameSet: (Int, Int, String) -> Unit,
+    onItemAdd: (Int, String) -> Unit,
+    onItemDelete: (Int, Int) -> Unit
 ) {
     LazyColumn {
-        itemsIndexed(items = checklists) { index, checklist ->
+        itemsIndexed(items = checklists) { checklistIndex, checklist ->
             var isExpanded by remember { mutableStateOf(false) }
 
             Column(
@@ -142,7 +182,7 @@ private fun Content(
                     )
 
                     IconButton(
-                        onClick = { onChecklistFavorite(index) }
+                        onClick = { onChecklistFavorite(checklistIndex) }
                     ) {
                         Icon(
                             imageVector = if (checklist.isFavorite) {
@@ -158,11 +198,26 @@ private fun Content(
 
                 AnimatedVisibility(visible = isExpanded) {
                     Checklist(
-                        header = { /*TODO*/ },
+                        header = {},
                         items = ImmutableList.copyOf(checklist.items),
-                        onItemSet = { _, _, _ -> },
-                        onItemAdd = {},
-                        onItemLongClick = { _ -> }
+                        onItemCheck = { itemIndex, isChecked ->
+                            onItemCheck(checklistIndex, itemIndex, isChecked)
+                        },
+                        onItemNameFocus = { itemName ->
+                            onItemNameFocus(itemName)
+                        },
+                        onItemNameChange = { itemIndex, itemName ->
+                            onItemNameChange(checklistIndex, itemIndex, itemName)
+                        },
+                        onItemNameSet = { itemIndex, itemName ->
+                            onItemNameSet(checklistIndex, itemIndex, itemName)
+                        },
+                        onItemAdd = { itemName ->
+                            onItemAdd(checklistIndex, itemName)
+                        },
+                        onItemDelete = { itemIndex ->
+                            onItemDelete(checklistIndex, itemIndex)
+                        }
                     )
                 }
             }

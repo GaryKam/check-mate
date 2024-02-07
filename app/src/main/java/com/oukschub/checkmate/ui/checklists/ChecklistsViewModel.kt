@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
@@ -15,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChecklistsViewModel @Inject constructor(
     private val repository: ChecklistRepository
-) : ViewModel() {
+) : CommonChecklistViewModel(repository) {
     private val _checklists get() = repository.checklists
     val checklists: ImmutableList<Checklist>
         get() {
@@ -34,7 +33,6 @@ class ChecklistsViewModel @Inject constructor(
             return ImmutableList.copyOf(checklists)
         }
     var query by mutableStateOf("")
-        private set
     private val _filters = mutableStateListOf<Triple<Int, Boolean, (Checklist) -> Boolean>>(
         Triple(R.string.checklists_filter_private, false) { it.isPrivate },
         Triple(R.string.checklists_filter_shared, false) { it.isShared },
@@ -42,14 +40,15 @@ class ChecklistsViewModel @Inject constructor(
     )
     val filters: ImmutableList<Triple<Int, Boolean, (Checklist) -> Boolean>>
         get() = ImmutableList.copyOf(_filters)
+    private var initialItemName: String? = null
 
-    fun changeQuery(query: String) {
-        this.query = query
-    }
-
-    fun changeFilter(filterIndex: Int) {
+    fun toggleFilter(filterIndex: Int) {
         val filter = _filters[filterIndex]
         _filters[filterIndex] = filter.copy(second = !filter.second)
+    }
+
+    fun focusItem(itemName: String) {
+        initialItemName = itemName
     }
 
     fun favoriteChecklist(filteredChecklistIndex: Int) {

@@ -18,11 +18,14 @@ class ChecklistRepository @Inject constructor(
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
 
-    fun changeChecklistTitle(
+    fun changeItemName(
         checklistIndex: Int,
-        title: String
+        itemIndex: Int,
+        itemName: String
     ) {
-        _checklists[checklistIndex] = _checklists[checklistIndex].copy(title = title)
+        val items = _checklists[checklistIndex].items.toMutableList()
+        items[itemIndex] = items[itemIndex].copy(name = itemName)
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
     fun createChecklist(
@@ -65,11 +68,23 @@ class ChecklistRepository @Inject constructor(
     fun updateChecklistItem(
         checklistIndex: Int,
         itemIndex: Int,
-        itemName: String,
         isChecked: Boolean
     ) {
         _checklists[checklistIndex].items.toMutableList().apply {
-            this[itemIndex] = ChecklistItem(itemName, isChecked)
+            this[itemIndex] = this[itemIndex].copy(isChecked = isChecked)
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
+        }
+    }
+
+    fun updateChecklistItem(
+        checklistIndex: Int,
+        itemIndex: Int,
+        itemName: String
+    ) {
+        _checklists[checklistIndex].items.toMutableList().apply {
+            this[itemIndex] = this[itemIndex].copy(name = itemName)
         }.also { items ->
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.updateChecklistItems(_checklists[checklistIndex].id, items)

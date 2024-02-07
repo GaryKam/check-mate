@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.createchecklist
+package com.oukschub.checkmate.ui.addchecklist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,9 +31,9 @@ import com.oukschub.checkmate.ui.component.Checklist
  */
 @Composable
 fun AddChecklistScreen(
-    viewModel: CreateChecklistViewModel,
+    viewModel: AddChecklistViewModel,
     onBack: () -> Unit,
-    onChecklistAdd: () -> Unit,
+    onSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -41,7 +41,11 @@ fun AddChecklistScreen(
         topBar = {
             TopBar(
                 onBack = onBack,
-                onChecklistAdd = { viewModel.addChecklist { onChecklistAdd() } }
+                onChecklistAdd = {
+                    viewModel.addChecklist(onSuccess = {
+                        onSuccess()
+                    })
+                }
             )
         }
     ) { paddingValues ->
@@ -54,15 +58,16 @@ fun AddChecklistScreen(
                 header = {
                     Header(
                         title = viewModel.title,
-                        onTitleChange = { viewModel.changeChecklistTitle(it) }
+                        onTitleSet = { title -> viewModel.title = title }
                     )
                 },
                 items = viewModel.items,
-                onItemSet = { index, name, isChecked ->
-                    viewModel.changeChecklistItem(index, name, isChecked)
-                },
-                onItemAdd = { viewModel.addChecklistItem(it) },
-                onItemLongClick = { _ -> }
+                onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(itemIndex, isChecked) },
+                onItemNameFocus = {},
+                onItemNameChange = { itemIndex, itemName -> viewModel.setItemName(itemIndex, itemName) },
+                onItemNameSet = { _, _ -> },
+                onItemAdd = { itemName -> viewModel.addItem(itemName) },
+                onItemDelete = { itemIndex -> viewModel.deleteItem(itemIndex) }
             )
 
             if (viewModel.isCreatingChecklist) {
@@ -102,11 +107,11 @@ private fun TopBar(
 @Composable
 private fun Header(
     title: String,
-    onTitleChange: (String) -> Unit
+    onTitleSet: (String) -> Unit
 ) {
     TextField(
         value = title,
-        onValueChange = { onTitleChange(it) },
+        onValueChange = { onTitleSet(it) },
         modifier = Modifier.fillMaxWidth(),
         textStyle = TextStyle(fontSize = 18.sp),
         placeholder = { Text("Title") },
