@@ -1,8 +1,6 @@
 package com.oukschub.checkmate.data.database
 
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
@@ -28,9 +26,7 @@ class Database {
                 )
             )
 
-        FirebaseAuth.getInstance().currentUser?.updateProfile(
-            UserProfileChangeRequest.Builder().setDisplayName(displayName).build()
-        )
+        FirebaseUtil.setDisplayName(displayName)
     }
 
     fun createChecklist(

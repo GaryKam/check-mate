@@ -56,6 +56,12 @@
     <string name="home_delete_dialog_title">Delete Item</string>
     <string name="home_delete_dialog_prompt">Do you want to delete the following item?\n%1$s</string>
 
+    // Profile
+    <string name="profile_change_display_name">Change Display Name</string>
+    <string name="profile_change_password">Change Password</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_sign_out">Sign Out</string>
+
     // Content Description
     <string name="desc_back">Back</string>
     <string name="desc_checklist_options">Checklist options</string>
