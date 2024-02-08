@@ -40,15 +40,10 @@ class ChecklistsViewModel @Inject constructor(
     )
     val filters: ImmutableList<Triple<Int, Boolean, (Checklist) -> Boolean>>
         get() = ImmutableList.copyOf(_filters)
-    private var initialItemName: String? = null
 
     fun toggleFilter(filterIndex: Int) {
         val filter = _filters[filterIndex]
         _filters[filterIndex] = filter.copy(second = !filter.second)
-    }
-
-    fun focusItem(itemName: String) {
-        initialItemName = itemName
     }
 
     fun favoriteChecklist(filteredChecklistIndex: Int) {

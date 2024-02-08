@@ -15,14 +15,9 @@ class HomeViewModel @Inject constructor(
     val checklists get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
     private var initialTitle: String? = null
-    private var initialItemName: String? = null
 
     fun focusTitle(title: String) {
         initialTitle = title
-    }
-
-    fun focusItem(itemName: String) {
-        initialItemName = itemName
     }
 
     fun setTitle(
