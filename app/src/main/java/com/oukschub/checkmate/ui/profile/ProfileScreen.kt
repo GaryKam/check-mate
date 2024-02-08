@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,12 +38,11 @@ import com.oukschub.checkmate.R
 /**
  * The screen for users to update their account information and logout.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     onSignOut: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -60,64 +60,96 @@ fun ProfileScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = null,
-                    modifier = Modifier.size(100.dp),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                val displayNameState = viewModel.displayName.collectAsState(initial = "")
+
+                ProfileIcon()
+                ProfileName(name = displayNameState.value)
+                ChangeDisplayNameButton(
+                    displayName = displayNameState.value,
+                    onDisplayNameSet = { displayName -> viewModel.setNewDisplayName(displayName) }
                 )
-
-                Text(
-                    text = viewModel.displayName,
-                    modifier = Modifier.padding(bottom = 5.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                var showChangeUsernameDialog by remember { mutableStateOf(false) }
-                Button(
-                    onClick = { showChangeUsernameDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.profile_change_display_name))
-                }
-
-                if (showChangeUsernameDialog) {
-                    ChangeDisplayNameDialog(
-                        currentDisplayName = viewModel.displayName,
-                        onDismiss = { showChangeUsernameDialog = false },
-                        onConfirm = { displayName ->
-                            viewModel.setNewDisplayName(displayName)
-                        }
-                    )
-                }
-
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.profile_change_password))
-                }
-
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.profile_settings))
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.signOut()
-                        onSignOut()
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.profile_sign_out))
-                }
+                ChangePasswordButton()
+                SettingsButton()
+                SignOutButton(onSignOut = {
+                    viewModel.signOut()
+                    onSignOut()
+                })
             }
         }
+    }
+}
+
+@Composable
+private fun ProfileIcon() {
+    Image(
+        imageVector = Icons.Default.AccountCircle,
+        contentDescription = null,
+        modifier = Modifier.size(100.dp),
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+    )
+}
+
+@Composable
+private fun ProfileName(name: String) {
+    Text(
+        text = name,
+        modifier = Modifier.padding(bottom = 5.dp),
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Medium,
+        style = MaterialTheme.typography.titleLarge
+    )
+}
+
+@Composable
+private fun ChangeDisplayNameButton(
+    displayName: String,
+    onDisplayNameSet: (String) -> Unit
+) {
+    var showChangeUsernameDialog by remember { mutableStateOf(false) }
+
+    Button(
+        onClick = { showChangeUsernameDialog = true },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.profile_change_display_name))
+    }
+
+    if (showChangeUsernameDialog) {
+        ChangeDisplayNameDialog(
+            currentDisplayName = displayName,
+            onDismiss = { showChangeUsernameDialog = false },
+            onConfirm = { onDisplayNameSet(it) }
+        )
+    }
+}
+
+@Composable
+private fun ChangePasswordButton() {
+    Button(
+        onClick = { /*TODO*/ },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.profile_change_password))
+    }
+}
+
+@Composable
+private fun SettingsButton() {
+    Button(
+        onClick = { /*TODO*/ },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.profile_settings))
+    }
+}
+
+@Composable
+private fun SignOutButton(onSignOut: () -> Unit) {
+    Button(
+        onClick = onSignOut,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.profile_sign_out))
     }
 }
 

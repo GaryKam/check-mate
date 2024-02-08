@@ -9,10 +9,13 @@ import androidx.lifecycle.ViewModel
 import com.google.common.collect.ImmutableList
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.R
-import com.oukschub.checkmate.data.database.Database
+import com.oukschub.checkmate.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class SignUpViewModel(
-    private val database: Database = Database()
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val userRepository: UserRepository
 ) : ViewModel() {
     var displayName by mutableStateOf("")
         private set
@@ -49,7 +52,7 @@ class SignUpViewModel(
         if (displayNameChecker.isValidated() && validEmail && passwordChecker.isValidated()) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    database.createUser(displayName)
+                    userRepository.createUser(displayName)
                     onSuccess()
                 }
                 .addOnFailureListener {

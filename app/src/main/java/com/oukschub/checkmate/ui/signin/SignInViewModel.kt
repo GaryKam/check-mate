@@ -9,13 +9,15 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.repository.ChecklistRepository
+import com.oukschub.checkmate.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val repository: ChecklistRepository
+    private val checklistRepository: ChecklistRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     var email by mutableStateOf("")
         private set
@@ -35,7 +37,8 @@ class SignInViewModel @Inject constructor(
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     viewModelScope.launch {
-                        repository.fetchChecklists()
+                        checklistRepository.fetchChecklists()
+                        userRepository.fetchDisplayName()
                         onSuccess()
                     }
                 }
