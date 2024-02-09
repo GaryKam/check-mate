@@ -83,6 +83,7 @@ fun SignInScreen(
 
             Button(
                 onClick = {
+                    focusManager.clearFocus()
                     viewModel.signIn(
                         onSuccess = { onSignIn() },
                         onFailure = { MessageUtil.displayToast(context, it) }

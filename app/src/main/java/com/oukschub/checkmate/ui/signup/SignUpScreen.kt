@@ -99,6 +99,7 @@ fun SignUpScreen(
             Button(
                 modifier = Modifier,
                 onClick = {
+                    focusManager.clearFocus()
                     viewModel.signUp(
                         onSuccess = { onSignUp() },
                         onFailure = { MessageUtil.displayToast(context, it) }
