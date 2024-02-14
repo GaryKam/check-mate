@@ -13,6 +13,11 @@ jobs:
   Gradle:
     runs-on: ubuntu-latest
     steps:
+      - name: decode keystore
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          filename: 'keystore/your_signing_keystore.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
       - name: checkout code
         uses: actions/checkout@v4
       - name: specify java version
@@ -23,7 +28,11 @@ jobs:
       - name: make Gradle executable
         run: chmod +x ./gradlew
       - name: build Release APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew app:bundleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       - name: create github release
         uses: softprops/action-gh-release@v1
         with:
