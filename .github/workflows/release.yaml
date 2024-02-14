@@ -34,7 +34,7 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       - name: find apk
-        run: find /home/runner -iname *.apk 2>/dev/null
+        run: find /home/runner -iname '*.apk' 2>/dev/null
       - name: create github release
         uses: softprops/action-gh-release@v1
         with:
