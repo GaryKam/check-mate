@@ -37,4 +37,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
-          files: /home/runner/work/check-mate/check-mate/app/release/app-release.apk
+          files: /home/runner/work/check-mate/check-mate/app/build/outputs/
