@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.ui.addchecklist
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +21,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
 
@@ -31,10 +35,10 @@ import com.oukschub.checkmate.ui.component.Checklist
  */
 @Composable
 fun AddChecklistScreen(
-    viewModel: AddChecklistViewModel,
     onBack: () -> Unit,
     onSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AddChecklistViewModel = hiltViewModel()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -49,8 +53,15 @@ fun AddChecklistScreen(
             )
         }
     ) { paddingValues ->
+        val focusManager = LocalFocusManager.current
+
         Column(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                },
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

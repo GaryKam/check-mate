@@ -32,8 +32,8 @@ fun PasswordTextField(
     onImeAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val passwordVisualTransformation = PasswordVisualTransformation()
     var isPasswordVisible by remember { mutableStateOf(false) }
+    val passwordVisualTransformation = PasswordVisualTransformation()
 
     OutlinedTextField(
         value = password,
