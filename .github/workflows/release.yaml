@@ -1,10 +1,7 @@
-name: Build & Publish Release APK
-run-name: Building apk with version ${{github.ref_name}}
+name: Build & Sign Release APK
+run-name: Building APK ${{github.ref_name}}
 
-on:
-  push:
-    tags:
-      - '*'
+on: workflow_dispatch
 
 permissions:
   contents: write
@@ -20,12 +17,29 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+      - name: setup build tool version variable
+        shell: bash
+        run: |
+          BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+          echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+          echo Last build tool version is: $BUILD_TOOL_VERSION
       - name: make Gradle executable
         run: chmod +x ./gradlew
-      - name: build Release APK
+      - name: build prod
         run: ./gradlew assembleRelease
-      - name: create github release
-        uses: softprops/action-gh-release@v1
+      - name: sign app APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
         with:
-          prerelease: true
-          files: /home/runner/work/check-mate/check-mate/app/build/outputs/apk/release/app-release.apk
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.KEYSTORE }}
+          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
+      - name: upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: Build Artifacts
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}

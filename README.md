@@ -48,3 +48,10 @@ exit $gradle_command_exit_code
 ### Database
 - Follow CRUD paradigm
    - `create<object>`, `read<object>`, `update<object>`, `delete<object>`
+
+# Downloading APK From Github Repository
+1. Go to "Actions" tab on the Github Repository
+2. Choose "Build & Sign Release APK" from the workflows on the left
+3. Above the list of workflow runs, click the Run workflow button
+4. Once the workflow runs successfully, download "Build Artifacts" at the bottom of the page
+5. Unzip the "Build Artifacts" file to find the APK
