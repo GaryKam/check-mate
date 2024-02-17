@@ -91,6 +91,24 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    fun updateChecklistDivider(
+        checklistIndex: Int,
+        dividerIndex: Int,
+        isChecked: Boolean
+    ) {
+        val myChecklistItems = _checklists[checklistIndex].items.toMutableList()
+        myChecklistItems[dividerIndex] = myChecklistItems[dividerIndex].copy(isChecked = isChecked)
+        for (i in dividerIndex + 1..<myChecklistItems.size) {
+            if (myChecklistItems[i].isDivider) {
+                break
+            } else {
+                myChecklistItems[i] = myChecklistItems[i].copy(isChecked = isChecked)
+            }
+        }
+        _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = myChecklistItems)
+        database.updateChecklistItems(_checklists[checklistIndex].id, myChecklistItems)
+    }
+
     fun updateChecklistFavorite(
         checklistIndex: Int,
         isFavorite: Boolean

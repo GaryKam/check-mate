@@ -88,6 +88,9 @@ fun HomeScreen(
             onItemDelete = { checklistIndex, itemIndex ->
                 viewModel.deleteItem(checklistIndex, itemIndex)
             },
+            onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
+                viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
+            },
             modifier = modifier
         )
     }
@@ -107,6 +110,7 @@ private fun Content(
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
+    onDividerCheck: (Int, Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -145,12 +149,37 @@ private fun Content(
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
-                    onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
+                    onItemCheck = { itemIndex, isChecked ->
+                        onItemCheck(
+                            checklistIndex,
+                            itemIndex,
+                            isChecked
+                        )
+                    },
                     onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
-                    onItemNameChange = { itemIndex, itemName -> onItemNameChange(checklistIndex, itemIndex, itemName) },
-                    onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
+                    onItemNameChange = { itemIndex, itemName ->
+                        onItemNameChange(
+                            checklistIndex,
+                            itemIndex,
+                            itemName
+                        )
+                    },
+                    onItemNameSet = { itemIndex, itemName ->
+                        onItemNameSet(
+                            checklistIndex,
+                            itemIndex,
+                            itemName
+                        )
+                    },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
-                    onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) }
+                    onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
+                    onDividerCheck = { dividerIndex, isChecked ->
+                        onDividerCheck(
+                            checklistIndex,
+                            dividerIndex,
+                            isChecked
+                        )
+                    }
                 )
             }
         }
