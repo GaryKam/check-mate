@@ -107,6 +107,9 @@ private fun Checkboxes(
                     ChecklistDivider(
                         checklistDivider = item,
                         itemIndex = itemIndex,
+                        onDividerNameChange = onItemNameChange,
+                        onDividerNameFocus = onItemNameFocus,
+                        onDividerSet = onItemNameSet,
                         onDividerCheck = onDividerCheck
                     )
                 } else {
@@ -150,6 +153,9 @@ private fun Checkboxes(
 private fun ChecklistDivider(
     checklistDivider: ChecklistItem,
     itemIndex: Int,
+    onDividerNameChange: (Int, String) -> Unit,
+    onDividerNameFocus: (String) -> Unit,
+    onDividerSet: (Int, String) -> Unit,
     onDividerCheck: (Int, Boolean) -> Unit
 ) {
     Row(
@@ -157,8 +163,21 @@ private fun ChecklistDivider(
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = checklistDivider.name)
+        BasicTextField(
+            value = checklistDivider.name,
+            onValueChange = { onDividerNameChange(itemIndex, it) },
+            modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        onDividerNameFocus(checklistDivider.name)
+                    } else {
+                        onDividerSet(itemIndex, checklistDivider.name)
+                    }
+                }
+        )
+
         Divider(modifier = Modifier.padding(horizontal = 10.dp))
+
         Checkbox(
             checked = checklistDivider.isChecked,
             onCheckedChange = {

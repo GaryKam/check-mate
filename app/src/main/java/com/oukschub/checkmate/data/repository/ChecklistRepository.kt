@@ -80,6 +80,48 @@ class ChecklistRepository @Inject constructor(
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
+
+        updateChecklistDividerFromItem(checklistIndex, itemIndex, isChecked)
+    }
+
+    // we have item index
+    // iterate down until we find unchecked item or end of list or next divider
+    // iterate up until we find unchecked item or beginning of list or divider
+    private fun updateChecklistDividerFromItem(
+        checklistIndex: Int,
+        itemIndex: Int,
+        isChecked: Boolean
+    ) {
+        val items = _checklists[checklistIndex].items
+        var checkDivider = true
+
+        for (i in itemIndex until items.size) {
+            val item = items[i]
+
+            if (item.isDivider) {
+                break
+            } else if (item.isChecked != isChecked) {
+                checkDivider = false
+                break
+            }
+        }
+
+        for (i in itemIndex downTo 0) {
+            val item = items[i]
+
+            if (item.isDivider) {
+                _checklists[checklistIndex].items.toMutableList().apply {
+                    this[i] = this[i].copy(isChecked = if (checkDivider) isChecked else false)
+                }.also {
+                    _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = it)
+                    database.updateChecklistItems(_checklists[checklistIndex].id, it)
+                }
+
+                break
+            } else if (item.isChecked != isChecked) {
+                checkDivider = false
+            }
+        }
     }
 
     fun updateChecklistItem(
@@ -101,7 +143,8 @@ class ChecklistRepository @Inject constructor(
         isChecked: Boolean
     ) {
         val myChecklistItems = _checklists[checklistIndex].items.toMutableList()
-        myChecklistItems[dividerIndex] = myChecklistItems[dividerIndex].copy(isChecked = isChecked)
+        myChecklistItems[dividerIndex] =
+            myChecklistItems[dividerIndex].copy(isChecked = isChecked)
         for (i in dividerIndex + 1..<myChecklistItems.size) {
             if (myChecklistItems[i].isDivider) {
                 break
