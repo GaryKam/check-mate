@@ -40,9 +40,13 @@ class ChecklistRepository @Inject constructor(
 
     fun createChecklistItem(
         checklistIndex: Int,
-        itemName: String
+        itemName: String,
+        isDivider: Boolean = false
     ) {
-        val item = ChecklistItem(itemName)
+        val item = ChecklistItem(
+            name = itemName,
+            isDivider = isDivider
+        )
         _checklists[checklistIndex].items.toMutableList().apply {
             add(item)
         }.also { items ->

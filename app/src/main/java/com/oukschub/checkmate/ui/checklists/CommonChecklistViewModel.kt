@@ -45,6 +45,14 @@ open class CommonChecklistViewModel(
         }
     }
 
+    fun addDivider(checklistIndex: Int) {
+        repository.createChecklistItem(
+            checklistIndex,
+            "default",
+            isDivider = true
+        )
+    }
+
     fun setDividerChecked(
         checklistIndex: Int,
         dividerIndex: Int,

@@ -52,7 +52,7 @@ fun Checklist(
     onItemNameSet: (Int, String) -> Unit,
     onItemAdd: (String) -> Unit,
     onItemDelete: (Int) -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit = { _, _ -> },
+    onDividerCheck: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current

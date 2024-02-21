@@ -91,6 +91,9 @@ fun HomeScreen(
             onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
                 viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
             },
+            onDividerAdd = { checklistIndex ->
+                viewModel.addDivider(checklistIndex)
+            },
             modifier = modifier
         )
     }
@@ -111,6 +114,7 @@ private fun Content(
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
     onDividerCheck: (Int, Int, Boolean) -> Unit,
+    onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -145,7 +149,8 @@ private fun Content(
                             onTitleFocus = { title -> onTitleFocus(title) },
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
-                            onChecklistDelete = { onChecklistDelete(checklistIndex) }
+                            onChecklistDelete = { onChecklistDelete(checklistIndex) },
+                            onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
@@ -193,6 +198,7 @@ private fun Header(
     onTitleSet: (String) -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
+    onDividerAdd: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -249,6 +255,14 @@ private fun Header(
                     onClick = {
                         isDropdownVisible = false
                         onChecklistDelete()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.checklist_add_divider)) },
+                    onClick = {
+                        isDropdownVisible = false
+                        onDividerAdd()
                     }
                 )
             }
