@@ -35,7 +35,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Adds a new checklist in [database].
+     * Adds a new checklist.
      */
     fun createChecklist(
         title: String,
@@ -48,13 +48,17 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Adds a new checklist item in [database].
+     * Adds a new checklist item.
      */
     fun createChecklistItem(
         checklistIndex: Int,
-        itemName: String
+        itemName: String,
+        isDivider: Boolean = false
     ) {
-        val item = ChecklistItem(itemName)
+        val item = ChecklistItem(
+            name = itemName,
+            isDivider = isDivider
+        )
         _checklists[checklistIndex].items.toMutableList().apply {
             add(item)
         }.also { items ->
@@ -64,7 +68,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Gets all checklists from [database].
+     * Gets all checklists.
      */
     suspend fun fetchChecklists() {
         Timber.d("Fetching checklists from database")
@@ -73,7 +77,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Sets the title of a checklist in [database].
+     * Sets the title of a checklist.
      */
     fun updateChecklistTitle(
         checklistIndex: Int,
@@ -84,7 +88,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Sets an item's check status in [database].
+     * Sets an item's check status, and its divider's check status if applicable.
      */
     fun updateChecklistItem(
         checklistIndex: Int,
@@ -97,10 +101,41 @@ class ChecklistRepository @Inject constructor(
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
+
+        val items = _checklists[checklistIndex].items
+        var checkDivider = true
+
+        for (i in itemIndex until items.size) {
+            val item = items[i]
+
+            if (item.isDivider) {
+                break
+            } else if (item.isChecked != isChecked) {
+                checkDivider = false
+                break
+            }
+        }
+
+        for (i in itemIndex downTo 0) {
+            val item = items[i]
+
+            if (item.isDivider) {
+                _checklists[checklistIndex].items.toMutableList().apply {
+                    this[i] = this[i].copy(isChecked = if (checkDivider) isChecked else false)
+                }.also {
+                    _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = it)
+                    database.updateChecklistItems(_checklists[checklistIndex].id, it)
+                }
+
+                break
+            } else if (item.isChecked != isChecked) {
+                checkDivider = false
+            }
+        }
     }
 
     /**
-     * Sets an item's name in [database].
+     * Sets an item's name.
      */
     fun updateChecklistItem(
         checklistIndex: Int,
@@ -116,7 +151,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Sets all items in a checklist to be unchecked in [database].
+     * Sets all items in a checklist to be unchecked.
      */
     fun updateChecklistItems(checklistIndex: Int) {
         _checklists[checklistIndex].items.toMutableList()
@@ -128,7 +163,31 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Sets a checklist to be a favorite in [database].
+     * Sets a divider's check status, and all items below it.
+     */
+    fun updateChecklistDivider(
+        checklistIndex: Int,
+        dividerIndex: Int,
+        isChecked: Boolean
+    ) {
+        _checklists[checklistIndex].items.toMutableList().apply {
+            this[dividerIndex] = this[dividerIndex].copy(isChecked = isChecked)
+
+            for (i in dividerIndex + 1..<this.size) {
+                if (this[i].isDivider) {
+                    break
+                } else {
+                    this[i] = this[i].copy(isChecked = isChecked)
+                }
+            }
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
+        }
+    }
+
+    /**
+     * Sets a checklist to be a favorite.
      */
     fun updateChecklistFavorite(
         checklistIndex: Int,
@@ -139,7 +198,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Removes a checklist from [database].
+     * Removes a checklist.
      */
     fun deleteChecklist(checklistIndex: Int) {
         _checklists[checklistIndex].run {
@@ -149,7 +208,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Removes an item from a checklist in [database].
+     * Removes an item from a checklist.
      */
     fun deleteChecklistItem(
         checklistIndex: Int,

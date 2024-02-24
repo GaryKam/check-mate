@@ -109,6 +109,9 @@ fun ChecklistsScreen(
                 },
                 onItemDelete = { checklistIndex, itemIndex ->
                     viewModel.deleteItem(checklistIndex, itemIndex)
+                },
+                onDividerChecked = { checklistIndex, dividerIndex, isChecked ->
+                    viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
                 }
             )
         }
@@ -168,7 +171,8 @@ private fun Content(
     onItemNameChange: (Int, Int, String) -> Unit,
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
-    onItemDelete: (Int, Int) -> Unit
+    onItemDelete: (Int, Int) -> Unit,
+    onDividerChecked: (Int, Int, Boolean) -> Unit
 ) {
     LazyColumn {
         itemsIndexed(items = checklists) { checklistIndex, checklist ->
@@ -226,6 +230,9 @@ private fun Content(
                         },
                         onItemDelete = { itemIndex ->
                             onItemDelete(checklistIndex, itemIndex)
+                        },
+                        onDividerCheck = { dividerIndex, isChecked ->
+                            onDividerChecked(checklistIndex, dividerIndex, isChecked)
                         }
                     )
                 }

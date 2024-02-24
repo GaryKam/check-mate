@@ -74,21 +74,19 @@ fun HomeScreen(
             onItemCheck = { checklistIndex, itemIndex, isChecked ->
                 viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
             },
-            onItemNameFocus = { itemName ->
-                viewModel.focusItem(itemName)
-            },
+            onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
             onItemNameChange = { checklistIndex, itemIndex, itemName ->
                 viewModel.changeItemName(checklistIndex, itemIndex, itemName)
             },
             onItemNameSet = { checklistIndex, itemIndex, itemName ->
                 viewModel.setItemName(checklistIndex, itemIndex, itemName)
             },
-            onItemAdd = { checklistIndex, itemName ->
-                viewModel.addItem(checklistIndex, itemName)
+            onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
+            onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+            onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
+                viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
             },
-            onItemDelete = { checklistIndex, itemIndex ->
-                viewModel.deleteItem(checklistIndex, itemIndex)
-            },
+            onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, "Default", true) },
             modifier = modifier
         )
     }
@@ -109,6 +107,8 @@ private fun Content(
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
+    onDividerCheck: (Int, Int, Boolean) -> Unit,
+    onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -144,16 +144,42 @@ private fun Content(
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
                             onChecklistDelete = { onChecklistDelete(checklistIndex) },
-                            onChecklistClear = { onChecklistClear(checklistIndex) }
+                            onChecklistClear = { onChecklistClear(checklistIndex) },
+                            onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
-                    onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
+                    onItemCheck = { itemIndex, isChecked ->
+                        onItemCheck(
+                            checklistIndex,
+                            itemIndex,
+                            isChecked
+                        )
+                    },
                     onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
-                    onItemNameChange = { itemIndex, itemName -> onItemNameChange(checklistIndex, itemIndex, itemName) },
-                    onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
+                    onItemNameChange = { itemIndex, itemName ->
+                        onItemNameChange(
+                            checklistIndex,
+                            itemIndex,
+                            itemName
+                        )
+                    },
+                    onItemNameSet = { itemIndex, itemName ->
+                        onItemNameSet(
+                            checklistIndex,
+                            itemIndex,
+                            itemName
+                        )
+                    },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
-                    onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) }
+                    onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
+                    onDividerCheck = { dividerIndex, isChecked ->
+                        onDividerCheck(
+                            checklistIndex,
+                            dividerIndex,
+                            isChecked
+                        )
+                    }
                 )
             }
         }
@@ -167,7 +193,8 @@ private fun Header(
     onTitleSet: (String) -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
-    onChecklistClear: () -> Unit
+    onChecklistClear: () -> Unit,
+    onDividerAdd: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -232,6 +259,14 @@ private fun Header(
                     onClick = {
                         isDropdownVisible = false
                         onChecklistClear()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.checklist_add_divider)) },
+                    onClick = {
+                        isDropdownVisible = false
+                        onDividerAdd()
                     }
                 )
             }
