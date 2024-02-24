@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +52,7 @@ fun Checklist(
     onItemNameSet: (Int, String) -> Unit,
     onItemAdd: (String) -> Unit,
     onItemDelete: (Int) -> Unit,
+    onDividerCheck: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -71,7 +73,8 @@ fun Checklist(
             onItemNameFocus = onItemNameFocus,
             onItemNameChange = onItemNameChange,
             onItemNameSet = onItemNameSet,
-            onItemDelete = onItemDelete
+            onItemDelete = onItemDelete,
+            onDividerCheck = onDividerCheck
         )
         InputField(onItemAdd = onItemAdd)
     }
@@ -84,7 +87,8 @@ private fun Checkboxes(
     onItemNameFocus: (String) -> Unit,
     onItemNameChange: (Int, String) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
-    onItemDelete: (Int) -> Unit
+    onItemDelete: (Int) -> Unit,
+    onDividerCheck: (Int, Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -99,37 +103,98 @@ private fun Checkboxes(
                     .background(Color.Transparent)
                     .fillMaxWidth()
             ) {
-                Checkbox(
-                    checked = item.isChecked,
-                    onCheckedChange = { onItemCheck(itemIndex, it) }
-                )
-
-                BasicTextField(
-                    value = item.name,
-                    onValueChange = { onItemNameChange(itemIndex, it) },
-                    modifier = Modifier
-                        .weight(1.0F)
-                        .onFocusChanged { focusState ->
-                            if (focusState.isFocused) {
-                                onItemNameFocus(item.name)
-                            } else {
-                                onItemNameSet(itemIndex, item.name)
-                            }
-                        },
-                    enabled = !item.isChecked,
-                    textStyle = TextStyle(
-                        textDecoration = if (item.isChecked) {
-                            TextDecoration.LineThrough
-                        } else {
-                            TextDecoration.None
-                        }
+                if (item.isDivider) {
+                    ChecklistDivider(
+                        checklistDivider = item,
+                        itemIndex = itemIndex,
+                        onDividerNameChange = onItemNameChange,
+                        onDividerNameFocus = onItemNameFocus,
+                        onDividerSet = onItemNameSet,
+                        onDividerCheck = onDividerCheck,
+                        onDividerDelete = onItemDelete
                     )
-                )
+                } else {
+                    Checkbox(
+                        checked = item.isChecked,
+                        onCheckedChange = { onItemCheck(itemIndex, it) }
+                    )
 
-                IconButton(onClick = { onItemDelete(itemIndex) }) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+                    BasicTextField(
+                        value = item.name,
+                        onValueChange = { onItemNameChange(itemIndex, it) },
+                        modifier = Modifier
+                            .weight(1.0F)
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    onItemNameFocus(item.name)
+                                } else {
+                                    onItemNameSet(itemIndex, item.name)
+                                }
+                            },
+                        enabled = !item.isChecked,
+                        textStyle = TextStyle(
+                            textDecoration = if (item.isChecked) {
+                                TextDecoration.LineThrough
+                            } else {
+                                TextDecoration.None
+                            }
+                        )
+                    )
+
+                    IconButton(onClick = { onItemDelete(itemIndex) }) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ChecklistDivider(
+    checklistDivider: ChecklistItem,
+    itemIndex: Int,
+    onDividerNameChange: (Int, String) -> Unit,
+    onDividerNameFocus: (String) -> Unit,
+    onDividerSet: (Int, String) -> Unit,
+    onDividerCheck: (Int, Boolean) -> Unit,
+    onDividerDelete: (Int) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.weight(1.0f)) {
+            BasicTextField(
+                value = checklistDivider.name,
+                onValueChange = { onDividerNameChange(itemIndex, it) },
+                modifier = Modifier
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            onDividerNameFocus(checklistDivider.name)
+                        } else {
+                            onDividerSet(itemIndex, checklistDivider.name)
+                        }
+                    }
+                    .padding(bottom = 2.dp)
+            )
+            Divider(color = MaterialTheme.colorScheme.secondary)
+        }
+        Row {
+            IconButton(
+                onClick = { onDividerDelete(itemIndex) },
+                modifier = Modifier.padding(0.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+            }
+
+            Checkbox(
+                checked = checklistDivider.isChecked,
+                onCheckedChange = {
+                    onDividerCheck(itemIndex, it)
+                },
+                modifier = Modifier.padding(0.dp)
+            )
         }
     }
 }
