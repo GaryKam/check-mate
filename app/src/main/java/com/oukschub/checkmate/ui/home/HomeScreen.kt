@@ -70,6 +70,7 @@ fun HomeScreen(
             onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
             onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
             onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
+            onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
             onItemCheck = { checklistIndex, itemIndex, isChecked ->
                 viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
             },
@@ -101,6 +102,7 @@ private fun Content(
     onTitleSet: (Int, String) -> Unit,
     onChecklistUnfavorite: (Int) -> Unit,
     onChecklistDelete: (Int) -> Unit,
+    onChecklistClear: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
     onItemNameChange: (Int, Int, String) -> Unit,
@@ -141,7 +143,8 @@ private fun Content(
                             onTitleFocus = { title -> onTitleFocus(title) },
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
-                            onChecklistDelete = { onChecklistDelete(checklistIndex) }
+                            onChecklistDelete = { onChecklistDelete(checklistIndex) },
+                            onChecklistClear = { onChecklistClear(checklistIndex) }
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
@@ -164,6 +167,7 @@ private fun Header(
     onTitleSet: (String) -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
+    onChecklistClear: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -220,6 +224,14 @@ private fun Header(
                     onClick = {
                         isDropdownVisible = false
                         onChecklistDelete()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.checklist_clear)) },
+                    onClick = {
+                        isDropdownVisible = false
+                        onChecklistClear()
                     }
                 )
             }

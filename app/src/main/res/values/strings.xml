@@ -43,6 +43,7 @@
     <string name="checklist_update_error">Checklist failed to update</string>
     <string name="checklist_unfavorite">Remove Favorite</string>
     <string name="checklist_delete">Delete Checklist</string>
+    <string name="checklist_clear">Clear Checklist</string>
 
     // Checklists
     <string name="checklists_search">Search</string>

@@ -91,6 +91,15 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    fun updateChecklistItems(checklistIndex: Int) {
+        _checklists[checklistIndex].items.toMutableList()
+            .map { item -> item.copy(isChecked = false) }
+            .also { items ->
+                _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+                database.updateChecklistItems(_checklists[checklistIndex].id, items)
+            }
+    }
+
     fun updateChecklistFavorite(
         checklistIndex: Int,
         isFavorite: Boolean
