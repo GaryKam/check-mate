@@ -9,15 +9,21 @@ import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * The single source for checklists.
+ * Centralizes changes to data, and interacts with our data source.
  */
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
+    /** The single source of checklists. */
     private val _checklists = mutableStateListOf<Checklist>()
+
+    /** A read-only copy for others to use. */
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
 
+    /**
+     * Allows user to see latest text value while typing. Modifies local [_checklists].
+     */
     fun changeItemName(
         checklistIndex: Int,
         itemIndex: Int,
@@ -28,6 +34,9 @@ class ChecklistRepository @Inject constructor(
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
+    /**
+     * Adds a new checklist in [database].
+     */
     fun createChecklist(
         title: String,
         items: List<ChecklistItem>,
@@ -38,6 +47,9 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Adds a new checklist item in [database].
+     */
     fun createChecklistItem(
         checklistIndex: Int,
         itemName: String
@@ -51,12 +63,18 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Gets all checklists from [database].
+     */
     suspend fun fetchChecklists() {
         Timber.d("Fetching checklists from database")
         _checklists.clear()
         _checklists.addAll(database.readChecklists())
     }
 
+    /**
+     * Sets the title of a checklist in [database].
+     */
     fun updateChecklistTitle(
         checklistIndex: Int,
         title: String
@@ -65,6 +83,9 @@ class ChecklistRepository @Inject constructor(
         database.updateChecklistTitle(_checklists[checklistIndex].id, title)
     }
 
+    /**
+     * Sets an item's check status in [database].
+     */
     fun updateChecklistItem(
         checklistIndex: Int,
         itemIndex: Int,
@@ -78,6 +99,9 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Sets an item's name in [database].
+     */
     fun updateChecklistItem(
         checklistIndex: Int,
         itemIndex: Int,
@@ -91,6 +115,9 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Sets all items in a checklist to be unchecked in [database].
+     */
     fun updateChecklistItems(checklistIndex: Int) {
         _checklists[checklistIndex].items.toMutableList()
             .map { item -> item.copy(isChecked = false) }
@@ -100,6 +127,9 @@ class ChecklistRepository @Inject constructor(
             }
     }
 
+    /**
+     * Sets a checklist to be a favorite in [database].
+     */
     fun updateChecklistFavorite(
         checklistIndex: Int,
         isFavorite: Boolean
@@ -108,6 +138,9 @@ class ChecklistRepository @Inject constructor(
         database.updateChecklistFavorite(_checklists[checklistIndex].id, isFavorite)
     }
 
+    /**
+     * Removes a checklist from [database].
+     */
     fun deleteChecklist(checklistIndex: Int) {
         _checklists[checklistIndex].run {
             _checklists.remove(this)
@@ -115,6 +148,9 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Removes an item from a checklist in [database].
+     */
     fun deleteChecklistItem(
         checklistIndex: Int,
         itemIndex: Int
