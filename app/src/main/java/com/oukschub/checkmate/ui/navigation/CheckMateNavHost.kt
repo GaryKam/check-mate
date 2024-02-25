@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.oukschub.checkmate.ui.addchecklist.AddChecklistScreen
+import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailScreen
+import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailViewModel
 import com.oukschub.checkmate.ui.checklists.ChecklistsScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
 import com.oukschub.checkmate.ui.home.HomeScreen
@@ -33,7 +35,8 @@ fun CheckMateNavHost(
     navController: NavHostController = rememberNavController(),
     checklistViewModel: ChecklistsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    checklistDetailViewModel: ChecklistDetailViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -78,7 +81,15 @@ fun CheckMateNavHost(
             enterTransition = { slideScreenIn(true) },
             exitTransition = { slideScreenOut(false) }
         ) {
-            ChecklistsScreen(viewModel = checklistViewModel)
+            ChecklistsScreen(
+                viewModel = checklistViewModel,
+                onChecklistClick = { checklistIndex ->
+                    navController.currentBackStackEntry?.arguments?.apply {
+                        putInt("checklistIndex", checklistIndex)
+                    }
+                    navController.navigate(Screen.ChecklistDetail.route)
+                }
+            )
         }
 
         composable(
@@ -128,6 +139,14 @@ fun CheckMateNavHost(
                         }
                     }
                 }
+            )
+        }
+
+        composable(Screen.ChecklistDetail.route) {
+            ChecklistDetailScreen(
+                viewModel = checklistDetailViewModel,
+                onDelete = { navController.navigate(Screen.Checklists.route) },
+                checklistIndex = navController.previousBackStackEntry?.arguments?.getInt("checklistIndex")!!
             )
         }
     }

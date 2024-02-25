@@ -1,6 +1,5 @@
 package com.oukschub.checkmate.ui.checklists
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -16,20 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
-import com.oukschub.checkmate.ui.component.Checklist
 import com.oukschub.checkmate.ui.component.Logo
 
 /**
@@ -49,6 +40,7 @@ import com.oukschub.checkmate.ui.component.Logo
 @Composable
 fun ChecklistsScreen(
     viewModel: ChecklistsViewModel,
+    onChecklistClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -92,6 +84,7 @@ fun ChecklistsScreen(
                 onChecklistFavorite = { checklistIndex ->
                     viewModel.favoriteChecklist(checklistIndex)
                 },
+                onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) },
                 onItemCheck = { checklistIndex, itemIndex, isChecked ->
                     viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
                 },
@@ -166,6 +159,7 @@ private fun ChipFilters(
 private fun Content(
     checklists: ImmutableList<Checklist>,
     onChecklistFavorite: (Int) -> Unit,
+    onChecklistClick: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
     onItemNameChange: (Int, Int, String) -> Unit,
@@ -176,7 +170,21 @@ private fun Content(
 ) {
     LazyColumn {
         itemsIndexed(items = checklists) { checklistIndex, checklist ->
-            var isExpanded by remember { mutableStateOf(false) }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onChecklistClick(checklistIndex) },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = checklist.title,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+
+            /*var isExpanded by remember { mutableStateOf(false) }
 
             Column(
                 modifier = Modifier
@@ -236,7 +244,7 @@ private fun Content(
                         }
                     )
                 }
-            }
+            }*/
         }
     }
 }
