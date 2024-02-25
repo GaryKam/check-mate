@@ -105,13 +105,12 @@ private fun Checkboxes(
             ) {
                 if (item.isDivider) {
                     ChecklistDivider(
-                        checklistDivider = item,
-                        itemIndex = itemIndex,
-                        onDividerNameChange = onItemNameChange,
-                        onDividerNameFocus = onItemNameFocus,
-                        onDividerSet = onItemNameSet,
-                        onDividerCheck = onDividerCheck,
-                        onDividerDelete = onItemDelete
+                        divider = item,
+                        onDividerNameChange = { onItemNameChange(itemIndex, it) },
+                        onDividerNameFocus = { onItemNameFocus(it) },
+                        onDividerSet = { onItemNameSet(itemIndex, it) },
+                        onDividerCheck = { onDividerCheck(itemIndex, it) },
+                        onDividerDelete = { onItemDelete(itemIndex) }
                     )
                 } else {
                     Checkbox(
@@ -142,7 +141,10 @@ private fun Checkboxes(
                     )
 
                     IconButton(onClick = { onItemDelete(itemIndex) }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                        )
                     }
                 }
             }
@@ -152,13 +154,12 @@ private fun Checkboxes(
 
 @Composable
 private fun ChecklistDivider(
-    checklistDivider: ChecklistItem,
-    itemIndex: Int,
-    onDividerNameChange: (Int, String) -> Unit,
+    divider: ChecklistItem,
+    onDividerNameChange: (String) -> Unit,
     onDividerNameFocus: (String) -> Unit,
-    onDividerSet: (Int, String) -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit,
-    onDividerDelete: (Int) -> Unit
+    onDividerSet: (String) -> Unit,
+    onDividerCheck: (Boolean) -> Unit,
+    onDividerDelete: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -166,14 +167,14 @@ private fun ChecklistDivider(
     ) {
         Column(modifier = Modifier.weight(1.0f)) {
             BasicTextField(
-                value = checklistDivider.name,
-                onValueChange = { onDividerNameChange(itemIndex, it) },
+                value = divider.name,
+                onValueChange = { onDividerNameChange(it) },
                 modifier = Modifier
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
-                            onDividerNameFocus(checklistDivider.name)
+                            onDividerNameFocus(divider.name)
                         } else {
-                            onDividerSet(itemIndex, checklistDivider.name)
+                            onDividerSet(divider.name)
                         }
                     }
                     .padding(bottom = 2.dp)
@@ -181,18 +182,16 @@ private fun ChecklistDivider(
             Divider(color = MaterialTheme.colorScheme.secondary)
         }
         Row {
-            IconButton(
-                onClick = { onDividerDelete(itemIndex) },
-                modifier = Modifier.padding(0.dp)
-            ) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+            IconButton(onClick = { onDividerDelete() }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                )
             }
 
             Checkbox(
-                checked = checklistDivider.isChecked,
-                onCheckedChange = {
-                    onDividerCheck(itemIndex, it)
-                },
+                checked = divider.isChecked,
+                onCheckedChange = { onDividerCheck(it) },
                 modifier = Modifier.padding(0.dp)
             )
         }

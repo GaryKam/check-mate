@@ -43,6 +43,7 @@
     <string name="checklist_update_error">Checklist failed to update</string>
     <string name="checklist_unfavorite">Remove Favorite</string>
     <string name="checklist_delete">Delete Checklist</string>
+    <string name="checklist_clear">Clear Checklist</string>
     <string name="checklist_add_divider">Add Divider</string>
 
     // Checklists
@@ -51,7 +52,7 @@
     <string name="checklists_filter_shared">Shared</string>
     <string name="checklists_filter_favorite">Favorite</string>
     <string name="checklists_none_found">No checklists found</string>
-    
+
     // Home
     <string name="home_no_favorites">You have no favorite checklists</string>
     <string name="home_delete_dialog_title">Delete Item</string>
@@ -69,5 +70,6 @@
     <string name="desc_done">Done</string>
     <string name="desc_create_checklist">Create new checklist</string>
     <string name="desc_favorite_checklist">Favorite checklist</string>
+    <string name="desc_delete_checklist_item">Delete checklist item</string>
 
 </resources>
