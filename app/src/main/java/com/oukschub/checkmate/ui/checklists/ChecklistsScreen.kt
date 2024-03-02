@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -81,31 +84,8 @@ fun ChecklistsScreen(
         } else {
             Content(
                 checklists = viewModel.checklists,
-                onChecklistFavorite = { checklistIndex ->
-                    viewModel.favoriteChecklist(checklistIndex)
-                },
-                onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) },
-                onItemCheck = { checklistIndex, itemIndex, isChecked ->
-                    viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-                },
-                onItemNameFocus = { itemName ->
-                    viewModel.focusItem(itemName)
-                },
-                onItemNameChange = { checklistIndex, itemIndex, itemName ->
-                    viewModel.changeItemName(checklistIndex, itemIndex, itemName)
-                },
-                onItemNameSet = { checklistIndex, itemIndex, itemName ->
-                    viewModel.setItemName(checklistIndex, itemIndex, itemName)
-                },
-                onItemAdd = { checklistIndex, itemName ->
-                    viewModel.addItem(checklistIndex, itemName)
-                },
-                onItemDelete = { checklistIndex, itemIndex ->
-                    viewModel.deleteItem(checklistIndex, itemIndex)
-                },
-                onDividerChecked = { checklistIndex, dividerIndex, isChecked ->
-                    viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
-                }
+                onChecklistFavorite = { checklistIndex -> viewModel.favoriteChecklist(checklistIndex) },
+                onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) }
             )
         }
     }
@@ -159,21 +139,14 @@ private fun ChipFilters(
 private fun Content(
     checklists: ImmutableList<Checklist>,
     onChecklistFavorite: (Int) -> Unit,
-    onChecklistClick: (Int) -> Unit,
-    onItemCheck: (Int, Int, Boolean) -> Unit,
-    onItemNameFocus: (String) -> Unit,
-    onItemNameChange: (Int, Int, String) -> Unit,
-    onItemNameSet: (Int, Int, String) -> Unit,
-    onItemAdd: (Int, String) -> Unit,
-    onItemDelete: (Int, Int) -> Unit,
-    onDividerChecked: (Int, Int, Boolean) -> Unit
+    onChecklistClick: (Int) -> Unit
 ) {
     LazyColumn {
         itemsIndexed(items = checklists) { checklistIndex, checklist ->
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(10.dp)
                     .clickable { onChecklistClick(checklistIndex) },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -182,69 +155,19 @@ private fun Content(
                     text = checklist.title,
                     style = MaterialTheme.typography.titleLarge
                 )
+
+                IconButton(onClick = { onChecklistFavorite(checklistIndex) }) {
+                    Icon(
+                        imageVector = if (checklist.isFavorite) {
+                            Icons.Default.Favorite
+                        } else {
+                            Icons.Default.FavoriteBorder
+                        },
+                        contentDescription = stringResource(R.string.desc_favorite_checklist),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-
-            /*var isExpanded by remember { mutableStateOf(false) }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { isExpanded = !isExpanded }
-                    .padding(10.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = checklist.title,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    IconButton(
-                        onClick = { onChecklistFavorite(checklistIndex) }
-                    ) {
-                        Icon(
-                            imageVector = if (checklist.isFavorite) {
-                                Icons.Default.Favorite
-                            } else {
-                                Icons.Default.FavoriteBorder
-                            },
-                            contentDescription = stringResource(R.string.desc_favorite_checklist),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-
-                AnimatedVisibility(visible = isExpanded) {
-                    Checklist(
-                        header = {},
-                        items = ImmutableList.copyOf(checklist.items),
-                        onItemCheck = { itemIndex, isChecked ->
-                            onItemCheck(checklistIndex, itemIndex, isChecked)
-                        },
-                        onItemNameFocus = { itemName ->
-                            onItemNameFocus(itemName)
-                        },
-                        onItemNameChange = { itemIndex, itemName ->
-                            onItemNameChange(checklistIndex, itemIndex, itemName)
-                        },
-                        onItemNameSet = { itemIndex, itemName ->
-                            onItemNameSet(checklistIndex, itemIndex, itemName)
-                        },
-                        onItemAdd = { itemName ->
-                            onItemAdd(checklistIndex, itemName)
-                        },
-                        onItemDelete = { itemIndex ->
-                            onItemDelete(checklistIndex, itemIndex)
-                        },
-                        onDividerCheck = { dividerIndex, isChecked ->
-                            onDividerChecked(checklistIndex, dividerIndex, isChecked)
-                        }
-                    )
-                }
-            }*/
         }
     }
 }

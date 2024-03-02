@@ -35,9 +35,9 @@ import com.oukschub.checkmate.ui.component.Checklist
 
 @Composable
 fun ChecklistDetailScreen(
+    checklistIndex: Int,
     viewModel: ChecklistDetailViewModel,
     onDelete: () -> Unit,
-    checklistIndex: Int,
     modifier: Modifier = Modifier
 ) {
     val checklist = viewModel.getChecklist(checklistIndex)

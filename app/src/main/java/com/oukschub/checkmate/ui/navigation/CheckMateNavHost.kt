@@ -2,8 +2,12 @@ package com.oukschub.checkmate.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,7 +47,7 @@ fun CheckMateNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(Screen.Splash.route) {
+        composable(route = Screen.Splash.route) {
             SplashScreen(
                 onComplete = {
                     navController.popBackStack()
@@ -52,41 +56,45 @@ fun CheckMateNavHost(
             )
         }
 
-        composable(Screen.SignIn.route) {
+        composable(route = Screen.SignIn.route) {
             SignInScreen(
                 onSignIn = {
                     navController.popBackStack()
                     navController.navigate(Screen.Home.route)
                 },
-                onFooterClick = {
-                    navController.navigate(Screen.SignUp.route)
-                }
+                onFooterClick = { navController.navigate(Screen.SignUp.route) }
             )
         }
 
-        composable(Screen.SignUp.route) {
+        composable(route = Screen.SignUp.route) {
             SignUpScreen(
                 onSignUp = {
                     navController.popBackStack(Screen.SignIn.route, true)
                     navController.navigate(Screen.Home.route)
                 },
-                onFooterClick = {
-                    navController.popBackStack()
-                }
+                onFooterClick = { navController.popBackStack() }
             )
         }
 
         composable(
             route = Screen.Checklists.route,
-            enterTransition = { slideScreenIn(true) },
-            exitTransition = { slideScreenOut(false) }
+            enterTransition = {
+                when (initialState.destination.route) {
+                    Screen.ChecklistDetail.route, Screen.AddChecklist.route -> fadeIn()
+                    else -> slideScreenIn(true)
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    Screen.ChecklistDetail.route, Screen.AddChecklist.route -> fadeOut()
+                    else -> slideScreenOut(false)
+                }
+            }
         ) {
             ChecklistsScreen(
                 viewModel = checklistViewModel,
                 onChecklistClick = { checklistIndex ->
-                    navController.currentBackStackEntry?.arguments?.apply {
-                        putInt("checklistIndex", checklistIndex)
-                    }
+                    navController.currentBackStackEntry?.arguments?.putInt("checklistIndex", checklistIndex)
                     navController.navigate(Screen.ChecklistDetail.route)
                 }
             )
@@ -98,14 +106,14 @@ fun CheckMateNavHost(
                 when (initialState.destination.route) {
                     Screen.Checklists.route -> slideScreenIn(false)
                     Screen.Profile.route -> slideScreenIn(true)
-                    else -> EnterTransition.None
+                    else -> fadeIn()
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
                     Screen.Checklists.route -> slideScreenOut(true)
                     Screen.Profile.route -> slideScreenOut(false)
-                    else -> ExitTransition.None
+                    else -> fadeOut()
                 }
             }
         ) {
@@ -114,8 +122,18 @@ fun CheckMateNavHost(
 
         composable(
             route = Screen.Profile.route,
-            enterTransition = { slideScreenIn(false) },
-            exitTransition = { slideScreenOut(true) }
+            enterTransition = {
+                when (initialState.destination.route) {
+                    Screen.AddChecklist.route -> fadeIn()
+                    else -> slideScreenIn(false)
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    Screen.AddChecklist.route -> fadeOut()
+                    else -> slideScreenOut(true)
+                }
+            }
         ) {
             ProfileScreen(
                 viewModel = profileViewModel,
@@ -129,7 +147,11 @@ fun CheckMateNavHost(
             )
         }
 
-        composable(Screen.AddChecklist.route) {
+        composable(
+            route = Screen.AddChecklist.route,
+            enterTransition = { fadeIn() + slideInVertically() },
+            exitTransition = { fadeOut() + slideOutVertically() }
+        ) {
             AddChecklistScreen(
                 onBack = { navController.popBackStack() },
                 onSuccess = {
@@ -142,20 +164,24 @@ fun CheckMateNavHost(
             )
         }
 
-        composable(Screen.ChecklistDetail.route) {
+        composable(
+            route = Screen.ChecklistDetail.route,
+            enterTransition = { fadeIn() + slideInVertically() },
+            exitTransition = { fadeOut() + slideOutVertically() }
+        ) {
             ChecklistDetailScreen(
+                checklistIndex = navController.previousBackStackEntry?.arguments?.getInt("checklistIndex")!!,
                 viewModel = checklistDetailViewModel,
-                onDelete = { navController.navigate(Screen.Checklists.route) },
-                checklistIndex = navController.previousBackStackEntry?.arguments?.getInt("checklistIndex")!!
+                onDelete = { navController.navigate(Screen.Checklists.route) }
             )
         }
     }
 }
 
 private fun slideScreenIn(fromRight: Boolean): EnterTransition {
-    return slideInHorizontally(initialOffsetX = { if (fromRight) -it else it })
+    return fadeIn() + slideInHorizontally(initialOffsetX = { if (fromRight) -it else it })
 }
 
 private fun slideScreenOut(toRight: Boolean): ExitTransition {
-    return slideOutHorizontally(targetOffsetX = { if (toRight) it else -it })
+    return fadeOut() + slideOutHorizontally(targetOffsetX = { if (toRight) it else -it })
 }
