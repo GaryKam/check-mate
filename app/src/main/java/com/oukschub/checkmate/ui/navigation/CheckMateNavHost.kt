@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.oukschub.checkmate.ui.addchecklist.AddChecklistScreen
 import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailScreen
 import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailViewModel
@@ -94,8 +96,7 @@ fun CheckMateNavHost(
             ChecklistsScreen(
                 viewModel = checklistViewModel,
                 onChecklistClick = { checklistIndex ->
-                    navController.currentBackStackEntry?.arguments?.putInt("checklistIndex", checklistIndex)
-                    navController.navigate(Screen.ChecklistDetail.route)
+                    navController.navigate("${Screen.ChecklistDetail.route}/$checklistIndex")
                 }
             )
         }
@@ -164,13 +165,15 @@ fun CheckMateNavHost(
             )
         }
 
+        val checklistIndexKey = "checklistIndex"
         composable(
-            route = Screen.ChecklistDetail.route,
+            route = "${Screen.ChecklistDetail.route}/{$checklistIndexKey}",
+            arguments = listOf(navArgument(checklistIndexKey) { type = NavType.IntType }),
             enterTransition = { fadeIn() + slideInVertically() },
             exitTransition = { fadeOut() + slideOutVertically() }
-        ) {
+        ) { backStackEntry ->
             ChecklistDetailScreen(
-                checklistIndex = navController.previousBackStackEntry?.arguments?.getInt("checklistIndex")!!,
+                checklistIndex = backStackEntry.arguments?.getInt(checklistIndexKey)!!,
                 viewModel = checklistDetailViewModel,
                 onDelete = { navController.navigate(Screen.Checklists.route) }
             )

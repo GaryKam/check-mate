@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.oukschub.checkmate.ui.theme.AppTheme
 import com.oukschub.checkmate.util.CustomTree
+import com.oukschub.checkmate.util.FirebaseUtil
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -19,6 +20,8 @@ class MainActivity : ComponentActivity() {
         if (BuildConfig.DEBUG) {
             Timber.plant(CustomTree("fiefie:"))
         }
+
+        Timber.d("User: " + if (FirebaseUtil.isSignedIn()) FirebaseUtil.getDisplayName() else "Anonymous")
 
         setContent {
             AppTheme(useDarkTheme = false) {
