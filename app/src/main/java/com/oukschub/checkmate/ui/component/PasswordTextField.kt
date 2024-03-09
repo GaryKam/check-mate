@@ -30,7 +30,7 @@ fun PasswordTextField(
     placeholder: String,
     onPasswordChange: (String) -> Unit,
     onImeAction: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     val passwordVisualTransformation = PasswordVisualTransformation()

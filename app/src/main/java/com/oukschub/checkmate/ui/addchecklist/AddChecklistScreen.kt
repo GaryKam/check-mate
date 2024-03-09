@@ -45,11 +45,7 @@ fun AddChecklistScreen(
         topBar = {
             TopBar(
                 onBack = onBack,
-                onChecklistAdd = {
-                    viewModel.addChecklist(onSuccess = {
-                        onSuccess()
-                    })
-                }
+                onChecklistAdd = { viewModel.addChecklist(onSuccess = { onSuccess() }) }
             )
         }
     ) { paddingValues ->
@@ -126,7 +122,8 @@ private fun Header(
         onValueChange = { onTitleSet(it) },
         modifier = Modifier.fillMaxWidth(),
         textStyle = TextStyle(fontSize = 18.sp),
-        placeholder = { Text("Title") },
+        placeholder = { Text(stringResource(R.string.checklist_title_placeholder)) },
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors()
     )
 }

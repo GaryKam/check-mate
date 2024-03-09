@@ -137,7 +137,8 @@ private fun Checkboxes(
                             } else {
                                 TextDecoration.None
                             }
-                        )
+                        ),
+                        singleLine = true
                     )
 
                     IconButton(onClick = { onItemDelete(itemIndex) }) {
@@ -162,39 +163,40 @@ private fun ChecklistDivider(
     onDividerDelete: () -> Unit
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.weight(1.0f)) {
+        Column(modifier = Modifier.weight(1.0F)) {
             BasicTextField(
                 value = divider.name,
                 onValueChange = { onDividerNameChange(it) },
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 2.dp)
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
                             onDividerNameFocus(divider.name)
                         } else {
                             onDividerSet(divider.name)
                         }
-                    }
-                    .padding(bottom = 2.dp)
+                    },
+                singleLine = true
             )
+
             Divider(color = MaterialTheme.colorScheme.secondary)
         }
-        Row {
-            IconButton(onClick = { onDividerDelete() }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.desc_delete_checklist_item)
-                )
-            }
 
-            Checkbox(
-                checked = divider.isChecked,
-                onCheckedChange = { onDividerCheck(it) },
-                modifier = Modifier.padding(0.dp)
+        IconButton(onClick = { onDividerDelete() }) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.desc_delete_checklist_item)
             )
         }
+
+        Checkbox(
+            checked = divider.isChecked,
+            onCheckedChange = { onDividerCheck(it) }
+        )
     }
 }
 
@@ -206,7 +208,7 @@ private fun InputField(onItemAdd: (String) -> Unit) {
         value = text,
         onValueChange = { text = it },
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(stringResource(R.string.type_placeholder)) },
+        placeholder = { Text(stringResource(R.string.checklist_type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
                 onItemAdd(text)
@@ -218,6 +220,7 @@ private fun InputField(onItemAdd: (String) -> Unit) {
                 )
             }
         },
+        singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
