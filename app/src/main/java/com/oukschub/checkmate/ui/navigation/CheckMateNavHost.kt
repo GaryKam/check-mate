@@ -4,6 +4,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -82,14 +84,14 @@ fun CheckMateNavHost(
             route = Screen.Checklists.route,
             enterTransition = {
                 when (initialState.destination.route) {
-                    Screen.ChecklistDetail.route, Screen.AddChecklist.route -> fadeIn()
-                    else -> slideScreenIn(true)
+                    Screen.Home.route, Screen.Profile.route -> slideScreenIn(fromRight = false)
+                    else -> fadeIn()
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
-                    Screen.ChecklistDetail.route, Screen.AddChecklist.route -> fadeOut()
-                    else -> slideScreenOut(false)
+                    Screen.Home.route, Screen.Profile.route -> slideScreenOut(toRight = false)
+                    else -> fadeOut()
                 }
             }
         ) {
@@ -105,15 +107,15 @@ fun CheckMateNavHost(
             route = Screen.Home.route,
             enterTransition = {
                 when (initialState.destination.route) {
-                    Screen.Checklists.route -> slideScreenIn(false)
-                    Screen.Profile.route -> slideScreenIn(true)
+                    Screen.Checklists.route -> slideScreenIn(fromRight = true)
+                    Screen.Profile.route -> slideScreenIn(fromRight = false)
                     else -> fadeIn()
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
-                    Screen.Checklists.route -> slideScreenOut(true)
-                    Screen.Profile.route -> slideScreenOut(false)
+                    Screen.Checklists.route -> slideScreenOut(toRight = true)
+                    Screen.Profile.route -> slideScreenOut(toRight = false)
                     else -> fadeOut()
                 }
             }
@@ -125,14 +127,14 @@ fun CheckMateNavHost(
             route = Screen.Profile.route,
             enterTransition = {
                 when (initialState.destination.route) {
-                    Screen.AddChecklist.route -> fadeIn()
-                    else -> slideScreenIn(false)
+                    Screen.Checklists.route, Screen.Home.route -> slideScreenIn(fromRight = true)
+                    else -> fadeIn()
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
-                    Screen.AddChecklist.route -> fadeOut()
-                    else -> slideScreenOut(true)
+                    Screen.Checklists.route, Screen.Home.route -> slideScreenOut(toRight = true)
+                    else -> fadeOut()
                 }
             }
         ) {
@@ -169,8 +171,8 @@ fun CheckMateNavHost(
         composable(
             route = "${Screen.ChecklistDetail.route}/{$checklistIndexKey}",
             arguments = listOf(navArgument(checklistIndexKey) { type = NavType.IntType }),
-            enterTransition = { fadeIn() + slideInVertically() },
-            exitTransition = { fadeOut() + slideOutVertically() }
+            enterTransition = { fadeIn() + scaleIn() },
+            exitTransition = { fadeOut() + scaleOut() }
         ) { backStackEntry ->
             ChecklistDetailScreen(
                 checklistIndex = backStackEntry.arguments?.getInt(checklistIndexKey)!!,
@@ -182,7 +184,7 @@ fun CheckMateNavHost(
 }
 
 private fun slideScreenIn(fromRight: Boolean): EnterTransition {
-    return fadeIn() + slideInHorizontally(initialOffsetX = { if (fromRight) -it else it })
+    return fadeIn() + slideInHorizontally(initialOffsetX = { if (fromRight) it else -it })
 }
 
 private fun slideScreenOut(toRight: Boolean): ExitTransition {
