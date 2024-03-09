@@ -65,6 +65,8 @@ class ChecklistRepository @Inject constructor(
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.createChecklistItem(_checklists[checklistIndex].id, item)
         }
+
+        updateChecklistDividers(checklistIndex)
     }
 
     /**
@@ -88,7 +90,7 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Sets an item's check status, and its divider's check status if applicable.
+     * Sets an item's check status.
      */
     fun updateChecklistItem(
         checklistIndex: Int,
@@ -102,36 +104,7 @@ class ChecklistRepository @Inject constructor(
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
 
-        val items = _checklists[checklistIndex].items
-        var checkDivider = true
-
-        for (i in itemIndex until items.size) {
-            val item = items[i]
-
-            if (item.isDivider) {
-                break
-            } else if (item.isChecked != isChecked) {
-                checkDivider = false
-                break
-            }
-        }
-
-        for (i in itemIndex downTo 0) {
-            val item = items[i]
-
-            if (item.isDivider) {
-                _checklists[checklistIndex].items.toMutableList().apply {
-                    this[i] = this[i].copy(isChecked = if (checkDivider) isChecked else false)
-                }.also {
-                    _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = it)
-                    database.updateChecklistItems(_checklists[checklistIndex].id, it)
-                }
-
-                break
-            } else if (item.isChecked != isChecked) {
-                checkDivider = false
-            }
-        }
+        updateChecklistDividers(checklistIndex)
     }
 
     /**
@@ -220,6 +193,46 @@ class ChecklistRepository @Inject constructor(
         }.also { items ->
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.deleteChecklistItem(_checklists[checklistIndex].id, item)
+        }
+
+        updateChecklistDividers(checklistIndex)
+    }
+
+    /**
+     * Sets the check status of all dividers according to the check status of items below.
+     */
+    private fun updateChecklistDividers(checklistIndex: Int) {
+        val items = _checklists[checklistIndex].items.toMutableList()
+        var requireUpdate = false
+        var dividerState = true
+        var dividerIndex = -1
+
+        for ((i, item) in items.withIndex()) {
+            if (item.isDivider) {
+                if (dividerIndex != -1) {
+                    if (items[dividerIndex].isChecked != dividerState) {
+                        items[dividerIndex] = items[dividerIndex].copy(isChecked = dividerState)
+                        requireUpdate = true
+                    }
+                }
+
+                dividerIndex = i
+                dividerState = true
+            } else if (dividerIndex != -1) {
+                if (!item.isChecked) {
+                    dividerState = false
+                }
+            }
+        }
+
+        if (items[dividerIndex].isChecked != dividerState) {
+            items[dividerIndex] = items[dividerIndex].copy(isChecked = dividerState)
+            requireUpdate = true
+        }
+
+        if (requireUpdate) {
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
     }
 }
