@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -70,10 +71,12 @@ fun ProfileScreen(
                 )
                 ChangePasswordButton()
                 SettingsButton()
-                SignOutButton(onSignOut = {
-                    viewModel.signOut()
-                    onSignOut()
-                })
+                SignOutButton(
+                    onSignOut = {
+                        viewModel.signOut()
+                        onSignOut()
+                    }
+                )
             }
         }
     }
@@ -118,7 +121,7 @@ private fun ChangeDisplayNameButton(
         ChangeDisplayNameDialog(
             currentDisplayName = displayName,
             onDismiss = { showChangeUsernameDialog = false },
-            onConfirm = { onDisplayNameSet(it) }
+            onConfirm = { name -> onDisplayNameSet(name) }
         )
     }
 }
@@ -145,11 +148,20 @@ private fun SettingsButton() {
 
 @Composable
 private fun SignOutButton(onSignOut: () -> Unit) {
+    var showSignOutDialog by remember { mutableStateOf(false) }
+
     Button(
-        onClick = onSignOut,
+        onClick = { showSignOutDialog = true },
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(stringResource(R.string.profile_sign_out))
+    }
+
+    if (showSignOutDialog) {
+        SignOutDialog(
+            onDismiss = { showSignOutDialog = false },
+            onConfirm = { onSignOut() }
+        )
     }
 }
 
@@ -164,7 +176,7 @@ private fun ChangeDisplayNameDialog(
         Column(
             modifier = Modifier
                 .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
+                    color = MaterialTheme.colorScheme.background,
                     shape = RoundedCornerShape(15.dp)
                 )
                 .padding(20.dp)
@@ -177,8 +189,8 @@ private fun ChangeDisplayNameDialog(
                 onValueChange = { displayName = it },
                 modifier = Modifier.padding(vertical = 10.dp),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.inversePrimary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.inversePrimary,
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 )
@@ -188,19 +200,48 @@ private fun ChangeDisplayNameDialog(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Button(
+                TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.padding(end = 10.dp)
                 ) {
                     Text(stringResource(R.string.cancel))
                 }
-                Button(onClick = {
-                    onConfirm(displayName)
-                    onDismiss()
-                }) {
+
+                TextButton(
+                    onClick = {
+                        onDismiss()
+                        onConfirm(displayName)
+                    }
+                ) {
                     Text(stringResource(R.string.confirm))
                 }
             }
         }
     }
+}
+
+@Composable
+private fun SignOutDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                    onConfirm()
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        text = { Text(stringResource(R.string.profile_prompt_sign_out)) }
+    )
 }

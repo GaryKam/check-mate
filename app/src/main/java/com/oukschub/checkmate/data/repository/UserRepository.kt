@@ -34,9 +34,11 @@ class UserRepository @Inject constructor(
     }
 
     fun setNewDisplayName(displayName: String) {
-        Timber.d("Setting name: $displayName")
-        FirebaseUtil.setDisplayName(displayName)
-        _displayName = displayName
+        if (displayName != _displayName) {
+            Timber.d("Setting name: $displayName")
+            FirebaseUtil.setDisplayName(displayName)
+            _displayName = displayName
+        }
     }
 
     fun signOut() {
