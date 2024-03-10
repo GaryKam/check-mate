@@ -5,10 +5,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,9 +47,12 @@ class AddChecklistViewModel @Inject constructor(
     fun addChecklist(onSuccess: () -> Unit) {
         isCreatingChecklist = true
 
-        repository.createChecklist(title, _items) {
+        viewModelScope.launch {
+            if (repository.createChecklist(title, _items)) {
+                onSuccess()
+            }
+
             isCreatingChecklist = false
-            onSuccess()
         }
     }
 

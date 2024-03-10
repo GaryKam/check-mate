@@ -27,30 +27,29 @@ class Database {
                     USER_CHECKLIST_FAVORITES_FIELD to emptyList()
                 )
             )
+            .also { it.await() }
 
-        task.await()
         return task.isSuccessful
     }
 
-    fun createChecklist(
+    suspend fun createChecklist(
         title: String,
-        items: List<ChecklistItem>,
-        onSuccess: () -> Unit
-    ): Checklist {
+        items: List<ChecklistItem>
+    ): Checklist? {
         val id = firestore.collection(CHECKLISTS_COLLECTION).document().id
         val checklist = Checklist(id, title, items)
 
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(id)
             .set(checklist)
-            .addOnSuccessListener { _ ->
-                firestore.collection(USERS_COLLECTION)
-                    .document(userId)
-                    .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
-                    .addOnSuccessListener { onSuccess() }
-            }
+            .await()
 
-        return checklist
+        val task = firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
+            .also { it.await() }
+
+        return if (task.isSuccessful) checklist else null
     }
 
     fun createChecklistItem(

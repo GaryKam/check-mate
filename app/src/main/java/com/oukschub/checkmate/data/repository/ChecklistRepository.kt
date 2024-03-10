@@ -37,14 +37,20 @@ class ChecklistRepository @Inject constructor(
     /**
      * Adds a new checklist.
      */
-    fun createChecklist(
+    suspend fun createChecklist(
         title: String,
-        items: List<ChecklistItem>,
-        onSuccess: () -> Unit
-    ) {
-        database.createChecklist(title, items, onSuccess).also { checklist ->
+        items: List<ChecklistItem>
+    ): Boolean {
+        val checklist = database.createChecklist(title, items)
+
+        if (checklist != null) {
+            Timber.d("Created checklist: $title")
             _checklists.add(checklist)
+        } else {
+            Timber.d("Failed to create checklist: $title")
         }
+
+        return checklist != null
     }
 
     /**
@@ -55,10 +61,7 @@ class ChecklistRepository @Inject constructor(
         itemName: String,
         isDivider: Boolean = false
     ) {
-        val item = ChecklistItem(
-            name = itemName,
-            isDivider = isDivider
-        )
+        val item = ChecklistItem(name = itemName, isDivider = isDivider)
         _checklists[checklistIndex].items.toMutableList().apply {
             add(item)
         }.also { items ->
