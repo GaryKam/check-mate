@@ -221,7 +221,7 @@ class ChecklistRepository @Inject constructor(
             }
         }
 
-        if (items[dividerIndex].isChecked != dividerState) {
+        if (dividerIndex != -1 && items[dividerIndex].isChecked != dividerState) {
             items[dividerIndex] = items[dividerIndex].copy(isChecked = dividerState)
             requireUpdate = true
         }
