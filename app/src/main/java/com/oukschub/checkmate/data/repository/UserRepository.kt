@@ -14,9 +14,15 @@ class UserRepository @Inject constructor(
     private var _displayName by mutableStateOf("")
     val displayName = snapshotFlow { _displayName }
 
-    fun createUser(displayName: String) {
-        _displayName = displayName
-        database.createUser(displayName)
+    suspend fun createUser(displayName: String): Boolean {
+        val isSuccessful = database.createUser()
+
+        if (isSuccessful) {
+            FirebaseUtil.setDisplayName(displayName)
+            _displayName = displayName
+        }
+
+        return isSuccessful
     }
 
     fun fetchDisplayName() {

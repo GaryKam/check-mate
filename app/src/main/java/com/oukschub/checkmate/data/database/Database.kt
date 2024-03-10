@@ -1,13 +1,13 @@
 package com.oukschub.checkmate.data.database
 
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
-import com.oukschub.checkmate.util.FirebaseUtil
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -15,18 +15,21 @@ import kotlinx.coroutines.tasks.await
  */
 class Database {
     private val firestore = Firebase.firestore
+    private val userId: String
+        get() = FirebaseAuth.getInstance().currentUser!!.uid
 
-    fun createUser(displayName: String) {
-        firestore.collection(USERS_COLLECTION)
-            .document(FirebaseUtil.getUserId())
+    suspend fun createUser(): Boolean {
+        val task = firestore.collection(USERS_COLLECTION)
+            .document(userId)
             .set(
-                mapOf(
-                    USER_CHECKLIST_IDS_FIELD to emptyList<DocumentReference>(),
-                    USER_CHECKLIST_FAVORITES_FIELD to emptyList<DocumentReference>()
+                mapOf<String, List<DocumentReference>>(
+                    USER_CHECKLIST_IDS_FIELD to emptyList(),
+                    USER_CHECKLIST_FAVORITES_FIELD to emptyList()
                 )
             )
 
-        FirebaseUtil.setDisplayName(displayName)
+        task.await()
+        return task.isSuccessful
     }
 
     fun createChecklist(
@@ -42,7 +45,7 @@ class Database {
             .set(checklist)
             .addOnSuccessListener { _ ->
                 firestore.collection(USERS_COLLECTION)
-                    .document(FirebaseUtil.getUserId())
+                    .document(userId)
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
                     .addOnSuccessListener { onSuccess() }
             }
@@ -64,7 +67,7 @@ class Database {
 
     suspend fun readChecklists(): List<Checklist> {
         val result = firestore.collection(USERS_COLLECTION)
-            .document(FirebaseUtil.getUserId())
+            .document(userId)
             .get()
             .await()
 
@@ -117,7 +120,7 @@ class Database {
         isFavorite: Boolean
     ) {
         firestore.collection(USERS_COLLECTION)
-            .document(FirebaseUtil.getUserId())
+            .document(userId)
             .update(
                 USER_CHECKLIST_FAVORITES_FIELD,
                 if (isFavorite) {
@@ -134,11 +137,11 @@ class Database {
             .delete()
             .addOnSuccessListener {
                 firestore.collection(USERS_COLLECTION)
-                    .document(FirebaseUtil.getUserId())
+                    .document(userId)
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(checklistId))
 
                 firestore.collection(USERS_COLLECTION)
-                    .document(FirebaseUtil.getUserId())
+                    .document(userId)
                     .update(USER_CHECKLIST_FAVORITES_FIELD, FieldValue.arrayRemove(checklistId))
             }
     }

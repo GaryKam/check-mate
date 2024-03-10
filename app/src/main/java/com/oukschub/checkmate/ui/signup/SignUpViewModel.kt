@@ -6,11 +6,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.common.collect.ImmutableList
 import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,10 +55,20 @@ class SignUpViewModel @Inject constructor(
         if (displayNameChecker.isValidated() && validEmail && passwordChecker.isValidated()) {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    userRepository.createUser(displayName)
-                    onSuccess()
+                    Timber.d("Created user in FirebaseAuth: $email")
+                    viewModelScope.launch {
+                        if (userRepository.createUser(displayName)) {
+                            Timber.d("Created user in Firestore: $email")
+                            onSuccess()
+                        } else {
+                            Timber.d("Failed to create user in Firestore: $email")
+                            onFailure(R.string.sign_up_failure)
+                            userRepository.signOut()
+                        }
+                    }
                 }
                 .addOnFailureListener {
+                    Timber.d("Failed to create user in FirebaseAuth: $email")
                     onFailure(R.string.sign_up_failure)
                 }
         } else {
