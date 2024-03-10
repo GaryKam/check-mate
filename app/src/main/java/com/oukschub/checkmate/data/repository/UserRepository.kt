@@ -4,8 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import com.google.firebase.auth.FirebaseAuth
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.util.FirebaseUtil
+import timber.log.Timber
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -27,9 +29,12 @@ class UserRepository @Inject constructor(
 
     fun fetchDisplayName() {
         _displayName = FirebaseUtil.getDisplayName()
+        Timber.d("Name: $_displayName")
+        Timber.d("Id: ${FirebaseAuth.getInstance().currentUser!!.uid}")
     }
 
     fun setNewDisplayName(displayName: String) {
+        Timber.d("Setting name: $displayName")
         FirebaseUtil.setDisplayName(displayName)
         _displayName = displayName
     }
@@ -37,5 +42,6 @@ class UserRepository @Inject constructor(
     fun signOut() {
         FirebaseUtil.signOut()
         _displayName = ""
+        Timber.d("Signing out: $_displayName")
     }
 }

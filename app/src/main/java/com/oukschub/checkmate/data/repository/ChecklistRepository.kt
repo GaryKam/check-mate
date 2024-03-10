@@ -42,14 +42,7 @@ class ChecklistRepository @Inject constructor(
         items: List<ChecklistItem>
     ): Boolean {
         val checklist = database.createChecklist(title, items)
-
-        if (checklist != null) {
-            Timber.d("Created checklist: $title")
-            _checklists.add(checklist)
-        } else {
-            Timber.d("Failed to create checklist: $title")
-        }
-
+        checklist?.let { _checklists.add(it) }
         return checklist != null
     }
 

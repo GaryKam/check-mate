@@ -9,6 +9,7 @@ import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 /**
  * Firestore database to handle checklist and user data.
@@ -49,7 +50,13 @@ class Database {
             .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(id))
             .also { it.await() }
 
-        return if (task.isSuccessful) checklist else null
+        return if (task.isSuccessful) {
+            Timber.d("Created checklist: $title")
+            checklist
+        } else {
+            Timber.d("Failed to create checklist: $title")
+            null
+        }
     }
 
     fun createChecklistItem(
@@ -58,10 +65,9 @@ class Database {
     ) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(checklistId)
-            .update(
-                CHECKLIST_ITEMS_FIELD,
-                FieldValue.arrayUnion(item)
-            )
+            .update(CHECKLIST_ITEMS_FIELD, FieldValue.arrayUnion(item))
+            .addOnSuccessListener { Timber.d("Created item: ${item.name}") }
+            .addOnFailureListener { Timber.d("Failed to create item: ${item.name}") }
     }
 
     suspend fun readChecklists(): List<Checklist> {
@@ -103,6 +109,8 @@ class Database {
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(checklistId)
             .update(CHECKLIST_TITLE_FIELD, title)
+            .addOnSuccessListener { Timber.d("Updated title: $title") }
+            .addOnFailureListener { Timber.d("Failed to update title: $title") }
     }
 
     fun updateChecklistItems(
@@ -112,6 +120,8 @@ class Database {
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(checklistId)
             .update(CHECKLIST_ITEMS_FIELD, items)
+            .addOnSuccessListener { Timber.d("Updated items: $items") }
+            .addOnFailureListener { Timber.d("Failed to update items: $items") }
     }
 
     fun updateChecklistFavorite(
@@ -128,6 +138,8 @@ class Database {
                     FieldValue.arrayRemove(checklistId)
                 }
             )
+            .addOnSuccessListener { Timber.d("Updated favorite status: $checklistId") }
+            .addOnFailureListener { Timber.d("Failed to update favorite status: $checklistId") }
     }
 
     fun deleteChecklist(checklistId: String) {
@@ -155,6 +167,8 @@ class Database {
                 CHECKLIST_ITEMS_FIELD,
                 FieldValue.arrayRemove(item)
             )
+            .addOnSuccessListener { Timber.d("Deleted item: ${item.name}") }
+            .addOnFailureListener { Timber.d("Failed to delete item: ${item.name}") }
     }
 
     companion object {
