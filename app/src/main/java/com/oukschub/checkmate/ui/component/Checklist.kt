@@ -1,11 +1,14 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -24,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * A container that displays information associated to a checklist.
@@ -200,19 +206,26 @@ private fun ChecklistDivider(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun InputField(onItemAdd: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
+    val couroutineScope = rememberCoroutineScope()
+    val viewRequester = remember { BringIntoViewRequester() }
 
     TextField(
         value = text,
         onValueChange = { text = it },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().bringIntoViewRequester(viewRequester),
         placeholder = { Text(stringResource(R.string.checklist_type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
                 onItemAdd(text)
                 text = ""
+                couroutineScope.launch {
+                    delay(300L)
+                    viewRequester.bringIntoView()
+                }
             }) {
                 Icon(
                     imageVector = Icons.Default.Check,
