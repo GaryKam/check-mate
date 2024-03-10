@@ -18,7 +18,7 @@ class AddChecklistViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : ViewModel() {
     var title by mutableStateOf("")
-    var isCreatingChecklist by mutableStateOf(false)
+    var isAddingChecklist by mutableStateOf(false)
         private set
     private val _items = mutableStateListOf<ChecklistItem>()
     val items: ImmutableList<ChecklistItem>
@@ -45,14 +45,18 @@ class AddChecklistViewModel @Inject constructor(
     }
 
     fun addChecklist(onSuccess: () -> Unit) {
-        isCreatingChecklist = true
+        if (isAddingChecklist) {
+            return
+        }
+
+        isAddingChecklist = true
 
         viewModelScope.launch {
             if (repository.createChecklist(title, _items)) {
                 onSuccess()
             }
 
-            isCreatingChecklist = false
+            isAddingChecklist = false
         }
     }
 

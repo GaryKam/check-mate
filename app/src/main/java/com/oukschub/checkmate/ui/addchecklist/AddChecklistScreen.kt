@@ -27,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
@@ -42,24 +43,28 @@ fun AddChecklistScreen(
     modifier: Modifier = Modifier,
     viewModel: AddChecklistViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
-                onBack = onBack,
-                onChecklistAdd = { viewModel.addChecklist(onSuccess = { onSuccess() }) }
+                onBack = {
+                    focusManager.clearFocus()
+                    onBack()
+                },
+                onChecklistAdd = {
+                    focusManager.clearFocus()
+                    viewModel.addChecklist(onSuccess = { onSuccess() })
+                }
             )
         }
     ) { paddingValues ->
-        val focusManager = LocalFocusManager.current
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { focusManager.clearFocus() })
-                }
+                .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -81,8 +86,8 @@ fun AddChecklistScreen(
                 onDividerCheck = { _, _ -> }
             )
 
-            if (viewModel.isCreatingChecklist) {
-                CircularProgressIndicator()
+            if (viewModel.isAddingChecklist) {
+                CircularProgressIndicator(modifier = Modifier.padding(80.dp))
             }
         }
     }

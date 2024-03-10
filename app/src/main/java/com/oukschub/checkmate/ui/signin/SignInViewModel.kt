@@ -27,22 +27,32 @@ class SignInViewModel @Inject constructor(
         private set
     var passwordError by mutableIntStateOf(R.string.blank)
         private set
+    var isSigningIn by mutableStateOf(false)
+        private set
 
     fun signIn(
         onSuccess: () -> Unit,
         onFailure: (Int) -> Unit
     ) {
+        if (isSigningIn) {
+            return
+        }
         if (email.isNotBlank() && password.isNotBlank()) {
+            isSigningIn = true
             FirebaseAuth.getInstance()
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     viewModelScope.launch {
                         checklistRepository.fetchChecklists()
                         userRepository.fetchDisplayName()
+                        isSigningIn = false
                         onSuccess()
                     }
                 }
-                .addOnFailureListener { onFailure(R.string.sign_in_failure) }
+                .addOnFailureListener {
+                    onFailure(R.string.sign_in_failure)
+                    isSigningIn = false
+                }
         } else {
             if (email.isBlank()) {
                 emailError = R.string.sign_in_email_error

@@ -33,6 +33,8 @@ class SignUpViewModel @Inject constructor(
         get() = ImmutableList.copyOf(_displayNameErrors)
     var emailError by mutableIntStateOf(R.string.blank)
         private set
+    var isSigningUp by mutableStateOf(false)
+        private set
     private val _passwordChecks = mutableStateListOf<Pair<Boolean, Int>>()
     val passwordChecks: ImmutableList<Pair<Boolean, Int>>
         get() = ImmutableList.copyOf(_passwordChecks)
@@ -48,21 +50,28 @@ class SignUpViewModel @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (Int) -> Unit
     ) {
+        if (isSigningUp) {
+            return
+        }
+
         displayNameChecker.check(displayName)
 
         val validEmail = emailRegex.matches(email)
 
         if (displayNameChecker.isValidated() && validEmail && passwordChecker.isValidated()) {
+            isSigningUp = true
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     Timber.d("Created user in FirebaseAuth: $email")
                     viewModelScope.launch {
                         if (userRepository.createUser(displayName)) {
                             Timber.d("Created user in Firestore: $email")
+                            isSigningUp = false
                             onSuccess()
                         } else {
                             Timber.d("Failed to create user in Firestore: $email")
                             onFailure(R.string.sign_up_failure)
+                            isSigningUp = false
                             userRepository.signOut()
                         }
                     }
@@ -70,6 +79,7 @@ class SignUpViewModel @Inject constructor(
                 .addOnFailureListener {
                     Timber.d("Failed to create user in FirebaseAuth: $email")
                     onFailure(R.string.sign_up_failure)
+                    isSigningUp = false
                 }
         } else {
             _displayNameErrors.clear()

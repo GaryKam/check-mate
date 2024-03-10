@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,9 +46,7 @@ fun SignInScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
@@ -74,6 +73,7 @@ fun SignInScreen(
                 onEmailChange = { viewModel.changeEmail(it) },
                 onPasswordChange = { viewModel.changePassword(it) },
                 onImeAction = {
+                    focusManager.clearFocus()
                     viewModel.signIn(
                         onSuccess = { onSignIn() },
                         onFailure = { MessageUtil.displayToast(context, it) }
@@ -94,6 +94,10 @@ fun SignInScreen(
                 }
             ) {
                 Text(stringResource(R.string.sign_in))
+            }
+
+            if (viewModel.isSigningIn) {
+                CircularProgressIndicator(modifier = Modifier.padding(80.dp))
             }
         }
 

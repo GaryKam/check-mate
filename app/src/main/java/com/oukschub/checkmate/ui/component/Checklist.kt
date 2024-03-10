@@ -67,9 +67,7 @@ fun Checklist(
         modifier = modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
     ) {
         header()

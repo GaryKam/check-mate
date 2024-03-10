@@ -40,8 +40,8 @@ class UserRepository @Inject constructor(
     }
 
     fun signOut() {
+        Timber.d("Signing out: $_displayName")
         FirebaseUtil.signOut()
         _displayName = ""
-        Timber.d("Signing out: $_displayName")
     }
 }
