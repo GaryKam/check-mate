@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -65,6 +66,7 @@ fun Checklist(
 
     ElevatedCard(
         modifier = modifier
+            .animateContentSize()
             .fillMaxWidth()
             .padding(10.dp)
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
@@ -96,27 +98,26 @@ private fun Checkboxes(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer)
+            .animateContentSize()
+            .fillMaxWidth()
             .padding(horizontal = 20.dp)
     ) {
         for ((itemIndex, item) in items.withIndex()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .fillMaxWidth()
-            ) {
-                if (item.isDivider) {
-                    ChecklistDivider(
-                        divider = item,
-                        onDividerNameChange = { onItemNameChange(itemIndex, it) },
-                        onDividerNameFocus = { onItemNameFocus(it) },
-                        onDividerSet = { onItemNameSet(itemIndex, it) },
-                        onDividerCheck = { onDividerCheck(itemIndex, it) },
-                        onDividerDelete = { onItemDelete(itemIndex) }
-                    )
-                } else {
+            if (item.isDivider) {
+                ChecklistDivider(
+                    divider = item,
+                    onDividerNameChange = { onItemNameChange(itemIndex, it) },
+                    onDividerNameFocus = { onItemNameFocus(it) },
+                    onDividerSet = { onItemNameSet(itemIndex, it) },
+                    onDividerCheck = { onDividerCheck(itemIndex, it) },
+                    onDividerDelete = { onItemDelete(itemIndex) }
+                )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Checkbox(
                         checked = item.isChecked,
                         onCheckedChange = { onItemCheck(itemIndex, it) }
@@ -214,7 +215,9 @@ private fun InputField(onItemAdd: (String) -> Unit) {
     TextField(
         value = text,
         onValueChange = { text = it },
-        modifier = Modifier.fillMaxWidth().bringIntoViewRequester(viewRequester),
+        modifier = Modifier
+            .fillMaxWidth()
+            .bringIntoViewRequester(viewRequester),
         placeholder = { Text(stringResource(R.string.checklist_type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
