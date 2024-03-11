@@ -2,16 +2,26 @@ package com.oukschub.checkmate.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.oukschub.checkmate.ui.addchecklist.AddChecklistScreen
+import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailScreen
+import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailViewModel
 import com.oukschub.checkmate.ui.checklists.ChecklistsScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
 import com.oukschub.checkmate.ui.home.HomeScreen
@@ -33,14 +43,15 @@ fun CheckMateNavHost(
     navController: NavHostController = rememberNavController(),
     checklistViewModel: ChecklistsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    checklistDetailViewModel: ChecklistDetailViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(Screen.Splash.route) {
+        composable(route = Screen.Splash.route) {
             SplashScreen(
                 onComplete = {
                     navController.popBackStack()
@@ -49,52 +60,63 @@ fun CheckMateNavHost(
             )
         }
 
-        composable(Screen.SignIn.route) {
+        composable(route = Screen.SignIn.route) {
             SignInScreen(
                 onSignIn = {
                     navController.popBackStack()
                     navController.navigate(Screen.Home.route)
                 },
-                onFooterClick = {
-                    navController.navigate(Screen.SignUp.route)
-                }
+                onFooterClick = { navController.navigate(Screen.SignUp.route) }
             )
         }
 
-        composable(Screen.SignUp.route) {
+        composable(route = Screen.SignUp.route) {
             SignUpScreen(
                 onSignUp = {
                     navController.popBackStack(Screen.SignIn.route, true)
                     navController.navigate(Screen.Home.route)
                 },
-                onFooterClick = {
-                    navController.popBackStack()
-                }
+                onFooterClick = { navController.popBackStack() }
             )
         }
 
         composable(
             route = Screen.Checklists.route,
-            enterTransition = { slideScreenIn(true) },
-            exitTransition = { slideScreenOut(false) }
+            enterTransition = {
+                when (initialState.destination.route) {
+                    Screen.Home.route, Screen.Profile.route -> slideScreenIn(fromRight = false)
+                    else -> fadeIn()
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    Screen.Home.route, Screen.Profile.route -> slideScreenOut(toRight = false)
+                    else -> fadeOut()
+                }
+            }
         ) {
-            ChecklistsScreen(viewModel = checklistViewModel)
+            ChecklistsScreen(
+                viewModel = checklistViewModel,
+                onChecklistClick = { checklistIndex ->
+                    navController.navigate("${Screen.ChecklistDetail.route}/$checklistIndex")
+                }
+            )
         }
 
         composable(
             route = Screen.Home.route,
             enterTransition = {
                 when (initialState.destination.route) {
-                    Screen.Checklists.route -> slideScreenIn(false)
-                    Screen.Profile.route -> slideScreenIn(true)
-                    else -> EnterTransition.None
+                    Screen.Checklists.route -> slideScreenIn(fromRight = true)
+                    Screen.Profile.route -> slideScreenIn(fromRight = false)
+                    else -> fadeIn()
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
-                    Screen.Checklists.route -> slideScreenOut(true)
-                    Screen.Profile.route -> slideScreenOut(false)
-                    else -> ExitTransition.None
+                    Screen.Checklists.route -> slideScreenOut(toRight = true)
+                    Screen.Profile.route -> slideScreenOut(toRight = false)
+                    else -> fadeOut()
                 }
             }
         ) {
@@ -103,8 +125,18 @@ fun CheckMateNavHost(
 
         composable(
             route = Screen.Profile.route,
-            enterTransition = { slideScreenIn(false) },
-            exitTransition = { slideScreenOut(true) }
+            enterTransition = {
+                when (initialState.destination.route) {
+                    Screen.Checklists.route, Screen.Home.route -> slideScreenIn(fromRight = true)
+                    else -> fadeIn()
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    Screen.Checklists.route, Screen.Home.route -> slideScreenOut(toRight = true)
+                    else -> fadeOut()
+                }
+            }
         ) {
             ProfileScreen(
                 viewModel = profileViewModel,
@@ -118,7 +150,11 @@ fun CheckMateNavHost(
             )
         }
 
-        composable(Screen.AddChecklist.route) {
+        composable(
+            route = Screen.AddChecklist.route,
+            enterTransition = { fadeIn() + slideInVertically() },
+            exitTransition = { fadeOut() + slideOutVertically() }
+        ) {
             AddChecklistScreen(
                 onBack = { navController.popBackStack() },
                 onSuccess = {
@@ -130,13 +166,27 @@ fun CheckMateNavHost(
                 }
             )
         }
+
+        val checklistIndexKey = "checklistIndex"
+        composable(
+            route = "${Screen.ChecklistDetail.route}/{$checklistIndexKey}",
+            arguments = listOf(navArgument(checklistIndexKey) { type = NavType.IntType }),
+            enterTransition = { fadeIn() + scaleIn() },
+            exitTransition = { fadeOut() + scaleOut() }
+        ) { backStackEntry ->
+            ChecklistDetailScreen(
+                checklistIndex = backStackEntry.arguments?.getInt(checklistIndexKey)!!,
+                viewModel = checklistDetailViewModel,
+                onDelete = { navController.navigate(Screen.Checklists.route) }
+            )
+        }
     }
 }
 
 private fun slideScreenIn(fromRight: Boolean): EnterTransition {
-    return slideInHorizontally(initialOffsetX = { if (fromRight) -it else it })
+    return fadeIn() + slideInHorizontally(initialOffsetX = { if (fromRight) it else -it })
 }
 
 private fun slideScreenOut(toRight: Boolean): ExitTransition {
-    return slideOutHorizontally(targetOffsetX = { if (toRight) it else -it })
+    return fadeOut() + slideOutHorizontally(targetOffsetX = { if (toRight) it else -it })
 }

@@ -69,9 +69,12 @@ class ChecklistRepository @Inject constructor(
      * Gets all checklists.
      */
     suspend fun fetchChecklists() {
-        Timber.d("Fetching checklists from database")
+        Timber.d("Start fetching checklists from database")
+        val startTime = System.currentTimeMillis()
         _checklists.clear()
         _checklists.addAll(database.readChecklists())
+        val endTime = (System.currentTimeMillis() - startTime) / 1000.0
+        Timber.d("Finish fetching checklists from database: $endTime")
     }
 
     /**

@@ -129,10 +129,7 @@ private fun Content(
             AnimatedVisibility(
                 visible = isContentVisible,
                 enter = fadeIn(tween(200, 80 * checklistIndex)) +
-                    slideInVertically(
-                        tween(200, 80 * checklistIndex),
-                        initialOffsetY = { it / 2 }
-                    )
+                    slideInVertically(tween(200, 80 * checklistIndex), initialOffsetY = { it / 2 })
             ) {
                 Checklist(
                     header = {
