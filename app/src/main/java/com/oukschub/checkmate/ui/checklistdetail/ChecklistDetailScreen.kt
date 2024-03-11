@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,12 +41,19 @@ fun ChecklistDetailScreen(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val checklist = viewModel.getChecklist(checklistIndex)
+    LaunchedEffect(
+        key1 = Unit,
+        block = { viewModel.getChecklist(checklistIndex) }
+    )
+
+    if (viewModel.checklist == null) {
+        return
+    }
 
     Checklist(
         header = {
             Header(
-                title = checklist.title,
+                title = viewModel.checklist!!.title,
                 onTitleFocus = { title -> viewModel.focusTitle(title) },
                 onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
                 onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
@@ -56,7 +64,7 @@ fun ChecklistDetailScreen(
                 onDividerAdd = { viewModel.addItem(checklistIndex, "default div", true) }
             )
         },
-        items = ImmutableList.copyOf(checklist.items),
+        items = ImmutableList.copyOf(viewModel.checklist!!.items),
         onItemCheck = { itemIndex, isChecked ->
             viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
         },

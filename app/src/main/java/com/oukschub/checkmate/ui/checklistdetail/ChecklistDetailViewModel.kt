@@ -11,9 +11,10 @@ class ChecklistDetailViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : CommonChecklistViewModel(repository) {
     private var initialTitle: String? = null
+    var checklist: Checklist? = null
 
-    fun getChecklist(checklistIndex: Int): Checklist {
-        return repository.checklists[checklistIndex]
+    fun getChecklist(checklistIndex: Int) {
+        checklist = repository.checklists[checklistIndex]
     }
 
     fun focusTitle(title: String) {
