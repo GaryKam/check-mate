@@ -116,9 +116,7 @@ private fun Content(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            }
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
     ) {
         itemsIndexed(
             items = checklists,
@@ -208,20 +206,23 @@ private fun Header(
         TextField(
             value = checklistTitle,
             onValueChange = { checklistTitle = it },
+            modifier = Modifier
+                .weight(1.0F)
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        onTitleFocus(checklistTitle)
+                    } else {
+                        onTitleSet(checklistTitle)
+                    }
+                },
             textStyle = TextStyle(fontSize = 18.sp),
+            singleLine = true,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
-            ),
-            modifier = Modifier.onFocusChanged { focusState ->
-                if (focusState.isFocused) {
-                    onTitleFocus(checklistTitle)
-                } else {
-                    onTitleSet(checklistTitle)
-                }
-            }
+            )
         )
 
         Box {

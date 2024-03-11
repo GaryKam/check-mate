@@ -4,10 +4,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,15 +46,13 @@ fun SignInScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             modifier = Modifier
-                .padding(20.dp)
-                .weight(.85F),
+                .padding(40.dp)
+                .weight(0.85F),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Logo(
@@ -62,6 +62,7 @@ fun SignInScreen(
             )
 
             val context = LocalContext.current
+
             InputFields(
                 email = viewModel.email,
                 password = viewModel.password,
@@ -72,11 +73,13 @@ fun SignInScreen(
                 onEmailChange = { viewModel.changeEmail(it) },
                 onPasswordChange = { viewModel.changePassword(it) },
                 onImeAction = {
+                    focusManager.clearFocus()
                     viewModel.signIn(
                         onSuccess = { onSignIn() },
                         onFailure = { MessageUtil.displayToast(context, it) }
                     )
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -92,6 +95,10 @@ fun SignInScreen(
             ) {
                 Text(stringResource(R.string.sign_in))
             }
+
+            if (viewModel.isSigningIn) {
+                CircularProgressIndicator(modifier = Modifier.padding(80.dp))
+            }
         }
 
         Footer(
@@ -102,7 +109,7 @@ fun SignInScreen(
                 append(stringResource(R.string.sign_up))
             },
             onClick = { onFooterClick() },
-            modifier = Modifier.weight(.15F)
+            modifier = Modifier.weight(0.15F)
         )
     }
 }
