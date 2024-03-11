@@ -53,7 +53,7 @@ fun ChecklistDetailScreen(
                     onDelete()
                     viewModel.deleteChecklist(checklistIndex)
                 },
-                onDividerAdd = { viewModel.addDivider(checklistIndex) }
+                onDividerAdd = { viewModel.addItem(checklistIndex, "default div", true) }
             )
         },
         items = ImmutableList.copyOf(checklist.items),
