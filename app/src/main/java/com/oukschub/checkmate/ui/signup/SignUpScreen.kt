@@ -4,9 +4,11 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,22 +49,21 @@ fun SignUpScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
             modifier = Modifier
-                .padding(20.dp)
-                .weight(.85F),
+                .padding(40.dp)
+                .weight(0.85F),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DisplayNameTextField(
                 displayName = viewModel.displayName,
                 errorIds = viewModel.displayNameErrors,
                 focusManager = focusManager,
-                onDisplayNameChange = { viewModel.changeDisplayName(it) }
+                onDisplayNameChange = { viewModel.changeDisplayName(it) },
+                modifier = Modifier.fillMaxWidth()
             )
 
             InputFields(
@@ -74,10 +75,12 @@ fun SignUpScreen(
                 focusManager = focusManager,
                 onEmailChange = { viewModel.changeEmail(it) },
                 onPasswordChange = { viewModel.changePassword(it) },
-                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) },
+                modifier = Modifier.fillMaxWidth()
             )
 
             val context = LocalContext.current
+
             PasswordTextField(
                 password = viewModel.passwordMatch,
                 imeAction = ImeAction.Done,
@@ -89,12 +92,13 @@ fun SignUpScreen(
                         onSuccess = { onSignUp() },
                         onFailure = { MessageUtil.displayToast(context, it) }
                     )
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
             PasswordCheckText(passwordChecks = viewModel.passwordChecks)
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Button(
                 modifier = Modifier,
@@ -108,6 +112,10 @@ fun SignUpScreen(
             ) {
                 Text(stringResource(R.string.sign_up))
             }
+
+            if (viewModel.isSigningUp) {
+                CircularProgressIndicator(modifier = Modifier.padding(80.dp))
+            }
         }
 
         Footer(
@@ -118,7 +126,7 @@ fun SignUpScreen(
                 append(stringResource(R.string.sign_in))
             },
             onClick = { onFooterClick() },
-            modifier = Modifier.weight(.15F)
+            modifier = Modifier.weight(0.15F)
         )
     }
 }

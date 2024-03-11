@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
@@ -25,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.oukschub.checkmate.R
@@ -40,28 +43,29 @@ fun AddChecklistScreen(
     modifier: Modifier = Modifier,
     viewModel: AddChecklistViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
-                onBack = onBack,
+                onBack = {
+                    focusManager.clearFocus()
+                    onBack()
+                },
                 onChecklistAdd = {
-                    viewModel.addChecklist(onSuccess = {
-                        onSuccess()
-                    })
+                    focusManager.clearFocus()
+                    viewModel.addChecklist(onSuccess = { onSuccess() })
                 }
             )
         }
     ) { paddingValues ->
-        val focusManager = LocalFocusManager.current
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { focusManager.clearFocus() })
-                },
+                .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -82,8 +86,8 @@ fun AddChecklistScreen(
                 onDividerCheck = { _, _ -> }
             )
 
-            if (viewModel.isCreatingChecklist) {
-                CircularProgressIndicator()
+            if (viewModel.isAddingChecklist) {
+                CircularProgressIndicator(modifier = Modifier.padding(80.dp))
             }
         }
     }
@@ -126,7 +130,8 @@ private fun Header(
         onValueChange = { onTitleSet(it) },
         modifier = Modifier.fillMaxWidth(),
         textStyle = TextStyle(fontSize = 18.sp),
-        placeholder = { Text("Title") },
+        placeholder = { Text(stringResource(R.string.checklist_title_placeholder)) },
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors()
     )
 }

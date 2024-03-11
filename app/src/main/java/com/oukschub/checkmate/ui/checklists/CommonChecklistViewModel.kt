@@ -14,9 +14,10 @@ open class CommonChecklistViewModel(
 
     fun addItem(
         checklistIndex: Int,
-        itemName: String
+        itemName: String,
+        isDivider: Boolean = false
     ) {
-        repository.createChecklistItem(checklistIndex, itemName)
+        repository.createChecklistItem(checklistIndex, itemName, isDivider)
     }
 
     fun changeItemName(
@@ -43,14 +44,6 @@ open class CommonChecklistViewModel(
         if (initialItemName != null && initialItemName != itemName) {
             repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
         }
-    }
-
-    fun addDivider(checklistIndex: Int) {
-        repository.createChecklistItem(
-            checklistIndex,
-            "default",
-            isDivider = true
-        )
     }
 
     fun setDividerChecked(

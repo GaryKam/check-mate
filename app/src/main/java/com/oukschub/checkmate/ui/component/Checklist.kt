@@ -1,11 +1,15 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -24,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * A container that displays information associated to a checklist.
@@ -59,11 +66,10 @@ fun Checklist(
 
     ElevatedCard(
         modifier = modifier
+            .animateContentSize()
             .fillMaxWidth()
             .padding(10.dp)
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
     ) {
         header()
@@ -92,28 +98,26 @@ private fun Checkboxes(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer)
+            .animateContentSize()
+            .fillMaxWidth()
             .padding(horizontal = 20.dp)
     ) {
         for ((itemIndex, item) in items.withIndex()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .fillMaxWidth()
-            ) {
-                if (item.isDivider) {
-                    ChecklistDivider(
-                        checklistDivider = item,
-                        itemIndex = itemIndex,
-                        onDividerNameChange = onItemNameChange,
-                        onDividerNameFocus = onItemNameFocus,
-                        onDividerSet = onItemNameSet,
-                        onDividerCheck = onDividerCheck,
-                        onDividerDelete = onItemDelete
-                    )
-                } else {
+            if (item.isDivider) {
+                ChecklistDivider(
+                    divider = item,
+                    onDividerNameChange = { onItemNameChange(itemIndex, it) },
+                    onDividerNameFocus = { onItemNameFocus(it) },
+                    onDividerSet = { onItemNameSet(itemIndex, it) },
+                    onDividerCheck = { onDividerCheck(itemIndex, it) },
+                    onDividerDelete = { onItemDelete(itemIndex) }
+                )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Checkbox(
                         checked = item.isChecked,
                         onCheckedChange = { onItemCheck(itemIndex, it) }
@@ -138,11 +142,15 @@ private fun Checkboxes(
                             } else {
                                 TextDecoration.None
                             }
-                        )
+                        ),
+                        singleLine = true
                     )
 
                     IconButton(onClick = { onItemDelete(itemIndex) }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                        )
                     }
                 }
             }
@@ -152,66 +160,73 @@ private fun Checkboxes(
 
 @Composable
 private fun ChecklistDivider(
-    checklistDivider: ChecklistItem,
-    itemIndex: Int,
-    onDividerNameChange: (Int, String) -> Unit,
+    divider: ChecklistItem,
+    onDividerNameChange: (String) -> Unit,
     onDividerNameFocus: (String) -> Unit,
-    onDividerSet: (Int, String) -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit,
-    onDividerDelete: (Int) -> Unit
+    onDividerSet: (String) -> Unit,
+    onDividerCheck: (Boolean) -> Unit,
+    onDividerDelete: () -> Unit
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.weight(1.0f)) {
+        Column(modifier = Modifier.weight(1.0F)) {
             BasicTextField(
-                value = checklistDivider.name,
-                onValueChange = { onDividerNameChange(itemIndex, it) },
+                value = divider.name,
+                onValueChange = { onDividerNameChange(it) },
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 2.dp)
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
-                            onDividerNameFocus(checklistDivider.name)
+                            onDividerNameFocus(divider.name)
                         } else {
-                            onDividerSet(itemIndex, checklistDivider.name)
+                            onDividerSet(divider.name)
                         }
-                    }
-                    .padding(bottom = 2.dp)
+                    },
+                singleLine = true
             )
+
             Divider(color = MaterialTheme.colorScheme.secondary)
         }
-        Row {
-            IconButton(
-                onClick = { onDividerDelete(itemIndex) },
-                modifier = Modifier.padding(0.dp)
-            ) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
-            }
 
-            Checkbox(
-                checked = checklistDivider.isChecked,
-                onCheckedChange = {
-                    onDividerCheck(itemIndex, it)
-                },
-                modifier = Modifier.padding(0.dp)
+        IconButton(onClick = { onDividerDelete() }) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.desc_delete_checklist_item)
             )
         }
+
+        Checkbox(
+            checked = divider.isChecked,
+            onCheckedChange = { onDividerCheck(it) }
+        )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun InputField(onItemAdd: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
+    val couroutineScope = rememberCoroutineScope()
+    val viewRequester = remember { BringIntoViewRequester() }
 
     TextField(
         value = text,
         onValueChange = { text = it },
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(stringResource(R.string.type_placeholder)) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .bringIntoViewRequester(viewRequester),
+        placeholder = { Text(stringResource(R.string.checklist_type_placeholder)) },
         trailingIcon = {
             IconButton(onClick = {
                 onItemAdd(text)
                 text = ""
+                couroutineScope.launch {
+                    delay(300L)
+                    viewRequester.bringIntoView()
+                }
             }) {
                 Icon(
                     imageVector = Icons.Default.Check,
@@ -219,6 +234,7 @@ private fun InputField(onItemAdd: (String) -> Unit) {
                 )
             }
         },
+        singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,

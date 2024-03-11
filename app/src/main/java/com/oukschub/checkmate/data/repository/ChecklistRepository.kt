@@ -9,15 +9,21 @@ import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * The single source for checklists.
+ * Centralizes changes to data, and interacts with our data source.
  */
 class ChecklistRepository @Inject constructor(
     private val database: Database
 ) {
+    /** The single source of checklists. */
     private val _checklists = mutableStateListOf<Checklist>()
+
+    /** A read-only copy for others to use. */
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
 
+    /**
+     * Allows user to see latest text value while typing. Modifies local [_checklists].
+     */
     fun changeItemName(
         checklistIndex: Int,
         itemIndex: Int,
@@ -28,33 +34,40 @@ class ChecklistRepository @Inject constructor(
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
     }
 
-    fun createChecklist(
+    /**
+     * Adds a new checklist.
+     */
+    suspend fun createChecklist(
         title: String,
-        items: List<ChecklistItem>,
-        onSuccess: () -> Unit
-    ) {
-        database.createChecklist(title, items, onSuccess).also { checklist ->
-            _checklists.add(checklist)
-        }
+        items: List<ChecklistItem>
+    ): Boolean {
+        val checklist = database.createChecklist(title, items)
+        checklist?.let { _checklists.add(it) }
+        return checklist != null
     }
 
+    /**
+     * Adds a new checklist item.
+     */
     fun createChecklistItem(
         checklistIndex: Int,
         itemName: String,
         isDivider: Boolean = false
     ) {
-        val item = ChecklistItem(
-            name = itemName,
-            isDivider = isDivider
-        )
+        val item = ChecklistItem(name = itemName, isDivider = isDivider)
         _checklists[checklistIndex].items.toMutableList().apply {
             add(item)
         }.also { items ->
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.createChecklistItem(_checklists[checklistIndex].id, item)
         }
+
+        updateChecklistDividers(checklistIndex)
     }
 
+    /**
+     * Gets all checklists.
+     */
     suspend fun fetchChecklists() {
         Timber.d("Start fetching checklists from database")
         val startTime = System.currentTimeMillis()
@@ -64,6 +77,9 @@ class ChecklistRepository @Inject constructor(
         Timber.d("Finish fetching checklists from database: $endTime")
     }
 
+    /**
+     * Sets the title of a checklist.
+     */
     fun updateChecklistTitle(
         checklistIndex: Int,
         title: String
@@ -72,6 +88,9 @@ class ChecklistRepository @Inject constructor(
         database.updateChecklistTitle(_checklists[checklistIndex].id, title)
     }
 
+    /**
+     * Sets an item's check status.
+     */
     fun updateChecklistItem(
         checklistIndex: Int,
         itemIndex: Int,
@@ -84,49 +103,12 @@ class ChecklistRepository @Inject constructor(
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
 
-        updateChecklistDividerFromItem(checklistIndex, itemIndex, isChecked)
+        updateChecklistDividers(checklistIndex)
     }
 
-    // we have item index
-    // iterate down until we find unchecked item or end of list or next divider
-    // iterate up until we find unchecked item or beginning of list or divider
-    private fun updateChecklistDividerFromItem(
-        checklistIndex: Int,
-        itemIndex: Int,
-        isChecked: Boolean
-    ) {
-        val items = _checklists[checklistIndex].items
-        var checkDivider = true
-
-        for (i in itemIndex until items.size) {
-            val item = items[i]
-
-            if (item.isDivider) {
-                break
-            } else if (item.isChecked != isChecked) {
-                checkDivider = false
-                break
-            }
-        }
-
-        for (i in itemIndex downTo 0) {
-            val item = items[i]
-
-            if (item.isDivider) {
-                _checklists[checklistIndex].items.toMutableList().apply {
-                    this[i] = this[i].copy(isChecked = if (checkDivider) isChecked else false)
-                }.also {
-                    _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = it)
-                    database.updateChecklistItems(_checklists[checklistIndex].id, it)
-                }
-
-                break
-            } else if (item.isChecked != isChecked) {
-                checkDivider = false
-            }
-        }
-    }
-
+    /**
+     * Sets an item's name.
+     */
     fun updateChecklistItem(
         checklistIndex: Int,
         itemIndex: Int,
@@ -140,25 +122,45 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Sets all items in a checklist to be unchecked.
+     */
+    fun updateChecklistItems(checklistIndex: Int) {
+        _checklists[checklistIndex].items.toMutableList()
+            .map { item -> item.copy(isChecked = false) }
+            .also { items ->
+                _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+                database.updateChecklistItems(_checklists[checklistIndex].id, items)
+            }
+    }
+
+    /**
+     * Sets a divider's check status, and all items below it.
+     */
     fun updateChecklistDivider(
         checklistIndex: Int,
         dividerIndex: Int,
         isChecked: Boolean
     ) {
-        val myChecklistItems = _checklists[checklistIndex].items.toMutableList()
-        myChecklistItems[dividerIndex] =
-            myChecklistItems[dividerIndex].copy(isChecked = isChecked)
-        for (i in dividerIndex + 1..<myChecklistItems.size) {
-            if (myChecklistItems[i].isDivider) {
-                break
-            } else {
-                myChecklistItems[i] = myChecklistItems[i].copy(isChecked = isChecked)
+        _checklists[checklistIndex].items.toMutableList().apply {
+            this[dividerIndex] = this[dividerIndex].copy(isChecked = isChecked)
+
+            for (i in dividerIndex + 1..<this.size) {
+                if (this[i].isDivider) {
+                    break
+                } else {
+                    this[i] = this[i].copy(isChecked = isChecked)
+                }
             }
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
-        _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = myChecklistItems)
-        database.updateChecklistItems(_checklists[checklistIndex].id, myChecklistItems)
     }
 
+    /**
+     * Sets a checklist to be a favorite.
+     */
     fun updateChecklistFavorite(
         checklistIndex: Int,
         isFavorite: Boolean
@@ -167,6 +169,9 @@ class ChecklistRepository @Inject constructor(
         database.updateChecklistFavorite(_checklists[checklistIndex].id, isFavorite)
     }
 
+    /**
+     * Removes a checklist.
+     */
     fun deleteChecklist(checklistIndex: Int) {
         _checklists[checklistIndex].run {
             _checklists.remove(this)
@@ -174,6 +179,9 @@ class ChecklistRepository @Inject constructor(
         }
     }
 
+    /**
+     * Removes an item from a checklist.
+     */
     fun deleteChecklistItem(
         checklistIndex: Int,
         itemIndex: Int
@@ -184,6 +192,46 @@ class ChecklistRepository @Inject constructor(
         }.also { items ->
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.deleteChecklistItem(_checklists[checklistIndex].id, item)
+        }
+
+        updateChecklistDividers(checklistIndex)
+    }
+
+    /**
+     * Sets the check status of all dividers according to the check status of items below.
+     */
+    private fun updateChecklistDividers(checklistIndex: Int) {
+        val items = _checklists[checklistIndex].items.toMutableList()
+        var requireUpdate = false
+        var dividerState = true
+        var dividerIndex = -1
+
+        for ((i, item) in items.withIndex()) {
+            if (item.isDivider) {
+                if (dividerIndex != -1) {
+                    if (items[dividerIndex].isChecked != dividerState) {
+                        items[dividerIndex] = items[dividerIndex].copy(isChecked = dividerState)
+                        requireUpdate = true
+                    }
+                }
+
+                dividerIndex = i
+                dividerState = true
+            } else if (dividerIndex != -1) {
+                if (!item.isChecked) {
+                    dividerState = false
+                }
+            }
+        }
+
+        if (dividerIndex != -1 && items[dividerIndex].isChecked != dividerState) {
+            items[dividerIndex] = items[dividerIndex].copy(isChecked = dividerState)
+            requireUpdate = true
+        }
+
+        if (requireUpdate) {
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
     }
 }

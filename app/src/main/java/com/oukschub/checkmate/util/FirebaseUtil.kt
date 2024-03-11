@@ -11,8 +11,6 @@ object FirebaseUtil {
 
     fun isSignedIn(): Boolean = auth.currentUser != null
 
-    fun getUserId(): String = auth.currentUser!!.uid
-
     fun getDisplayName(): String = auth.currentUser?.displayName ?: ""
 
     fun setDisplayName(displayName: String) {
