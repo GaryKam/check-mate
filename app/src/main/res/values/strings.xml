@@ -77,5 +77,6 @@
     <string name="desc_favorite_checklist">Favorite checklist</string>
     <string name="desc_delete_checklist_item">Delete checklist item</string>
     <string name="desc_checklist_detail_menu">Checklist menu</string>
+    <string name="desc_checklist_backdrop">View more settings</string>
 
 </resources>

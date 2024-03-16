@@ -1,5 +1,7 @@
 package com.oukschub.checkmate.ui.checklists
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,10 +11,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -25,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -60,23 +68,14 @@ fun ChecklistsScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var isExpanded by remember { mutableStateOf(false) }
-        val backdropOffset by animateDpAsState(if (isExpanded) 0.dp else (-60).dp, label = "BackdropAnimation")
+        var isBackdropExpanded by remember { mutableStateOf(false) }
+        val backdropOffset by animateDpAsState(if (isBackdropExpanded) 0.dp else (-60).dp, label = "BackdropAnimation")
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SearchBar(
-                query = viewModel.query,
-                onQueryChange = { query -> viewModel.query = query }
-            )
-
-            IconButton(onClick = { isExpanded = !isExpanded }) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "todo")
-            }
-        }
+        Backdrop(
+            query = viewModel.query,
+            onQueryChange = { viewModel.query = it },
+            onExpand = { isBackdropExpanded = !isBackdropExpanded }
+        )
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -114,26 +113,100 @@ fun ChecklistsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchBar(
+private fun Backdrop(
     query: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
+    onExpand: () -> Unit
 ) {
-    androidx.compose.material3.SearchBar(
-        query = query,
-        onQueryChange = { onQueryChange(it) },
-        onSearch = {},
-        active = false,
-        onActiveChange = {},
-        modifier = Modifier.padding(10.dp),
-        leadingIcon = {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HiddenSearchBar(
+                query = query,
+                onQueryChange = onQueryChange
+            )
+
+            IconButton(onClick = onExpand) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.desc_checklist_backdrop),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HiddenSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val backgroundColor by animateColorAsState(
+        if (isExpanded) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.primary
+        },
+        label = "BackgroundColorAnimation"
+    )
+    val iconColor by animateColorAsState(
+        if (isExpanded) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onPrimary
+        },
+        label = "IconColorAnimation"
+    )
+
+    Row(
+        modifier = modifier
+            .background(backgroundColor, shape = RoundedCornerShape(8.dp))
+            .animateContentSize()
+            .width(if (isExpanded) 300.dp else 48.dp)
+            .height(TextFieldDefaults.MinHeight),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
+
+        IconButton(
+            onClick = {
+                isExpanded = !isExpanded
+                if (isExpanded) {
+                    focusRequester.requestFocus()
+                } else {
+                    focusManager.clearFocus()
+                }
+            }
+        ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = stringResource(R.string.checklists_search)
+                contentDescription = stringResource(R.string.checklists_search),
+                tint = iconColor
             )
         }
-    ) {}
+
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 8.dp)
+                .focusRequester(focusRequester),
+            singleLine = true
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -173,8 +246,8 @@ private fun Content(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
-                    .clickable { onChecklistClick(checklistIndex) },
+                    .clickable { onChecklistClick(checklistIndex) }
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
