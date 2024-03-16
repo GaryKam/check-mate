@@ -34,15 +34,13 @@
     <string name="sign_up_display_name_alpha_num">Display name can only contain alphanumeric characters\n</string>
 
     // Checklist
-    <string name="checklist_create">Create Checklist</string>
     <string name="checklist_title_placeholder">Title</string>
     <string name="checklist_type_placeholder">Type here…</string>
-    <string name="checklist_update">Checklist has been updated</string>
-    <string name="checklist_update_error">Checklist failed to update</string>
     <string name="checklist_unfavorite">Remove Favorite</string>
     <string name="checklist_delete">Delete Checklist</string>
     <string name="checklist_clear">Clear Checklist</string>
     <string name="checklist_add_divider">Add Divider</string>
+    <string name="checklist_default_divider">Divider</string>
 
     // Checklists
     <string name="checklists">Checklists</string>
@@ -66,12 +64,18 @@
     <string name="profile_sign_out">Sign Out</string>
     <string name="profile_prompt_sign_out">Are you sure you want to sign out?</string>
 
+    // Add Checklist
+    <string name="add_checklist">Add New Checklist</string>
+
+    // Checklist Detail
+
     // Content Description
     <string name="desc_back">Back</string>
     <string name="desc_done">Done</string>
     <string name="desc_checklist_options">Checklist options</string>
-    <string name="desc_create_checklist">Create new checklist</string>
+    <string name="desc_add_checklist">Add new checklist</string>
     <string name="desc_favorite_checklist">Favorite checklist</string>
     <string name="desc_delete_checklist_item">Delete checklist item</string>
+    <string name="desc_checklist_detail_menu">Checklist menu</string>
 
 </resources>

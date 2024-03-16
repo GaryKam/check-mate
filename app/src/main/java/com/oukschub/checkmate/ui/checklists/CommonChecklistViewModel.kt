@@ -54,6 +54,10 @@ open class CommonChecklistViewModel(
         repository.updateChecklistDivider(checklistIndex, dividerIndex, isChecked)
     }
 
+    fun clearChecklist(checklistIndex: Int) {
+        repository.updateChecklistItems(checklistIndex)
+    }
+
     fun deleteItem(
         checklistIndex: Int,
         itemIndex: Int

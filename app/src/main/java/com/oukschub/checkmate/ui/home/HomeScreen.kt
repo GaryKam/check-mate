@@ -223,9 +223,9 @@ private fun Header(
         )
 
         Box {
-            var isDropdownVisible by remember { mutableStateOf(false) }
+            var isMenuVisible by remember { mutableStateOf(false) }
 
-            IconButton(onClick = { isDropdownVisible = true }) {
+            IconButton(onClick = { isMenuVisible = true }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = stringResource(R.string.desc_checklist_options)
@@ -233,13 +233,13 @@ private fun Header(
             }
 
             DropdownMenu(
-                expanded = isDropdownVisible,
-                onDismissRequest = { isDropdownVisible = false }
+                expanded = isMenuVisible,
+                onDismissRequest = { isMenuVisible = false }
             ) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_unfavorite)) },
                     onClick = {
-                        isDropdownVisible = false
+                        isMenuVisible = false
                         onChecklistUnfavorite()
                     }
                 )
@@ -247,7 +247,7 @@ private fun Header(
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_delete)) },
                     onClick = {
-                        isDropdownVisible = false
+                        isMenuVisible = false
                         onChecklistDelete()
                     }
                 )
@@ -255,7 +255,7 @@ private fun Header(
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_clear)) },
                     onClick = {
-                        isDropdownVisible = false
+                        isMenuVisible = false
                         onChecklistClear()
                     }
                 )
@@ -263,7 +263,7 @@ private fun Header(
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_add_divider)) },
                     onClick = {
-                        isDropdownVisible = false
+                        isMenuVisible = false
                         onDividerAdd()
                     }
                 )

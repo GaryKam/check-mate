@@ -11,10 +11,10 @@ class ChecklistDetailViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : CommonChecklistViewModel(repository) {
     private var initialTitle: String? = null
-    var checklist: Checklist? = null
+    private var isDeletingChecklist = false
 
-    fun getChecklist(checklistIndex: Int) {
-        checklist = repository.checklists[checklistIndex]
+    fun getChecklist(checklistIndex: Int): Checklist? {
+        return if (isDeletingChecklist) null else repository.checklists[checklistIndex]
     }
 
     fun focusTitle(title: String) {
@@ -36,6 +36,7 @@ class ChecklistDetailViewModel @Inject constructor(
     }
 
     fun deleteChecklist(checklistIndex: Int) {
+        isDeletingChecklist = true
         repository.deleteChecklist(checklistIndex)
     }
 }
