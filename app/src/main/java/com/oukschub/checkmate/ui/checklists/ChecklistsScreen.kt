@@ -1,23 +1,24 @@
 package com.oukschub.checkmate.ui.checklists
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -25,9 +26,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -51,40 +55,61 @@ fun ChecklistsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SearchBar(
-            query = viewModel.query,
-            onQueryChange = { query -> viewModel.query = query }
-        )
-        ChipFilters(
-            filters = viewModel.filters,
-            onFilterChange = { filterIndex -> viewModel.toggleFilter(filterIndex) }
-        )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
-                .height(1.dp)
-        )
+        var isExpanded by remember { mutableStateOf(false) }
+        val backdropOffset by animateDpAsState(if (isExpanded) 0.dp else (-60).dp, label = "BackdropAnimation")
 
-        if (viewModel.checklists.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Logo(isSad = true)
-                Text(stringResource(R.string.checklists_none_found))
-            }
-        } else {
-            Content(
-                checklists = viewModel.checklists,
-                onChecklistFavorite = { checklistIndex -> viewModel.favoriteChecklist(checklistIndex) },
-                onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SearchBar(
+                query = viewModel.query,
+                onQueryChange = { query -> viewModel.query = query }
             )
+
+            IconButton(onClick = { isExpanded = !isExpanded }) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "todo")
+            }
+        }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(space = backdropOffset, alignment = Alignment.Top)
+        ) {
+            ChipFilters(
+                filters = viewModel.filters,
+                onFilterChange = { filterIndex -> viewModel.toggleFilter(filterIndex) }
+            )
+
+            Card(
+                modifier = Modifier.fillMaxSize(),
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+            ) {
+                if (viewModel.checklists.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Logo(isSad = true)
+                        Text(stringResource(R.string.checklists_none_found))
+                    }
+                } else {
+                    Content(
+                        checklists = viewModel.checklists,
+                        onChecklistFavorite = { checklistIndex -> viewModel.favoriteChecklist(checklistIndex) },
+                        onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) }
+                    )
+                }
+            }
         }
     }
 }
@@ -139,7 +164,11 @@ private fun Content(
     onChecklistFavorite: (Int) -> Unit,
     onChecklistClick: (Int) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         itemsIndexed(items = checklists) { checklistIndex, checklist ->
             Row(
                 modifier = Modifier
