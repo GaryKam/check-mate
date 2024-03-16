@@ -21,7 +21,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.oukschub.checkmate.ui.addchecklist.AddChecklistScreen
 import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailScreen
-import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailViewModel
 import com.oukschub.checkmate.ui.checklists.ChecklistsScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
 import com.oukschub.checkmate.ui.forgotpassword.ForgotPasswordScreen
@@ -44,8 +43,7 @@ fun CheckMateNavHost(
     navController: NavHostController = rememberNavController(),
     checklistViewModel: ChecklistsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel(),
-    checklistDetailViewModel: ChecklistDetailViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -184,8 +182,8 @@ fun CheckMateNavHost(
         ) { backStackEntry ->
             ChecklistDetailScreen(
                 checklistIndex = backStackEntry.arguments?.getInt(checklistIndexKey)!!,
-                viewModel = checklistDetailViewModel,
-                onDelete = { navController.navigate(Screen.Checklists.route) }
+                onBack = { navController.popBackStack() },
+                onDelete = { navController.popBackStack() }
             )
         }
     }

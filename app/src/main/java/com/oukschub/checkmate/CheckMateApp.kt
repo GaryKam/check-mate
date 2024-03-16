@@ -109,7 +109,7 @@ private fun CreateChecklistFab(onClick: () -> Unit) {
     FloatingActionButton(onClick = onClick) {
         Icon(
             imageVector = Icons.Default.Add,
-            contentDescription = stringResource(R.string.desc_create_checklist)
+            contentDescription = stringResource(R.string.desc_add_checklist)
         )
     }
 }

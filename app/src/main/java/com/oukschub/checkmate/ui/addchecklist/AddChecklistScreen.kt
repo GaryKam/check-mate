@@ -100,7 +100,7 @@ private fun TopBar(
     onChecklistAdd: () -> Unit
 ) {
     TopAppBar(
-        title = { Text(stringResource(R.string.checklist_create)) },
+        title = { Text(stringResource(R.string.add_checklist)) },
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
@@ -113,7 +113,7 @@ private fun TopBar(
             IconButton(onClick = onChecklistAdd) {
                 Icon(
                     imageVector = Icons.Default.Create,
-                    contentDescription = stringResource(R.string.desc_create_checklist)
+                    contentDescription = stringResource(R.string.desc_add_checklist)
                 )
             }
         }

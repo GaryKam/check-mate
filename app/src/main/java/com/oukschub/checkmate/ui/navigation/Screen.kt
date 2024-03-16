@@ -20,9 +20,9 @@ sealed class Screen(
     data object SignIn : Screen("sign_in")
     data object ForgotPassword : Screen("forgot_password")
     data object SignUp : Screen("sign_up")
-    data object ChecklistDetail : Screen("checklist_detail")
     data object Checklists : Screen("checklists", R.string.checklists, Icons.Default.List)
     data object Home : Screen("home", R.string.home, Icons.Default.Home)
     data object Profile : Screen("profile", R.string.profile, Icons.Default.Person)
     data object AddChecklist : Screen("add_checklist")
+    data object ChecklistDetail : Screen("checklist_detail")
 }
