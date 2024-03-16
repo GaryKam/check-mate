@@ -1,9 +1,12 @@
 package com.oukschub.checkmate.ui.checklistdetail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -26,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -41,52 +46,50 @@ fun ChecklistDetailScreen(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(
-        key1 = Unit,
-        block = { viewModel.getChecklist(checklistIndex) }
-    )
+    LaunchedEffect(Unit) {
+        viewModel.checklistIndex = checklistIndex
+    }
 
     if (viewModel.checklist == null) {
         return
     }
 
-    Checklist(
-        header = {
-            Header(
-                title = viewModel.checklist!!.title,
-                onTitleFocus = { title -> viewModel.focusTitle(title) },
-                onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
-                onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
-                onChecklistDelete = {
-                    onDelete()
-                    viewModel.deleteChecklist(checklistIndex)
-                },
-                onDividerAdd = { viewModel.addItem(checklistIndex, "default div", true) }
-            )
-        },
-        items = ImmutableList.copyOf(viewModel.checklist!!.items),
-        onItemCheck = { itemIndex, isChecked ->
-            viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-        },
-        onItemNameFocus = { itemName ->
-            viewModel.focusItem(itemName)
-        },
-        onItemNameChange = { itemIndex, itemName ->
-            viewModel.changeItemName(checklistIndex, itemIndex, itemName)
-        },
-        onItemNameSet = { itemIndex, itemName ->
-            viewModel.setItemName(checklistIndex, itemIndex, itemName)
-        },
-        onItemAdd = { itemName ->
-            viewModel.addItem(checklistIndex, itemName)
-        },
-        onItemDelete = { itemIndex ->
-            viewModel.deleteItem(checklistIndex, itemIndex)
-        },
-        onDividerCheck = { dividerIndex, isChecked ->
-            viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
-        }
-    )
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Checklist(
+            header = {
+                val dividerText = stringResource(R.string.checklist_default_divider)
+                Header(
+                    title = viewModel.checklist!!.title,
+                    onTitleFocus = { title -> viewModel.focusTitle(title) },
+                    onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
+                    onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
+                    onChecklistDelete = {
+                        onDelete()
+                        viewModel.deleteChecklist(checklistIndex)
+                    },
+                    onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
+                )
+            },
+            items = ImmutableList.copyOf(viewModel.checklist!!.items),
+            onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
+            onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
+            onItemNameChange = { itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+            onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+            onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
+            onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+            onDividerCheck = { dividerIndex, isChecked ->
+                viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
+            }
+        )
+    }
 }
 
 @Composable
