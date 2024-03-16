@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -225,7 +226,8 @@ private fun ChipFilters(
             FilterChip(
                 selected = status.second,
                 onClick = { onFilterChange(index) },
-                label = { Text(stringResource(status.first)) }
+                label = { Text(stringResource(status.first)) },
+                colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.onPrimary)
             )
         }
     }
