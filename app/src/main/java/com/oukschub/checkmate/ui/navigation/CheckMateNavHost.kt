@@ -174,6 +174,7 @@ fun CheckMateNavHost(
         ) { backStackEntry ->
             ChecklistDetailScreen(
                 checklistIndex = backStackEntry.arguments?.getInt(checklistIndexKey)!!,
+                onBack = { navController.popBackStack() },
                 onDelete = { navController.popBackStack() }
             )
         }

@@ -37,8 +37,4 @@ class HomeViewModel @Inject constructor(
     fun deleteChecklist(checklistIndex: Int) {
         repository.deleteChecklist(checklistIndex)
     }
-
-    fun clearChecklist(checklistIndex: Int) {
-        repository.updateChecklistItems(checklistIndex)
-    }
 }
