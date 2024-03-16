@@ -38,7 +38,7 @@ import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Logo
 
 /**
- * The screen that displays all existing checklists.
+ * The screen that displays the title of each existing checklists.
  */
 @Composable
 fun ChecklistsScreen(
