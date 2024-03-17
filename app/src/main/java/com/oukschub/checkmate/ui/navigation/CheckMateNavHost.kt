@@ -72,7 +72,7 @@ fun CheckMateNavHost(
 
         composable(route = Screen.ForgotPassword.route) {
             ForgotPasswordScreen(
-                onBack = { navController.navigate(Screen.SignIn.route) }
+                onBack = { navController.popBackStack() }
             )
         }
 
