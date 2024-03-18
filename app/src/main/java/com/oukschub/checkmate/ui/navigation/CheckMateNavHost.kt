@@ -23,6 +23,7 @@ import com.oukschub.checkmate.ui.addchecklist.AddChecklistScreen
 import com.oukschub.checkmate.ui.checklistdetail.ChecklistDetailScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsScreen
 import com.oukschub.checkmate.ui.checklists.ChecklistsViewModel
+import com.oukschub.checkmate.ui.forgotpassword.ForgotPasswordScreen
 import com.oukschub.checkmate.ui.home.HomeScreen
 import com.oukschub.checkmate.ui.home.HomeViewModel
 import com.oukschub.checkmate.ui.profile.ProfileScreen
@@ -64,7 +65,14 @@ fun CheckMateNavHost(
                     navController.popBackStack()
                     navController.navigate(Screen.Home.route)
                 },
+                onForgotPassword = { navController.navigate(Screen.ForgotPassword.route) },
                 onFooterClick = { navController.navigate(Screen.SignUp.route) }
+            )
+        }
+
+        composable(route = Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                onBack = { navController.popBackStack() }
             )
         }
 
