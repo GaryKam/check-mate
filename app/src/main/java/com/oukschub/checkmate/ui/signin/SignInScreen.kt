@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import com.oukschub.checkmate.util.MessageUtil
 @Composable
 fun SignInScreen(
     onSignIn: () -> Unit,
+    onForgotPassword: () -> Unit,
     onFooterClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = hiltViewModel()
@@ -81,6 +83,24 @@ fun SignInScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            TextButton(
+                modifier = Modifier.padding(bottom = 10.dp),
+                onClick = {
+                    focusManager.clearFocus()
+                    onForgotPassword()
+                }
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        pushStyle(SpanStyle(color = Color.Black, fontWeight = FontWeight.Normal))
+                        append(stringResource(R.string.sign_in_forgot_password))
+                        append(" ")
+                        pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
+                        append(stringResource(R.string.sign_in_click_here))
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 

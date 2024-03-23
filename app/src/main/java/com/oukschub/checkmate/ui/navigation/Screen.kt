@@ -18,6 +18,7 @@ sealed class Screen(
 ) {
     data object Splash : Screen("splash")
     data object SignIn : Screen("sign_in")
+    data object ForgotPassword : Screen("forgot_password")
     data object SignUp : Screen("sign_up")
     data object Checklists : Screen("checklists", R.string.checklists, Icons.Default.List)
     data object Home : Screen("home", R.string.home, Icons.Default.Home)
