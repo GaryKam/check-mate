@@ -17,9 +17,13 @@ class SplashViewModel @Inject constructor(
     fun runTasks(onComplete: () -> Unit) {
         if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
-                checklistRepository.fetchChecklists()
-                userRepository.fetchDisplayName()
+                checklistRepository.fetchFavoriteChecklists()
                 onComplete()
+            }
+
+            viewModelScope.launch {
+                userRepository.fetchDisplayName()
+                checklistRepository.fetchChecklists()
             }
         } else {
             onComplete()

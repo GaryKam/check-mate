@@ -8,6 +8,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
+import com.oukschub.checkmate.util.ChecklistType
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
@@ -18,6 +19,7 @@ class Database {
     private val firestore = Firebase.firestore
     private val userId: String
         get() = FirebaseAuth.getInstance().currentUser!!.uid
+    private val favoriteChecklistIds = mutableListOf<String>()
 
     suspend fun createUser(): Boolean {
         val task = firestore.collection(USERS_COLLECTION)
@@ -70,7 +72,7 @@ class Database {
             .addOnFailureListener { Timber.d("Failed to create item: ${item.name}") }
     }
 
-    suspend fun readChecklists(): List<Checklist> {
+    suspend fun readChecklists(checklistType: ChecklistType): List<Checklist> {
         val result = firestore.collection(USERS_COLLECTION)
             .document(userId)
             .get()
@@ -78,12 +80,24 @@ class Database {
 
         val checklists = mutableListOf<Checklist>()
 
-        @Suppress("UNCHECKED_CAST")
-        val favoriteChecklistIds =
-            (result.data?.get(USER_CHECKLIST_FAVORITES_FIELD) as ArrayList<String>)
+        val checklistIds = when (checklistType) {
+            ChecklistType.DEFAULT -> {
+                @Suppress("UNCHECKED_CAST")
+                val ids = result.data?.get(USER_CHECKLIST_IDS_FIELD) as ArrayList<String>
+                ids.removeIf { favoriteChecklistIds.contains(it) }
+                ids
+            }
 
-        @Suppress("UNCHECKED_CAST")
-        (result.data?.get(USER_CHECKLIST_IDS_FIELD) as ArrayList<String>).let { ids ->
+            ChecklistType.FAVORITE -> {
+                @Suppress("UNCHECKED_CAST")
+                val ids = result.data?.get(USER_CHECKLIST_FAVORITES_FIELD) as ArrayList<String>
+                favoriteChecklistIds.clear()
+                favoriteChecklistIds.addAll(ids)
+                ids
+            }
+        }
+
+        checklistIds.let { ids ->
             for (id in ids) {
                 val checklist = firestore.collection(CHECKLISTS_COLLECTION)
                     .document(id)
@@ -91,10 +105,9 @@ class Database {
                     .await()
                     .toObject<Checklist>()!!
 
-                if (favoriteChecklistIds.contains(id)) {
-                    checklists.add(checklist.copy(isFavorite = true))
-                } else {
-                    checklists.add(checklist)
+                when (checklistType) {
+                    ChecklistType.DEFAULT -> checklists.add(checklist)
+                    ChecklistType.FAVORITE -> checklists.add(checklist.copy(isFavorite = true))
                 }
             }
         }
