@@ -55,7 +55,6 @@ fun CheckMateApp(
         }
     ) { paddingValues ->
         CheckMateNavHost(
-            startDestination = Screen.Splash.route,
             modifier = Modifier.padding(paddingValues),
             navController = navController
         )
