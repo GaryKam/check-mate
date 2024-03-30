@@ -71,21 +71,13 @@ fun HomeScreen(
             onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
             onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
             onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
-            onItemCheck = { checklistIndex, itemIndex, isChecked ->
-                viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-            },
+            onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
             onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
-            onItemNameChange = { checklistIndex, itemIndex, itemName ->
-                viewModel.changeItemName(checklistIndex, itemIndex, itemName)
-            },
-            onItemNameSet = { checklistIndex, itemIndex, itemName ->
-                viewModel.setItemName(checklistIndex, itemIndex, itemName)
-            },
+            onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+            onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
             onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
             onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-            onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
-                viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
-            },
+            onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
             onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, "Default", true) },
             modifier = modifier
         )
@@ -119,13 +111,9 @@ private fun Content(
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
     ) {
         itemsIndexed(
-            items = checklists,
+            items = checklists.filter { it.isFavorite },
             key = { _, checklist -> checklist.id }
         ) { checklistIndex, checklist ->
-            if (!checklist.isFavorite) {
-                return@itemsIndexed
-            }
-
             AnimatedVisibility(
                 visible = isContentVisible,
                 enter = fadeIn(tween(200, 80 * checklistIndex)) +
@@ -144,37 +132,13 @@ private fun Content(
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
-                    onItemCheck = { itemIndex, isChecked ->
-                        onItemCheck(
-                            checklistIndex,
-                            itemIndex,
-                            isChecked
-                        )
-                    },
+                    onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
                     onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
-                    onItemNameChange = { itemIndex, itemName ->
-                        onItemNameChange(
-                            checklistIndex,
-                            itemIndex,
-                            itemName
-                        )
-                    },
-                    onItemNameSet = { itemIndex, itemName ->
-                        onItemNameSet(
-                            checklistIndex,
-                            itemIndex,
-                            itemName
-                        )
-                    },
+                    onItemNameChange = { itemIndex, itemName -> onItemNameChange(checklistIndex, itemIndex, itemName) },
+                    onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
-                    onDividerCheck = { dividerIndex, isChecked ->
-                        onDividerCheck(
-                            checklistIndex,
-                            dividerIndex,
-                            isChecked
-                        )
-                    }
+                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
                 )
             }
         }

@@ -164,13 +164,13 @@ class Database {
                 firestore.collection(USERS_COLLECTION)
                     .document(userId)
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(checklistId))
-                    .addOnSuccessListener { Timber.d("Delete checklist from user: $checklistId") }
+                    .addOnSuccessListener { Timber.d("Deleted checklist from user: $checklistId") }
                     .addOnFailureListener { Timber.d("Failed to delete checklist from user: $checklistId") }
 
                 firestore.collection(USERS_COLLECTION)
                     .document(userId)
                     .update(USER_CHECKLIST_FAVORITES_FIELD, FieldValue.arrayRemove(checklistId))
-                    .addOnSuccessListener { Timber.d("Delete checklist from user favorites: $checklistId") }
+                    .addOnSuccessListener { Timber.d("Deleted checklist from user favorites: $checklistId") }
                     .addOnFailureListener { Timber.d("Failed to delete checklist from user favorites: $checklistId") }
             }
             .addOnFailureListener { Timber.d("Failed to delete checklist: $checklistId") }

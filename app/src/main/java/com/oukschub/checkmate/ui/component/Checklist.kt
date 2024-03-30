@@ -220,14 +220,16 @@ private fun InputField(onItemAdd: (String) -> Unit) {
             .bringIntoViewRequester(viewRequester),
         placeholder = { Text(stringResource(R.string.checklist_type_placeholder)) },
         trailingIcon = {
-            IconButton(onClick = {
-                onItemAdd(text)
-                text = ""
-                couroutineScope.launch {
-                    delay(300L)
-                    viewRequester.bringIntoView()
+            IconButton(
+                onClick = {
+                    onItemAdd(text)
+                    text = ""
+                    couroutineScope.launch {
+                        delay(300L)
+                        viewRequester.bringIntoView()
+                    }
                 }
-            }) {
+            ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(R.string.desc_done)
