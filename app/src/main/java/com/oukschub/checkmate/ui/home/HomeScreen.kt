@@ -15,8 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -60,27 +63,48 @@ fun HomeScreen(
         viewModel.isContentVisible = true
     }
 
-    if (viewModel.checklists.none { it.isFavorite }) {
-        SadCheckmate(modifier = modifier)
-    } else {
-        Content(
-            checklists = viewModel.checklists,
-            isContentVisible = viewModel.isContentVisible,
-            onTitleFocus = { title -> viewModel.focusTitle(title) },
-            onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
-            onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
-            onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
-            onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
-            onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
-            onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
-            onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
-            onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
-            onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
-            onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-            onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
-            onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, "Default", true) },
-            modifier = modifier
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxSize(),
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        ) {
+            if (viewModel.checklists.none { it.isFavorite }) {
+                SadCheckmate(modifier = modifier)
+            } else {
+                val dividerText = stringResource(R.string.checklist_default_divider)
+                Content(
+                    checklists = viewModel.checklists,
+                    isContentVisible = viewModel.isContentVisible,
+                    onTitleFocus = { title -> viewModel.focusTitle(title) },
+                    onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
+                    onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
+                    onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
+                    onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
+                    onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
+                    onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
+                    onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+                    onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+                    onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
+                    onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+                    onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
+                        viewModel.setDividerChecked(
+                            checklistIndex,
+                            dividerIndex,
+                            isChecked
+                        )
+                    },
+                    onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
+                    modifier = modifier
+                )
+            }
+        }
     }
 }
 
