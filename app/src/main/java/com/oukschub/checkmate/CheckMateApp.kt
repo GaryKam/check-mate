@@ -59,6 +59,13 @@ fun CheckMateApp(
             )
         }
     ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+
         CheckMateNavHost(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

@@ -86,7 +86,7 @@ fun CheckMateNavHost(
             exitTransition = {
                 when (targetState.destination.route) {
                     Screen.Home.route, Screen.Profile.route -> slideScreenOut(toRight = false)
-                    else -> fadeOut()
+                    else -> ExitTransition.None
                 }
             }
         ) {
@@ -111,7 +111,7 @@ fun CheckMateNavHost(
                 when (targetState.destination.route) {
                     Screen.Checklists.route -> slideScreenOut(toRight = true)
                     Screen.Profile.route -> slideScreenOut(toRight = false)
-                    else -> fadeOut()
+                    else -> ExitTransition.None
                 }
             }
         ) {
@@ -129,7 +129,7 @@ fun CheckMateNavHost(
             exitTransition = {
                 when (targetState.destination.route) {
                     Screen.Checklists.route, Screen.Home.route -> slideScreenOut(toRight = true)
-                    else -> fadeOut()
+                    else -> ExitTransition.None
                 }
             }
         ) {
