@@ -2,7 +2,6 @@ package com.oukschub.checkmate.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -81,7 +80,7 @@ fun CheckMateNavHost(
             enterTransition = {
                 when (initialState.destination.route) {
                     Screen.Home.route, Screen.Profile.route -> slideScreenIn(fromRight = false)
-                    else -> fadeIn()
+                    else -> EnterTransition.None
                 }
             },
             exitTransition = {
@@ -105,7 +104,7 @@ fun CheckMateNavHost(
                 when (initialState.destination.route) {
                     Screen.Checklists.route -> slideScreenIn(fromRight = true)
                     Screen.Profile.route -> slideScreenIn(fromRight = false)
-                    else -> fadeIn()
+                    else -> EnterTransition.None
                 }
             },
             exitTransition = {
@@ -124,7 +123,7 @@ fun CheckMateNavHost(
             enterTransition = {
                 when (initialState.destination.route) {
                     Screen.Checklists.route, Screen.Home.route -> slideScreenIn(fromRight = true)
-                    else -> fadeIn()
+                    else -> EnterTransition.None
                 }
             },
             exitTransition = {
@@ -148,7 +147,7 @@ fun CheckMateNavHost(
 
         composable(
             route = Screen.AddChecklist.route,
-            enterTransition = { fadeIn() + slideInVertically() },
+            enterTransition = { slideInVertically() },
             exitTransition = { fadeOut() + slideOutVertically() }
         ) {
             AddChecklistScreen(
@@ -167,7 +166,7 @@ fun CheckMateNavHost(
         composable(
             route = "${Screen.ChecklistDetail.route}/{$checklistIndexKey}",
             arguments = listOf(navArgument(checklistIndexKey) { type = NavType.IntType }),
-            enterTransition = { fadeIn() + scaleIn() },
+            enterTransition = { scaleIn() },
             exitTransition = { fadeOut() + scaleOut() }
         ) { backStackEntry ->
             ChecklistDetailScreen(
@@ -180,9 +179,9 @@ fun CheckMateNavHost(
 }
 
 private fun slideScreenIn(fromRight: Boolean): EnterTransition {
-    return fadeIn() + slideInHorizontally(initialOffsetX = { if (fromRight) it else -it })
+    return slideInHorizontally(initialOffsetX = { if (fromRight) it else -it })
 }
 
 private fun slideScreenOut(toRight: Boolean): ExitTransition {
-    return fadeOut() + slideOutHorizontally(targetOffsetX = { if (toRight) it else -it })
+    return slideOutHorizontally(targetOffsetX = { if (toRight) it else -it })
 }
