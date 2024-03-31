@@ -28,6 +28,8 @@ class MainViewModel @Inject constructor(
                 userRepository.fetchDisplayName()
                 checklistRepository.fetchChecklists()
             }
+        } else {
+            isAppReady = true
         }
     }
 }

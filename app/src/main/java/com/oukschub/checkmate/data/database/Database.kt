@@ -190,6 +190,10 @@ class Database {
             .addOnFailureListener { Timber.d("Failed to delete item: ${item.name}") }
     }
 
+    fun reset() {
+        favoriteChecklistIds.clear()
+    }
+
     companion object {
         private const val CHECKLISTS_COLLECTION = "checklists"
         private const val CHECKLIST_TITLE_FIELD = "title"

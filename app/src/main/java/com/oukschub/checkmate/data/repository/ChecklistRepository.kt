@@ -36,6 +36,14 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
+     * Removes all checklist data. Modifies local [_checklists].
+     */
+    fun clearChecklists() {
+        _checklists.clear()
+        database.reset()
+    }
+
+    /**
      * Adds a new checklist.
      */
     suspend fun createChecklist(
