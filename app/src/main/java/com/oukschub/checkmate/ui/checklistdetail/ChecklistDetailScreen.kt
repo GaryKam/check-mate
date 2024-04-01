@@ -98,21 +98,13 @@ fun ChecklistDetailScreen(
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
-                    onItemCheck = { itemIndex, isChecked ->
-                        viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-                    },
+                    onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
                     onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
-                    onItemNameChange = { itemIndex, itemName ->
-                        viewModel.changeItemName(checklistIndex, itemIndex, itemName)
-                    },
-                    onItemNameSet = { itemIndex, itemName ->
-                        viewModel.setItemName(checklistIndex, itemIndex, itemName)
-                    },
+                    onItemNameChange = { itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+                    onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-                    onDividerCheck = { dividerIndex, isChecked ->
-                        viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
-                    }
+                    onDividerCheck = { dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) }
                 )
             }
         }

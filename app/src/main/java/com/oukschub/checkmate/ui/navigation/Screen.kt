@@ -16,7 +16,6 @@ sealed class Screen(
     @StringRes val resourceId: Int = -1,
     val icon: ImageVector? = null
 ) {
-    data object Splash : Screen("splash")
     data object SignIn : Screen("sign_in")
     data object ForgotPassword : Screen("forgot_password")
     data object SignUp : Screen("sign_up")

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -38,6 +40,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.google.common.collect.ImmutableList
@@ -220,20 +223,33 @@ private fun InputField(onItemAdd: (String) -> Unit) {
             .bringIntoViewRequester(viewRequester),
         placeholder = { Text(stringResource(R.string.checklist_type_placeholder)) },
         trailingIcon = {
-            IconButton(onClick = {
-                onItemAdd(text)
-                text = ""
-                couroutineScope.launch {
-                    delay(300L)
-                    viewRequester.bringIntoView()
+            IconButton(
+                onClick = {
+                    onItemAdd(text)
+                    text = ""
+                    couroutineScope.launch {
+                        delay(300L)
+                        viewRequester.bringIntoView()
+                    }
                 }
-            }) {
+            ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(R.string.desc_done)
                 )
             }
         },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onItemAdd(text)
+                text = ""
+                couroutineScope.launch {
+                    delay(300L)
+                    viewRequester.bringIntoView()
+                }
+            }
+        ),
         singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,

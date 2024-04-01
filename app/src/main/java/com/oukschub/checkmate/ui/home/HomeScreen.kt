@@ -9,14 +9,18 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -33,8 +37,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -60,35 +69,48 @@ fun HomeScreen(
         viewModel.isContentVisible = true
     }
 
-    if (viewModel.checklists.none { it.isFavorite }) {
-        SadCheckmate(modifier = modifier)
-    } else {
-        Content(
-            checklists = viewModel.checklists,
-            isContentVisible = viewModel.isContentVisible,
-            onTitleFocus = { title -> viewModel.focusTitle(title) },
-            onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
-            onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
-            onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
-            onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
-            onItemCheck = { checklistIndex, itemIndex, isChecked ->
-                viewModel.setItemChecked(checklistIndex, itemIndex, isChecked)
-            },
-            onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
-            onItemNameChange = { checklistIndex, itemIndex, itemName ->
-                viewModel.changeItemName(checklistIndex, itemIndex, itemName)
-            },
-            onItemNameSet = { checklistIndex, itemIndex, itemName ->
-                viewModel.setItemName(checklistIndex, itemIndex, itemName)
-            },
-            onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
-            onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-            onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
-                viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked)
-            },
-            onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, "Default", true) },
-            modifier = modifier
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxSize(),
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+        ) {
+            if (viewModel.checklists.none { it.isFavorite }) {
+                SadCheckmate(modifier = modifier)
+            } else {
+                val dividerText = stringResource(R.string.checklist_default_divider)
+                Content(
+                    checklists = viewModel.checklists,
+                    isContentVisible = viewModel.isContentVisible,
+                    onTitleFocus = { title -> viewModel.focusTitle(title) },
+                    onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
+                    onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
+                    onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
+                    onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
+                    onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
+                    onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
+                    onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+                    onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+                    onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
+                    onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+                    onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
+                        viewModel.setDividerChecked(
+                            checklistIndex,
+                            dividerIndex,
+                            isChecked
+                        )
+                    },
+                    onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
+                    modifier = modifier
+                )
+            }
+        }
     }
 }
 
@@ -117,15 +139,23 @@ private fun Content(
         modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
+            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+            .drawWithContent {
+                drawContent()
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        0.0F to Color.Transparent, 0.04F to Color.Red,
+                        0.96F to Color.Red, 1.0F to Color.Transparent
+                    ),
+                    blendMode = BlendMode.DstIn
+                )
+            },
+        contentPadding = PaddingValues(vertical = 20.dp)
     ) {
         itemsIndexed(
-            items = checklists,
+            items = checklists.filter { it.isFavorite },
             key = { _, checklist -> checklist.id }
         ) { checklistIndex, checklist ->
-            if (!checklist.isFavorite) {
-                return@itemsIndexed
-            }
-
             AnimatedVisibility(
                 visible = isContentVisible,
                 enter = fadeIn(tween(200, 80 * checklistIndex)) +
@@ -144,37 +174,13 @@ private fun Content(
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
-                    onItemCheck = { itemIndex, isChecked ->
-                        onItemCheck(
-                            checklistIndex,
-                            itemIndex,
-                            isChecked
-                        )
-                    },
+                    onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
                     onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
-                    onItemNameChange = { itemIndex, itemName ->
-                        onItemNameChange(
-                            checklistIndex,
-                            itemIndex,
-                            itemName
-                        )
-                    },
-                    onItemNameSet = { itemIndex, itemName ->
-                        onItemNameSet(
-                            checklistIndex,
-                            itemIndex,
-                            itemName
-                        )
-                    },
+                    onItemNameChange = { itemIndex, itemName -> onItemNameChange(checklistIndex, itemIndex, itemName) },
+                    onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
-                    onDividerCheck = { dividerIndex, isChecked ->
-                        onDividerCheck(
-                            checklistIndex,
-                            dividerIndex,
-                            isChecked
-                        )
-                    }
+                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
                 )
             }
         }

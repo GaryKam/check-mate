@@ -54,7 +54,7 @@ class SignUpViewModel @Inject constructor(
             return
         }
 
-        displayNameChecker.check(displayName)
+        displayNameChecker.check(displayName.trim())
 
         val validEmail = emailRegex.matches(email)
 
@@ -64,7 +64,7 @@ class SignUpViewModel @Inject constructor(
                 .addOnSuccessListener {
                     Timber.d("Created user in FirebaseAuth: $email")
                     viewModelScope.launch {
-                        if (userRepository.createUser(displayName)) {
+                        if (userRepository.createUser(displayName.trim())) {
                             Timber.d("Created user in Firestore: $email")
                             isSigningUp = false
                             onSuccess()
@@ -96,7 +96,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun changeDisplayName(displayName: String) {
-        this.displayName = displayName.trim()
+        this.displayName = displayName
         _displayNameErrors.clear()
     }
 
@@ -125,7 +125,7 @@ class SignUpViewModel @Inject constructor(
             private set
         var alphaNumCheck = false
             private set
-        private val alphaNumRegex = Regex("^[a-zA-Z0-9]+\$")
+        private val alphaNumRegex = Regex("^[a-zA-Z0-9\\s]+\$")
 
         fun check(displayName: String) {
             lengthMinCheck = displayName.length >= 2

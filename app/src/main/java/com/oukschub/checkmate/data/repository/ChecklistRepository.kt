@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.data.database.Database
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.model.ChecklistItem
+import com.oukschub.checkmate.util.ChecklistType
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -32,6 +33,14 @@ class ChecklistRepository @Inject constructor(
         val items = _checklists[checklistIndex].items.toMutableList()
         items[itemIndex] = items[itemIndex].copy(name = itemName)
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+    }
+
+    /**
+     * Removes all checklist data. Modifies local [_checklists].
+     */
+    fun clearChecklists() {
+        _checklists.clear()
+        database.reset()
     }
 
     /**
@@ -66,13 +75,23 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Gets all checklists.
+     * Gets all favorite checklists.
+     */
+    suspend fun fetchFavoriteChecklists() {
+        Timber.d("Start fetching favorite checklists from database")
+        val startTime = System.currentTimeMillis()
+        _checklists.addAll(database.readChecklists(ChecklistType.FAVORITE))
+        val endTime = (System.currentTimeMillis() - startTime) / 1000.0
+        Timber.d("Finish fetching favorite checklists from database: $endTime")
+    }
+
+    /**
+     * Gets all regular checklists.
      */
     suspend fun fetchChecklists() {
         Timber.d("Start fetching checklists from database")
         val startTime = System.currentTimeMillis()
-        _checklists.clear()
-        _checklists.addAll(database.readChecklists())
+        _checklists.addAll(database.readChecklists(ChecklistType.DEFAULT))
         val endTime = (System.currentTimeMillis() - startTime) / 1000.0
         Timber.d("Finish fetching checklists from database: $endTime")
     }

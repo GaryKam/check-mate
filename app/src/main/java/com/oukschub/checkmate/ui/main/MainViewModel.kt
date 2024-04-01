@@ -1,4 +1,4 @@
-package com.oukschub.checkmate.ui.splash
+package com.oukschub.checkmate.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,19 +10,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val checklistRepository: ChecklistRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
-    fun runTasks(onComplete: () -> Unit) {
+    var isAppReady = false
+        private set
+
+    fun loadData() {
         if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
-                checklistRepository.fetchChecklists()
+                checklistRepository.fetchFavoriteChecklists()
+                isAppReady = true
+            }
+
+            viewModelScope.launch {
                 userRepository.fetchDisplayName()
-                onComplete()
+                checklistRepository.fetchChecklists()
             }
         } else {
-            onComplete()
+            isAppReady = true
         }
     }
 }

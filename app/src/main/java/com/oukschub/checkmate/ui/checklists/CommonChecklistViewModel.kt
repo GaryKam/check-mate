@@ -42,6 +42,7 @@ open class CommonChecklistViewModel(
         itemName: String
     ) {
         if (initialItemName != null && initialItemName != itemName) {
+            initialItemName = null
             repository.updateChecklistItem(checklistIndex, itemIndex, itemName)
         }
     }

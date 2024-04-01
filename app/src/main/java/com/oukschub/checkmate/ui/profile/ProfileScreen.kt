@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -46,37 +49,47 @@ fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
     ) {
-        OutlinedCard(
+        Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
+                .padding(top = 10.dp)
+                .fillMaxSize(),
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
         ) {
-            Column(
+            OutlinedCard(
                 modifier = Modifier
-                    .padding(horizontal = 30.dp, vertical = 10.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .weight(1.0F)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(horizontal = 10.dp)
             ) {
-                val displayNameState = viewModel.displayName.collectAsState(initial = "")
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 30.dp, vertical = 10.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val displayNameState = viewModel.displayName.collectAsState(initial = "")
 
-                ProfileIcon()
-                ProfileName(name = displayNameState.value)
-                ChangeDisplayNameButton(
-                    displayName = displayNameState.value,
-                    onDisplayNameSet = { displayName -> viewModel.setNewDisplayName(displayName) }
-                )
-                ChangePasswordButton()
-                SettingsButton()
-                SignOutButton(
-                    onSignOut = {
-                        viewModel.signOut()
-                        onSignOut()
-                    }
-                )
+                    ProfileIcon()
+                    ProfileName(name = displayNameState.value)
+                    ChangeDisplayNameButton(
+                        displayName = displayNameState.value,
+                        onDisplayNameSet = { displayName -> viewModel.setNewDisplayName(displayName) }
+                    )
+                    ChangePasswordButton()
+                    SettingsButton()
+                    SignOutButton(
+                        onSignOut = {
+                            viewModel.signOut()
+                            onSignOut()
+                        }
+                    )
+                }
             }
         }
     }
@@ -99,6 +112,7 @@ private fun ProfileName(name: String) {
         modifier = Modifier.padding(bottom = 5.dp),
         color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Medium,
+        maxLines = 1,
         style = MaterialTheme.typography.titleLarge
     )
 }
