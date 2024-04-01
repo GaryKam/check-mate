@@ -253,4 +253,14 @@ class ChecklistRepository @Inject constructor(
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
     }
+
+    var currentChecklist = -1
+
+    fun updateChecklistOnPause() {
+        if (currentChecklist != -1) {
+            val checklist = _checklists[currentChecklist]
+            database.updateChecklistTitle(checklist.id, checklist.title)
+            database.updateChecklistItems(checklist.id, checklist.items)
+        }
+    }
 }

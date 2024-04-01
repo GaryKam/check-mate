@@ -2,14 +2,20 @@ package com.oukschub.checkmate.ui.checklists
 
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.data.repository.ChecklistRepository
+import timber.log.Timber
 
 open class CommonChecklistViewModel(
     private val repository: ChecklistRepository
 ) : ViewModel() {
     private var initialItemName: String? = null
 
-    fun focusItem(itemName: String) {
+    fun focusItem(
+        checklistIndex: Int,
+        itemName: String
+    ) {
         initialItemName = itemName
+        repository.currentChecklist = checklistIndex
+        Timber.d(repository.currentChecklist.toString())
     }
 
     fun addItem(

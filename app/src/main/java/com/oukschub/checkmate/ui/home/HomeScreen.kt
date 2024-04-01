@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
@@ -67,6 +69,10 @@ fun HomeScreen(
 ) {
     LaunchedEffect(Unit) {
         viewModel.isContentVisible = true
+    }
+
+    DisposableEffect(key1 = viewModel) {
+        onDispose { viewModel.onStop() }
     }
 
     Column(
@@ -88,15 +94,33 @@ fun HomeScreen(
                 Content(
                     checklists = viewModel.checklists,
                     isContentVisible = viewModel.isContentVisible,
-                    onTitleFocus = { title -> viewModel.focusTitle(title) },
+                    onTitleFocus = { checklistIndex, title -> viewModel.focusTitle(checklistIndex, title) },
                     onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
                     onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
                     onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
                     onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
-                    onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
-                    onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
-                    onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
-                    onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+                    onItemCheck = { checklistIndex, itemIndex, isChecked ->
+                        viewModel.setItemChecked(
+                            checklistIndex,
+                            itemIndex,
+                            isChecked
+                        )
+                    },
+                    onItemNameFocus = { checklistIndex, itemName -> viewModel.focusItem(checklistIndex, itemName) },
+                    onItemNameChange = { checklistIndex, itemIndex, itemName ->
+                        viewModel.changeItemName(
+                            checklistIndex,
+                            itemIndex,
+                            itemName
+                        )
+                    },
+                    onItemNameSet = { checklistIndex, itemIndex, itemName ->
+                        viewModel.setItemName(
+                            checklistIndex,
+                            itemIndex,
+                            itemName
+                        )
+                    },
                     onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
                     onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
@@ -118,13 +142,13 @@ fun HomeScreen(
 private fun Content(
     checklists: ImmutableList<Checklist>,
     isContentVisible: Boolean,
-    onTitleFocus: (String) -> Unit,
+    onTitleFocus: (Int, String) -> Unit,
     onTitleSet: (Int, String) -> Unit,
     onChecklistUnfavorite: (Int) -> Unit,
     onChecklistDelete: (Int) -> Unit,
     onChecklistClear: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
-    onItemNameFocus: (String) -> Unit,
+    onItemNameFocus: (Int, String) -> Unit,
     onItemNameChange: (Int, Int, String) -> Unit,
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
@@ -165,7 +189,7 @@ private fun Content(
                     header = {
                         Header(
                             title = checklist.title,
-                            onTitleFocus = { title -> onTitleFocus(title) },
+                            onTitleFocus = { title -> onTitleFocus(checklistIndex, title) },
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
                             onChecklistDelete = { onChecklistDelete(checklistIndex) },
@@ -175,12 +199,18 @@ private fun Content(
                     },
                     items = ImmutableList.copyOf(checklist.items),
                     onItemCheck = { itemIndex, isChecked -> onItemCheck(checklistIndex, itemIndex, isChecked) },
-                    onItemNameFocus = { itemName -> onItemNameFocus(itemName) },
+                    onItemNameFocus = { itemName -> onItemNameFocus(checklistIndex, itemName) },
                     onItemNameChange = { itemIndex, itemName -> onItemNameChange(checklistIndex, itemIndex, itemName) },
                     onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
-                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
+                    onDividerCheck = { dividerIndex, isChecked ->
+                        onDividerCheck(
+                            checklistIndex,
+                            dividerIndex,
+                            isChecked
+                        )
+                    }
                 )
             }
         }

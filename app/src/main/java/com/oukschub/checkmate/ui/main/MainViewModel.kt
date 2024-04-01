@@ -32,4 +32,8 @@ class MainViewModel @Inject constructor(
             isAppReady = true
         }
     }
+
+    fun onPause() {
+        checklistRepository.updateChecklistOnPause()
+    }
 }

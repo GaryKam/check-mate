@@ -46,4 +46,11 @@ class MainActivity : ComponentActivity() {
         val content = findViewById<View>(android.R.id.content)
         content.viewTreeObserver.addOnPreDrawListener { viewModel.isAppReady }
     }
+
+    override fun onPause() {
+        super.onPause()
+        val viewModel: MainViewModel by viewModels()
+        Timber.d("ON PAUSE IN MAIN ACTIVITY YOOOOOOOT")
+        viewModel.onPause()
+    }
 }
