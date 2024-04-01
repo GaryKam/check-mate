@@ -14,7 +14,7 @@ class ProfileViewModel @Inject constructor(
     val displayName = userRepository.displayName
 
     fun setNewDisplayName(displayName: String) {
-        userRepository.setNewDisplayName(displayName)
+        userRepository.setNewDisplayName(displayName.trim())
     }
 
     fun signOut() {

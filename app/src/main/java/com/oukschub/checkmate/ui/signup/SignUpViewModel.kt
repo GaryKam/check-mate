@@ -54,7 +54,7 @@ class SignUpViewModel @Inject constructor(
             return
         }
 
-        displayNameChecker.check(displayName)
+        displayNameChecker.check(displayName.trim())
 
         val validEmail = emailRegex.matches(email)
 

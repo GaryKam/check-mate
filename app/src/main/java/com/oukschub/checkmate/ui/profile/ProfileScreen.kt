@@ -112,6 +112,7 @@ private fun ProfileName(name: String) {
         modifier = Modifier.padding(bottom = 5.dp),
         color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Medium,
+        maxLines = 1,
         style = MaterialTheme.typography.titleLarge
     )
 }
