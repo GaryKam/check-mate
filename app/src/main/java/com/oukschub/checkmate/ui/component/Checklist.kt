@@ -7,7 +7,10 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
@@ -99,14 +103,15 @@ private fun Checkboxes(
     onItemDelete: (Int) -> Unit,
     onDividerCheck: (Int, Boolean) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer)
             .animateContentSize()
             .fillMaxWidth()
+            .height(items.size * 44.dp)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 20.dp)
     ) {
-        for ((itemIndex, item) in items.withIndex()) {
+        itemsIndexed(items = items) { itemIndex, item ->
             if (item.isDivider) {
                 ChecklistDivider(
                     divider = item,
@@ -118,7 +123,9 @@ private fun Checkboxes(
                 )
             } else {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
@@ -171,7 +178,9 @@ private fun ChecklistDivider(
     onDividerDelete: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1.0F)) {
