@@ -177,9 +177,13 @@ private fun Content(
         contentPadding = PaddingValues(vertical = 20.dp)
     ) {
         itemsIndexed(
-            items = checklists.filter { it.isFavorite },
+            items = checklists,
             key = { _, checklist -> checklist.id }
         ) { checklistIndex, checklist ->
+            if (!checklist.isFavorite) {
+                return@itemsIndexed
+            }
+
             AnimatedVisibility(
                 visible = isContentVisible,
                 enter = fadeIn(tween(200, 80 * checklistIndex)) +
