@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +50,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
@@ -69,10 +67,6 @@ fun HomeScreen(
 ) {
     LaunchedEffect(Unit) {
         viewModel.isContentVisible = true
-    }
-
-    DisposableEffect(key1 = viewModel) {
-        onDispose { viewModel.onStop() }
     }
 
     Column(
@@ -99,37 +93,13 @@ fun HomeScreen(
                     onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
                     onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
                     onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
-                    onItemCheck = { checklistIndex, itemIndex, isChecked ->
-                        viewModel.setItemChecked(
-                            checklistIndex,
-                            itemIndex,
-                            isChecked
-                        )
-                    },
+                    onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
                     onItemNameFocus = { checklistIndex, itemName -> viewModel.focusItem(checklistIndex, itemName) },
-                    onItemNameChange = { checklistIndex, itemIndex, itemName ->
-                        viewModel.changeItemName(
-                            checklistIndex,
-                            itemIndex,
-                            itemName
-                        )
-                    },
-                    onItemNameSet = { checklistIndex, itemIndex, itemName ->
-                        viewModel.setItemName(
-                            checklistIndex,
-                            itemIndex,
-                            itemName
-                        )
-                    },
+                    onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+                    onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-                    onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
-                        viewModel.setDividerChecked(
-                            checklistIndex,
-                            dividerIndex,
-                            isChecked
-                        )
-                    },
+                    onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
                     onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
                     modifier = modifier
                 )
@@ -208,13 +178,7 @@ private fun Content(
                     onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
-                    onDividerCheck = { dividerIndex, isChecked ->
-                        onDividerCheck(
-                            checklistIndex,
-                            dividerIndex,
-                            isChecked
-                        )
-                    }
+                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
                 )
             }
         }

@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         val viewModel: MainViewModel by viewModels()
-        Timber.d("ON PAUSE IN MAIN ACTIVITY YOOOOOOOT")
         viewModel.onPause()
     }
 }

@@ -18,6 +18,9 @@ class ChecklistRepository @Inject constructor(
     /** The single source of checklists. */
     private val _checklists = mutableStateListOf<Checklist>()
 
+    /** Index of checklist most recently focused. */
+    var currentChecklist = -1
+
     /** A read-only copy for others to use. */
     val checklists: ImmutableList<Checklist>
         get() = ImmutableList.copyOf(_checklists)
@@ -217,6 +220,16 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
+     * Sets the checklist items upon pausing the application.
+     */
+    fun updateChecklistOnPause() {
+        if (currentChecklist != -1) {
+            val checklist = _checklists[currentChecklist]
+            database.updateChecklistItems(checklist.id, checklist.items)
+        }
+    }
+
+    /**
      * Sets the check status of all dividers according to the check status of items below.
      */
     private fun updateChecklistDividers(checklistIndex: Int) {
@@ -251,16 +264,6 @@ class ChecklistRepository @Inject constructor(
         if (requireUpdate) {
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
-        }
-    }
-
-    var currentChecklist = -1
-
-    fun updateChecklistOnPause() {
-        if (currentChecklist != -1) {
-            val checklist = _checklists[currentChecklist]
-            database.updateChecklistTitle(checklist.id, checklist.title)
-            database.updateChecklistItems(checklist.id, checklist.items)
         }
     }
 }

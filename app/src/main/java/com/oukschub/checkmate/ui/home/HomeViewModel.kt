@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import com.oukschub.checkmate.ui.checklists.CommonChecklistViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,21 +16,12 @@ class HomeViewModel @Inject constructor(
     var isContentVisible by mutableStateOf(false)
     private var initialTitle: String? = null
 
-    fun onStop() {
-        repository.checklists.forEach {
-            if (it.title == "booby!") {
-                Timber.d(it.items.toString())
-            }
-        }
-    }
-
     fun focusTitle(
         checklistIndex: Int,
         title: String
     ) {
-        initialTitle = title
         repository.currentChecklist = checklistIndex
-        Timber.d(repository.currentChecklist.toString())
+        initialTitle = title
     }
 
     fun setTitle(
