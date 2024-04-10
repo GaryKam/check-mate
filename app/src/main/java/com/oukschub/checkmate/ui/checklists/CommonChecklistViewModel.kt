@@ -6,7 +6,16 @@ import com.oukschub.checkmate.data.repository.ChecklistRepository
 open class CommonChecklistViewModel(
     private val repository: ChecklistRepository
 ) : ViewModel() {
+    private var initialTitle: String? = null
     private var initialItemName: String? = null
+
+    fun focusTitle(
+        checklistIndex: Int,
+        title: String
+    ) {
+        repository.currentChecklist = checklistIndex
+        initialTitle = title
+    }
 
     fun focusItem(
         checklistIndex: Int,
@@ -30,6 +39,16 @@ open class CommonChecklistViewModel(
         itemName: String
     ) {
         repository.changeItemName(checklistIndex, itemIndex, itemName)
+    }
+
+    fun setTitle(
+        checklistIndex: Int,
+        title: String
+    ) {
+        if (initialTitle != null && initialTitle != title) {
+            repository.updateChecklistTitle(checklistIndex, title)
+            initialTitle = null
+        }
     }
 
     fun setItemChecked(
@@ -59,6 +78,10 @@ open class CommonChecklistViewModel(
         repository.updateChecklistDivider(checklistIndex, dividerIndex, isChecked)
     }
 
+    fun unfavoriteChecklist(checklistIndex: Int) {
+        repository.updateChecklistFavorite(checklistIndex, false)
+    }
+
     fun clearChecklist(checklistIndex: Int) {
         repository.updateChecklistItems(checklistIndex)
     }
@@ -69,5 +92,11 @@ open class CommonChecklistViewModel(
     ) {
         initialItemName = null
         repository.deleteChecklistItem(checklistIndex, itemIndex)
+    }
+
+    open fun deleteChecklist(checklistIndex: Int) {
+        initialTitle = null
+        initialItemName = null
+        repository.deleteChecklist(checklistIndex)
     }
 }

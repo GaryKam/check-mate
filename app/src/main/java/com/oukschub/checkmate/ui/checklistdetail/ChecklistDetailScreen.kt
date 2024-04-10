@@ -93,7 +93,7 @@ fun ChecklistDetailScreen(
                     header = {
                         Header(
                             title = checklist.title,
-                            onTitleFocus = { title -> viewModel.focusTitle(title) },
+                            onTitleFocus = { title -> viewModel.focusTitle(checklistIndex, title) },
                             onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
                         )
                     },

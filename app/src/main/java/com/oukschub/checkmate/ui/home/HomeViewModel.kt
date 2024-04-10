@@ -14,31 +14,4 @@ class HomeViewModel @Inject constructor(
 ) : CommonChecklistViewModel(repository) {
     val checklists get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
-    private var initialTitle: String? = null
-
-    fun focusTitle(
-        checklistIndex: Int,
-        title: String
-    ) {
-        repository.currentChecklist = checklistIndex
-        initialTitle = title
-    }
-
-    fun setTitle(
-        checklistIndex: Int,
-        title: String
-    ) {
-        if (initialTitle != null && initialTitle != title) {
-            repository.updateChecklistTitle(checklistIndex, title)
-            initialTitle = null
-        }
-    }
-
-    fun unfavoriteChecklist(checklistIndex: Int) {
-        repository.updateChecklistFavorite(checklistIndex, false)
-    }
-
-    fun deleteChecklist(checklistIndex: Int) {
-        repository.deleteChecklist(checklistIndex)
-    }
 }
