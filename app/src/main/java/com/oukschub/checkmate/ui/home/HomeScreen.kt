@@ -99,6 +99,7 @@ fun HomeScreen(
                     onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+                    onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
                     onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
                         viewModel.setDividerChecked(
                             checklistIndex,
@@ -129,6 +130,7 @@ private fun Content(
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
+    onItemMove: (Int, Int, Int) -> Unit,
     onDividerCheck: (Int, Int, Boolean) -> Unit,
     onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -180,6 +182,7 @@ private fun Content(
                     onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
+                    onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
                     onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
                 )
             }

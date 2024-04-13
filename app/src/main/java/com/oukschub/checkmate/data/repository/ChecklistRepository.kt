@@ -142,6 +142,22 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
+     * Moves an item to another location within the checklist.
+     */
+    fun updateChecklistItem(
+        checklistIndex: Int,
+        fromIndex: Int,
+        toIndex: Int
+    ) {
+        _checklists[checklistIndex].items.toMutableList().apply {
+            add(toIndex, removeAt(fromIndex))
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+            database.updateChecklistItems(_checklists[checklistIndex].id, items)
+        }
+    }
+
+    /**
      * Sets all items in a checklist to be unchecked.
      */
     fun updateChecklistItems(checklistIndex: Int) {
