@@ -76,7 +76,8 @@ fun Checklist(
     onItemDelete: (Int) -> Unit,
     onItemMove: (Int, Int) -> Unit,
     onDividerCheck: (Int, Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEditing: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -91,6 +92,7 @@ fun Checklist(
         header()
         Checkboxes(
             items = items,
+            isEditing = isEditing,
             onItemCheck = onItemCheck,
             onItemNameFocus = onItemNameFocus,
             onItemNameChange = onItemNameChange,
@@ -106,6 +108,7 @@ fun Checklist(
 @Composable
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
+    isEditing: Boolean,
     onItemCheck: (Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
     onItemNameChange: (Int, String) -> Unit,
@@ -178,19 +181,21 @@ private fun Checkboxes(
                             singleLine = true
                         )
 
-                        Icon(
-                            painter = painterResource(R.drawable.ic_reorder),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .detectReorder(state)
-                                .scale(0.5F)
-                        )
-
-                        IconButton(onClick = { onItemDelete(itemIndex) }) {
+                        if (isEditing) {
                             Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                                painter = painterResource(R.drawable.ic_reorder),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .detectReorder(state)
+                                    .scale(0.5F)
                             )
+
+                            IconButton(onClick = { onItemDelete(itemIndex) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                                )
+                            }
                         }
                     }
                 }

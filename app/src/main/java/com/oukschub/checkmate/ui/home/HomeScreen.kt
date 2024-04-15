@@ -32,6 +32,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -100,13 +101,7 @@ fun HomeScreen(
                     onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
                     onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
-                    onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
-                        viewModel.setDividerChecked(
-                            checklistIndex,
-                            dividerIndex,
-                            isChecked
-                        )
-                    },
+                    onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
                     onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
                     modifier = modifier
                 )
@@ -136,6 +131,7 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
+    var editIndex by remember { mutableIntStateOf(-1) }
 
     LazyColumn(
         modifier = modifier
@@ -172,6 +168,7 @@ private fun Content(
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
                             onChecklistDelete = { onChecklistDelete(checklistIndex) },
                             onChecklistClear = { onChecklistClear(checklistIndex) },
+                            onChecklistEdit = { editIndex = checklistIndex },
                             onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
@@ -183,7 +180,8 @@ private fun Content(
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
                     onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
-                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
+                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) },
+                    isEditing = editIndex == checklistIndex
                 )
             }
         }
@@ -198,6 +196,7 @@ private fun Header(
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
     onChecklistClear: () -> Unit,
+    onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     Row(
@@ -266,6 +265,14 @@ private fun Header(
                     onClick = {
                         isMenuVisible = false
                         onChecklistClear()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Edit Checklist") },
+                    onClick = {
+                        isMenuVisible = false
+                        onChecklistEdit()
                     }
                 )
 
