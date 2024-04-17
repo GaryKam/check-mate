@@ -57,6 +57,7 @@ import com.oukschub.checkmate.data.model.ChecklistItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
@@ -138,12 +139,14 @@ private fun Checkboxes(
                 if (item.isDivider) {
                     ChecklistDivider(
                         divider = item,
+                        state = state,
                         onDividerNameChange = { onItemNameChange(itemIndex, it) },
                         onDividerNameFocus = { onItemNameFocus(it) },
                         onDividerSet = { onItemNameSet(itemIndex, it) },
                         onDividerCheck = { onDividerCheck(itemIndex, it) },
                         onDividerDelete = { onItemDelete(itemIndex) },
-                        modifier = Modifier.shadow(elevation.value)
+                        modifier = Modifier.shadow(elevation.value),
+                        isEditing = isEditing
                     )
                 } else {
                     Row(
@@ -207,12 +210,14 @@ private fun Checkboxes(
 @Composable
 private fun ChecklistDivider(
     divider: ChecklistItem,
+    state: ReorderableLazyListState,
     onDividerNameChange: (String) -> Unit,
     onDividerNameFocus: (String) -> Unit,
     onDividerSet: (String) -> Unit,
     onDividerCheck: (Boolean) -> Unit,
     onDividerDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEditing: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -240,11 +245,21 @@ private fun ChecklistDivider(
             Divider(color = MaterialTheme.colorScheme.secondary)
         }
 
-        IconButton(onClick = { onDividerDelete() }) {
+        if (isEditing) {
             Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                painter = painterResource(R.drawable.ic_reorder),
+                contentDescription = null,
+                modifier = Modifier
+                    .detectReorder(state)
+                    .scale(0.5F)
             )
+
+            IconButton(onClick = { onDividerDelete() }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                )
+            }
         }
 
         Checkbox(
