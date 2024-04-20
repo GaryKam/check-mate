@@ -101,6 +101,7 @@ fun HomeScreen(
                     onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
                     onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
+                    onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) },
                     onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
                     onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
                     modifier = modifier
@@ -126,6 +127,7 @@ private fun Content(
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
     onItemMove: (Int, Int, Int) -> Unit,
+    onItemMoveDone: (Int) -> Unit,
     onDividerCheck: (Int, Int, Boolean) -> Unit,
     onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -180,6 +182,7 @@ private fun Content(
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
                     onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
+                    onItemMoveDone = { onItemMoveDone(checklistIndex) },
                     onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) },
                     isEditing = editIndex == checklistIndex
                 )
@@ -269,7 +272,7 @@ private fun Header(
                 )
 
                 DropdownMenuItem(
-                    text = { Text("Edit Checklist") },
+                    text = { Text(stringResource(R.string.checklist_edit)) },
                     onClick = {
                         isMenuVisible = false
                         onChecklistEdit()
