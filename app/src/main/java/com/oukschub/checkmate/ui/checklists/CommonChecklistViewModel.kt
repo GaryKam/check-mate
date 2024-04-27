@@ -82,6 +82,18 @@ open class CommonChecklistViewModel(
         repository.updateChecklistFavorite(checklistIndex, false)
     }
 
+    fun moveItem(
+        checklistIndex: Int,
+        fromIndex: Int,
+        toIndex: Int
+    ) {
+        repository.moveChecklistItem(checklistIndex, fromIndex, toIndex)
+    }
+
+    fun finishMovingItem(checklistIndex: Int) {
+        repository.updateChecklistItemPositions(checklistIndex)
+    }
+
     fun clearChecklist(checklistIndex: Int) {
         repository.updateChecklistItems(checklistIndex)
     }

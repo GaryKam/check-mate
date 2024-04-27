@@ -39,6 +39,21 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
+     * Allows user to see latest item position while dragging. Modifies local [_checklists].
+     */
+    fun moveChecklistItem(
+        checklistIndex: Int,
+        fromIndex: Int,
+        toIndex: Int
+    ) {
+        _checklists[checklistIndex].items.toMutableList().apply {
+            add(toIndex, removeAt(fromIndex))
+        }.also { items ->
+            _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
+        }
+    }
+
+    /**
      * Removes all checklist data. Modifies local [_checklists].
      */
     fun clearChecklists() {
@@ -142,6 +157,16 @@ class ChecklistRepository @Inject constructor(
             _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
             database.updateChecklistItems(_checklists[checklistIndex].id, items)
         }
+    }
+
+    /**
+     * Sets the positions of all items after user has finished dragging.
+     */
+    fun updateChecklistItemPositions(checklistIndex: Int) {
+        val items = _checklists[checklistIndex].items
+        database.updateChecklistItems(_checklists[checklistIndex].id, items)
+
+        updateChecklistDividers(checklistIndex)
     }
 
     /**
