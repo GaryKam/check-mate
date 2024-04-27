@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.ui.checklists
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
@@ -93,21 +94,15 @@ fun ChecklistsScreen(
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
             ) {
-                if (viewModel.checklists.isEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        SadCheckmate()
-                    }
-                } else {
-                    Content(
-                        checklists = viewModel.checklists,
-                        onChecklistFavorite = { checklistIndex -> viewModel.favoriteChecklist(checklistIndex) },
-                        onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) }
-                    )
+                AnimatedVisibility(visible = viewModel.checklists.isEmpty()) {
+                    SadCheckmate()
                 }
+
+                Content(
+                    checklists = viewModel.checklists,
+                    onChecklistFavorite = { checklistIndex -> viewModel.favoriteChecklist(checklistIndex) },
+                    onChecklistClick = { checklistIndex -> onChecklistClick(checklistIndex) }
+                )
             }
         }
     }

@@ -125,7 +125,6 @@ private fun Checkboxes(
         onMove = { from, to -> onItemMove(from.index, to.index) },
         onDragEnd = { fromIndex, toIndex -> onItemMoveDone() }
     )
-
     LazyColumn(
         modifier = Modifier
             .animateContentSize()

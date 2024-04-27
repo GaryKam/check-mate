@@ -93,13 +93,13 @@ fun ChecklistDetailScreen(
                     header = {
                         Header(
                             title = checklist.title,
-                            onTitleFocus = { title -> viewModel.focusTitle(title) },
+                            onTitleFocus = { title -> viewModel.focusTitle(checklistIndex, title) },
                             onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
                         )
                     },
                     items = ImmutableList.copyOf(checklist.items),
                     onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
-                    onItemNameFocus = { itemName -> viewModel.focusItem(itemName) },
+                    onItemNameFocus = { itemName -> viewModel.focusItem(checklistIndex, itemName) },
                     onItemNameChange = { itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
                     onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
