@@ -1,13 +1,17 @@
 package com.oukschub.checkmate.ui.component
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
@@ -34,20 +38,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.burnoutcrew.reorderable.detectReorder
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 /**
  * A container that displays information associated to a checklist.
@@ -62,8 +75,11 @@ fun Checklist(
     onItemNameSet: (Int, String) -> Unit,
     onItemAdd: (String) -> Unit,
     onItemDelete: (Int) -> Unit,
+    onItemMove: (Int, Int) -> Unit,
     onDividerCheck: (Int, Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEditing: Boolean = false,
+    onItemMoveDone: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -78,12 +94,15 @@ fun Checklist(
         header()
         Checkboxes(
             items = items,
+            isEditing = isEditing,
             onItemCheck = onItemCheck,
             onItemNameFocus = onItemNameFocus,
             onItemNameChange = onItemNameChange,
             onItemNameSet = onItemNameSet,
             onItemDelete = onItemDelete,
-            onDividerCheck = onDividerCheck
+            onItemMove = onItemMove,
+            onDividerCheck = onDividerCheck,
+            onItemMoveDone = onItemMoveDone
         )
         InputField(onItemAdd = onItemAdd)
     }
@@ -92,68 +111,99 @@ fun Checklist(
 @Composable
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
+    isEditing: Boolean,
     onItemCheck: (Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
     onItemNameChange: (Int, String) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
     onItemDelete: (Int) -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit
+    onItemMove: (Int, Int) -> Unit,
+    onDividerCheck: (Int, Boolean) -> Unit,
+    onItemMoveDone: () -> Unit
 ) {
-    Column(
+    val state = rememberReorderableLazyListState(
+        onMove = { from, to -> onItemMove(from.index, to.index) },
+        onDragEnd = { fromIndex, toIndex -> onItemMoveDone() }
+    )
+
+    LazyColumn(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer)
             .animateContentSize()
             .fillMaxWidth()
+            .height(items.size * 44.dp)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 20.dp)
+            .reorderable(state),
+        state = state.listState
     ) {
-        for ((itemIndex, item) in items.withIndex()) {
-            if (item.isDivider) {
-                ChecklistDivider(
-                    divider = item,
-                    onDividerNameChange = { onItemNameChange(itemIndex, it) },
-                    onDividerNameFocus = { onItemNameFocus(it) },
-                    onDividerSet = { onItemNameSet(itemIndex, it) },
-                    onDividerCheck = { onDividerCheck(itemIndex, it) },
-                    onDividerDelete = { onItemDelete(itemIndex) }
-                )
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = item.isChecked,
-                        onCheckedChange = { onItemCheck(itemIndex, it) }
-                    )
+        itemsIndexed(items = items) { itemIndex, item ->
+            ReorderableItem(state = state, index = itemIndex, key = item) { isDragging ->
+                val elevation = animateDpAsState(if (isDragging) 3.dp else 0.dp, label = "ElevationAnimation")
 
-                    BasicTextField(
-                        value = item.name,
-                        onValueChange = { onItemNameChange(itemIndex, it) },
+                if (item.isDivider) {
+                    ChecklistDivider(
+                        divider = item,
+                        state = state,
+                        onDividerNameChange = { onItemNameChange(itemIndex, it) },
+                        onDividerNameFocus = { onItemNameFocus(it) },
+                        onDividerSet = { onItemNameSet(itemIndex, it) },
+                        onDividerCheck = { onDividerCheck(itemIndex, it) },
+                        onDividerDelete = { onItemDelete(itemIndex) },
+                        modifier = Modifier.shadow(elevation.value),
+                        isEditing = isEditing
+                    )
+                } else {
+                    Row(
                         modifier = Modifier
-                            .weight(1.0F)
-                            .onFocusChanged { focusState ->
-                                if (focusState.isFocused) {
-                                    onItemNameFocus(item.name)
-                                } else {
-                                    onItemNameSet(itemIndex, item.name)
-                                }
-                            },
-                        enabled = !item.isChecked,
-                        textStyle = TextStyle(
-                            textDecoration = if (item.isChecked) {
-                                TextDecoration.LineThrough
-                            } else {
-                                TextDecoration.None
-                            }
-                        ),
-                        singleLine = true
-                    )
-
-                    IconButton(onClick = { onItemDelete(itemIndex) }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                            .shadow(elevation.value)
+                            .fillMaxWidth()
+                            .height(44.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = item.isChecked,
+                            onCheckedChange = { onItemCheck(itemIndex, it) }
                         )
+
+                        BasicTextField(
+                            value = item.name,
+                            onValueChange = { onItemNameChange(itemIndex, it) },
+                            modifier = Modifier
+                                .weight(1.0F)
+                                .onFocusChanged { focusState ->
+                                    if (focusState.isFocused) {
+                                        onItemNameFocus(item.name)
+                                    } else {
+                                        onItemNameSet(itemIndex, item.name)
+                                    }
+                                },
+                            enabled = !item.isChecked,
+                            textStyle = TextStyle(
+                                textDecoration = if (item.isChecked) {
+                                    TextDecoration.LineThrough
+                                } else {
+                                    TextDecoration.None
+                                }
+                            ),
+                            singleLine = true
+                        )
+
+                        if (isEditing) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_reorder),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .detectReorder(state)
+                                    .scale(0.5F)
+                            )
+
+                            IconButton(onClick = { onItemDelete(itemIndex) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -164,14 +214,19 @@ private fun Checkboxes(
 @Composable
 private fun ChecklistDivider(
     divider: ChecklistItem,
+    state: ReorderableLazyListState,
     onDividerNameChange: (String) -> Unit,
     onDividerNameFocus: (String) -> Unit,
     onDividerSet: (String) -> Unit,
     onDividerCheck: (Boolean) -> Unit,
-    onDividerDelete: () -> Unit
+    onDividerDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+    isEditing: Boolean = false
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(44.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1.0F)) {
@@ -194,11 +249,21 @@ private fun ChecklistDivider(
             Divider(color = MaterialTheme.colorScheme.secondary)
         }
 
-        IconButton(onClick = { onDividerDelete() }) {
+        if (isEditing) {
             Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                painter = painterResource(R.drawable.ic_reorder),
+                contentDescription = null,
+                modifier = Modifier
+                    .detectReorder(state)
+                    .scale(0.5F)
             )
+
+            IconButton(onClick = { onDividerDelete() }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.desc_delete_checklist_item)
+                )
+            }
         }
 
         Checkbox(

@@ -104,6 +104,7 @@ fun ChecklistDetailScreen(
                     onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+                    onItemMove = { _, _ -> },
                     onDividerCheck = { dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) }
                 )
             }

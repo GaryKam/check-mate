@@ -32,6 +32,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -99,13 +100,9 @@ fun HomeScreen(
                     onItemNameSet = { checklistIndex, itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-                    onDividerCheck = { checklistIndex, dividerIndex, isChecked ->
-                        viewModel.setDividerChecked(
-                            checklistIndex,
-                            dividerIndex,
-                            isChecked
-                        )
-                    },
+                    onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
+                    onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) },
+                    onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
                     onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
                     modifier = modifier
                 )
@@ -129,11 +126,14 @@ private fun Content(
     onItemNameSet: (Int, Int, String) -> Unit,
     onItemAdd: (Int, String) -> Unit,
     onItemDelete: (Int, Int) -> Unit,
+    onItemMove: (Int, Int, Int) -> Unit,
+    onItemMoveDone: (Int) -> Unit,
     onDividerCheck: (Int, Int, Boolean) -> Unit,
     onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
+    var editIndex by remember { mutableIntStateOf(-1) }
 
     LazyColumn(
         modifier = modifier
@@ -153,9 +153,13 @@ private fun Content(
         contentPadding = PaddingValues(vertical = 20.dp)
     ) {
         itemsIndexed(
-            items = checklists.filter { it.isFavorite },
+            items = checklists,
             key = { _, checklist -> checklist.id }
         ) { checklistIndex, checklist ->
+            if (!checklist.isFavorite) {
+                return@itemsIndexed
+            }
+
             AnimatedVisibility(
                 visible = isContentVisible,
                 enter = fadeIn(tween(200, 80 * checklistIndex)) +
@@ -170,6 +174,7 @@ private fun Content(
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
                             onChecklistDelete = { onChecklistDelete(checklistIndex) },
                             onChecklistClear = { onChecklistClear(checklistIndex) },
+                            onChecklistEdit = { editIndex = checklistIndex },
                             onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
@@ -180,7 +185,10 @@ private fun Content(
                     onItemNameSet = { itemIndex, itemName -> onItemNameSet(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> onItemAdd(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
-                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) }
+                    onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
+                    onItemMoveDone = { onItemMoveDone(checklistIndex) },
+                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) },
+                    isEditing = editIndex == checklistIndex
                 )
             }
         }
@@ -195,6 +203,7 @@ private fun Header(
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
     onChecklistClear: () -> Unit,
+    onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     Row(
@@ -263,6 +272,14 @@ private fun Header(
                     onClick = {
                         isMenuVisible = false
                         onChecklistClear()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.checklist_edit)) },
+                    onClick = {
+                        isMenuVisible = false
+                        onChecklistEdit()
                     }
                 )
 

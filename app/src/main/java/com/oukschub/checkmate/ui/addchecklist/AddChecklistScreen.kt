@@ -83,6 +83,7 @@ fun AddChecklistScreen(
                 onItemNameSet = { _, _ -> },
                 onItemAdd = { itemName -> viewModel.addItem(itemName) },
                 onItemDelete = { itemIndex -> viewModel.deleteItem(itemIndex) },
+                onItemMove = { _, _ -> },
                 onDividerCheck = { _, _ -> }
             )
 
