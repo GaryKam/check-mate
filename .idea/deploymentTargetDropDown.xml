@@ -2,7 +2,16 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="AuthNavigationTest">
+        <State />
+      </entry>
+      <entry key="BottomBarNavigationTest">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="test_nav()">
         <State />
       </entry>
     </value>

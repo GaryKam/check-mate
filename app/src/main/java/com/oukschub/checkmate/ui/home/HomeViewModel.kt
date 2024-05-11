@@ -4,6 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.google.common.collect.ImmutableList
+import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import com.oukschub.checkmate.ui.checklists.CommonChecklistViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : CommonChecklistViewModel(repository) {
-    val checklists get() = repository.checklists
+    val checklists: ImmutableList<Checklist>
+        get() = repository.checklists
     var isContentVisible by mutableStateOf(false)
         private set
     var isSadCheckMateVisible by mutableStateOf(false)

@@ -131,7 +131,7 @@ private fun Backdrop(
             IconButton(onClick = onExpand) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.desc_checklist_backdrop),
+                    contentDescription = stringResource(R.string.desc_checklists_backdrop),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -187,7 +187,7 @@ private fun HiddenSearchBar(
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = stringResource(R.string.checklists_search),
+                contentDescription = stringResource(R.string.desc_checklists_search),
                 tint = iconColor
             )
         }
