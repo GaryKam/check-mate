@@ -75,6 +75,7 @@ fun ChecklistDetailScreen(
                     viewModel.deleteChecklist(checklistIndex)
                 },
                 onChecklistClear = { viewModel.clearChecklist(checklistIndex) },
+                onChecklistEdit = { viewModel.editChecklist() },
                 onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
             )
         }
@@ -104,8 +105,10 @@ fun ChecklistDetailScreen(
                     onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
                     onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
                     onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-                    onItemMove = { _, _ -> },
-                    onDividerCheck = { dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) }
+                    onItemMove = { fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
+                    onItemMoveDone = { viewModel.finishMovingItem(checklistIndex) },
+                    onDividerCheck = { dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
+                    isEditing = viewModel.isEditingChecklist
                 )
             }
         }
@@ -120,6 +123,7 @@ private fun TopBar(
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
     onChecklistClear: () -> Unit,
+    onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     TopAppBar(
@@ -170,6 +174,14 @@ private fun TopBar(
                         onClick = {
                             isMenuVisible = false
                             onChecklistClear()
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.checklist_edit)) },
+                        onClick = {
+                            isMenuVisible = false
+                            onChecklistEdit()
                         }
                     )
 

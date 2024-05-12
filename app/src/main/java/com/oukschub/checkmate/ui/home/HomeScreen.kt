@@ -99,7 +99,7 @@ fun HomeScreen(
                 onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
                 onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) },
                 onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
-                onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
+                onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) }
             )
         }
     }
