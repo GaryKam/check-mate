@@ -13,6 +13,8 @@ import javax.inject.Inject
 class ChecklistDetailViewModel @Inject constructor(
     private val repository: ChecklistRepository
 ) : CommonChecklistViewModel(repository) {
+    var isDeletePromptVisible by mutableStateOf(false)
+        private set
     var isEditingChecklist by mutableStateOf(false)
         private set
     private var isDeletingChecklist = false
@@ -23,6 +25,14 @@ class ChecklistDetailViewModel @Inject constructor(
 
     fun editChecklist() {
         isEditingChecklist = !isEditingChecklist
+    }
+
+    fun promptDeleteChecklist() {
+        isDeletePromptVisible = true
+    }
+
+    fun hideDeleteChecklistDialog() {
+        isDeletePromptVisible = false
     }
 
     override fun deleteChecklist(checklistIndex: Int) {

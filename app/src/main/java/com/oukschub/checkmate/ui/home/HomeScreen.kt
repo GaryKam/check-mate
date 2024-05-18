@@ -86,7 +86,7 @@ fun HomeScreen(
                 isContentVisible = viewModel.isContentVisible,
                 editChecklistIndex = viewModel.editChecklistIndex,
                 deleteChecklistIndex = viewModel.deleteChecklistIndex,
-                onDeleteDismiss = { viewModel.stopDeletingChecklist() },
+                onDeleteDismiss = { viewModel.hideDeleteChecklistDialog() },
                 onDeleteConfirm = { viewModel.deleteChecklist() },
                 onTitleFocus = { checklistIndex, title -> viewModel.focusTitle(checklistIndex, title) },
                 onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },

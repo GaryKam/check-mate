@@ -46,7 +46,7 @@ class HomeViewModel @Inject constructor(
         deleteChecklistIndex = checklistIndex
     }
 
-    fun stopDeletingChecklist() {
+    fun hideDeleteChecklistDialog() {
         deleteChecklistIndex = -1
     }
 

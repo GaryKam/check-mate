@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.ui.checklistdetail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -65,17 +68,12 @@ fun ChecklistDetailScreen(
             val dividerText = stringResource(R.string.checklist_default_divider)
             TopBar(
                 isEditing = viewModel.isEditingChecklist,
-                isFavorite = checklist?.isFavorite ?: false,
                 onBack = {
                     focusManager.clearFocus()
                     onBack()
                 },
                 onChecklistEdit = { viewModel.editChecklist() },
-                onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
-                onChecklistDelete = {
-                    onDelete()
-                    viewModel.deleteChecklist(checklistIndex)
-                },
+                onChecklistPromptDelete = { viewModel.promptDeleteChecklist() },
                 onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
             )
         }
@@ -112,17 +110,26 @@ fun ChecklistDetailScreen(
             }
         }
     }
+
+    AnimatedVisibility(visible = viewModel.isDeletePromptVisible) {
+        DeleteChecklistDialog(
+            onDismiss = { viewModel.hideDeleteChecklistDialog() },
+            onConfirm = {
+                onDelete()
+                viewModel.hideDeleteChecklistDialog()
+                viewModel.deleteChecklist(checklistIndex)
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     isEditing: Boolean,
-    isFavorite: Boolean,
     onBack: () -> Unit,
     onChecklistEdit: () -> Unit,
-    onChecklistUnfavorite: () -> Unit,
-    onChecklistDelete: () -> Unit,
+    onChecklistPromptDelete: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     TopAppBar(
@@ -158,21 +165,11 @@ private fun TopBar(
                         }
                     )
 
-                    if (isFavorite) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.checklist_unfavorite)) },
-                            onClick = {
-                                isMenuVisible = false
-                                onChecklistUnfavorite()
-                            }
-                        )
-                    }
-
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.checklist_delete)) },
                         onClick = {
                             isMenuVisible = false
-                            onChecklistDelete()
+                            onChecklistPromptDelete()
                         }
                     )
 
@@ -223,4 +220,30 @@ private fun Header(
             }
         )
     }
+}
+
+@Composable
+private fun DeleteChecklistDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                    onConfirm()
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        text = { Text(stringResource(R.string.checklist_delete_prompt)) }
+    )
 }
