@@ -1,6 +1,7 @@
 package com.oukschub.checkmate.ui.home
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
@@ -23,6 +24,8 @@ class HomeViewModel @Inject constructor(
         private set
     var isSadCheckMateVisible by mutableStateOf(false)
         private set
+    var editChecklistIndex by mutableIntStateOf(-1)
+        private set
 
     init {
         isContentVisible = true
@@ -31,5 +34,9 @@ class HomeViewModel @Inject constructor(
             delay(500L)
             isSadCheckMateVisible = true
         }
+    }
+
+    fun editChecklist(checklistIndex: Int) {
+        editChecklistIndex = if (checklistIndex == editChecklistIndex) -1 else checklistIndex
     }
 }

@@ -47,6 +47,7 @@
     <string name="checklist_delete">Delete Checklist</string>
     <string name="checklist_clear">Clear Checklist</string>
     <string name="checklist_edit">Edit</string>
+    <string name="checklist_edit_stop">Stop Editing</string>
     <string name="checklist_add_divider">Add Divider</string>
     <string name="checklist_default_divider">Divider</string>
 

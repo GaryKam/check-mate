@@ -64,17 +64,18 @@ fun ChecklistDetailScreen(
         topBar = {
             val dividerText = stringResource(R.string.checklist_default_divider)
             TopBar(
+                isEditing = viewModel.isEditingChecklist,
                 isFavorite = checklist?.isFavorite ?: false,
                 onBack = {
                     focusManager.clearFocus()
                     onBack()
                 },
+                onChecklistEdit = { viewModel.editChecklist() },
                 onChecklistUnfavorite = { viewModel.unfavoriteChecklist(checklistIndex) },
                 onChecklistDelete = {
                     onDelete()
                     viewModel.deleteChecklist(checklistIndex)
                 },
-                onChecklistEdit = { viewModel.editChecklist() },
                 onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
             )
         }
@@ -116,11 +117,12 @@ fun ChecklistDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    isEditing: Boolean,
     isFavorite: Boolean,
     onBack: () -> Unit,
+    onChecklistEdit: () -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
-    onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     TopAppBar(
@@ -148,6 +150,14 @@ private fun TopBar(
                     expanded = isMenuVisible,
                     onDismissRequest = { isMenuVisible = false }
                 ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(if (isEditing) R.string.checklist_edit_stop else R.string.checklist_edit)) },
+                        onClick = {
+                            isMenuVisible = false
+                            onChecklistEdit()
+                        }
+                    )
+
                     if (isFavorite) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.checklist_unfavorite)) },
@@ -163,14 +173,6 @@ private fun TopBar(
                         onClick = {
                             isMenuVisible = false
                             onChecklistDelete()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.checklist_edit)) },
-                        onClick = {
-                            isMenuVisible = false
-                            onChecklistEdit()
                         }
                     )
 

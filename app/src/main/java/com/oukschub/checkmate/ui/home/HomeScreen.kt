@@ -31,7 +31,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -85,8 +84,10 @@ fun HomeScreen(
             Content(
                 checklists = viewModel.checklists,
                 isContentVisible = viewModel.isContentVisible,
+                editChecklistIndex = viewModel.editChecklistIndex,
                 onTitleFocus = { checklistIndex, title -> viewModel.focusTitle(checklistIndex, title) },
                 onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
+                onChecklistEdit = { checklistIndex -> viewModel.editChecklist(checklistIndex) },
                 onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
                 onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
                 onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
@@ -107,8 +108,10 @@ fun HomeScreen(
 private fun Content(
     checklists: ImmutableList<Checklist>,
     isContentVisible: Boolean,
+    editChecklistIndex: Int,
     onTitleFocus: (Int, String) -> Unit,
     onTitleSet: (Int, String) -> Unit,
+    onChecklistEdit: (Int) -> Unit,
     onChecklistUnfavorite: (Int) -> Unit,
     onChecklistDelete: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
@@ -123,7 +126,6 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    var editIndex by remember { mutableIntStateOf(-1) }
 
     LazyColumn(
         modifier = modifier
@@ -159,11 +161,12 @@ private fun Content(
                     header = {
                         Header(
                             title = checklist.title,
+                            isEditing = checklistIndex == editChecklistIndex,
                             onTitleFocus = { title -> onTitleFocus(checklistIndex, title) },
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
+                            onChecklistEdit = { onChecklistEdit(checklistIndex) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
                             onChecklistDelete = { onChecklistDelete(checklistIndex) },
-                            onChecklistEdit = { editIndex = checklistIndex },
                             onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
@@ -176,7 +179,7 @@ private fun Content(
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
                     onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
                     onItemMoveDone = { onItemMoveDone(checklistIndex) },
-                    isEditing = editIndex == checklistIndex
+                    isEditing = checklistIndex == editChecklistIndex
                 )
             }
         }
@@ -186,11 +189,12 @@ private fun Content(
 @Composable
 private fun Header(
     title: String,
+    isEditing: Boolean,
     onTitleFocus: (String) -> Unit,
     onTitleSet: (String) -> Unit,
+    onChecklistEdit: () -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
-    onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     Row(
@@ -239,6 +243,14 @@ private fun Header(
                 onDismissRequest = { isMenuVisible = false }
             ) {
                 DropdownMenuItem(
+                    text = { Text(stringResource(if (isEditing) R.string.checklist_edit_stop else R.string.checklist_edit)) },
+                    onClick = {
+                        isMenuVisible = false
+                        onChecklistEdit()
+                    }
+                )
+
+                DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_unfavorite)) },
                     onClick = {
                         isMenuVisible = false
@@ -251,14 +263,6 @@ private fun Header(
                     onClick = {
                         isMenuVisible = false
                         onChecklistDelete()
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.checklist_edit)) },
-                    onClick = {
-                        isMenuVisible = false
-                        onChecklistEdit()
                     }
                 )
 
