@@ -170,18 +170,6 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
-     * Sets all items in a checklist to be unchecked.
-     */
-    fun updateChecklistItems(checklistIndex: Int) {
-        _checklists[checklistIndex].items.toMutableList()
-            .map { item -> item.copy(isChecked = false) }
-            .also { items ->
-                _checklists[checklistIndex] = _checklists[checklistIndex].copy(items = items)
-                database.updateChecklistItems(_checklists[checklistIndex].id, items)
-            }
-    }
-
-    /**
      * Sets a divider's check status, and all items below it.
      */
     fun updateChecklistDivider(

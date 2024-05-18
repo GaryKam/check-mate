@@ -74,7 +74,6 @@ fun ChecklistDetailScreen(
                     onDelete()
                     viewModel.deleteChecklist(checklistIndex)
                 },
-                onChecklistClear = { viewModel.clearChecklist(checklistIndex) },
                 onChecklistEdit = { viewModel.editChecklist() },
                 onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
             )
@@ -122,7 +121,6 @@ private fun TopBar(
     onBack: () -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
-    onChecklistClear: () -> Unit,
     onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
@@ -166,14 +164,6 @@ private fun TopBar(
                         onClick = {
                             isMenuVisible = false
                             onChecklistDelete()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.checklist_clear)) },
-                        onClick = {
-                            isMenuVisible = false
-                            onChecklistClear()
                         }
                     )
 

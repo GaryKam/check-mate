@@ -89,7 +89,6 @@ fun HomeScreen(
                 onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
                 onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
                 onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
-                onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
                 onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
                 onItemNameFocus = { checklistIndex, itemName -> viewModel.focusItem(checklistIndex, itemName) },
                 onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
@@ -113,7 +112,6 @@ private fun Content(
     onTitleSet: (Int, String) -> Unit,
     onChecklistUnfavorite: (Int) -> Unit,
     onChecklistDelete: (Int) -> Unit,
-    onChecklistClear: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (Int, String) -> Unit,
     onItemNameChange: (Int, Int, String) -> Unit,
@@ -167,7 +165,6 @@ private fun Content(
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
                             onChecklistDelete = { onChecklistDelete(checklistIndex) },
-                            onChecklistClear = { onChecklistClear(checklistIndex) },
                             onChecklistEdit = { editIndex = checklistIndex },
                             onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
@@ -196,7 +193,6 @@ private fun Header(
     onTitleSet: (String) -> Unit,
     onChecklistUnfavorite: () -> Unit,
     onChecklistDelete: () -> Unit,
-    onChecklistClear: () -> Unit,
     onChecklistEdit: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
@@ -258,14 +254,6 @@ private fun Header(
                     onClick = {
                         isMenuVisible = false
                         onChecklistDelete()
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.checklist_clear)) },
-                    onClick = {
-                        isMenuVisible = false
-                        onChecklistClear()
                     }
                 )
 
