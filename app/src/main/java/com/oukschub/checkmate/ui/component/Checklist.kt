@@ -77,7 +77,6 @@ fun Checklist(
     onItemDelete: (Int) -> Unit,
     onItemMove: (Int, Int) -> Unit,
     onItemMoveDone: () -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     isEditing: Boolean = false
 ) {
@@ -101,7 +100,6 @@ fun Checklist(
             onItemNameSet = onItemNameSet,
             onItemDelete = onItemDelete,
             onItemMove = onItemMove,
-            onDividerCheck = onDividerCheck,
             onItemMoveDone = onItemMoveDone
         )
         InputField(onItemAdd = onItemAdd)
@@ -118,7 +116,6 @@ private fun Checkboxes(
     onItemNameSet: (Int, String) -> Unit,
     onItemDelete: (Int) -> Unit,
     onItemMove: (Int, Int) -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit,
     onItemMoveDone: () -> Unit
 ) {
     val state = rememberReorderableLazyListState(
@@ -146,7 +143,7 @@ private fun Checkboxes(
                         onDividerNameChange = { onItemNameChange(itemIndex, it) },
                         onDividerNameFocus = { onItemNameFocus(it) },
                         onDividerSet = { onItemNameSet(itemIndex, it) },
-                        onDividerCheck = { onDividerCheck(itemIndex, it) },
+                        onDividerCheck = { onItemCheck(itemIndex, it) },
                         onDividerDelete = { onItemDelete(itemIndex) },
                         modifier = Modifier.shadow(elevation.value),
                         isEditing = isEditing

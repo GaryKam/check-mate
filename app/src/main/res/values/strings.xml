@@ -43,10 +43,10 @@
     // Checklist
     <string name="checklist_title_placeholder">Title</string>
     <string name="checklist_type_placeholder">Type here…</string>
-    <string name="checklist_unfavorite">Remove Favorite</string>
+    <string name="checklist_unfavorite">Unfavorite</string>
     <string name="checklist_delete">Delete Checklist</string>
     <string name="checklist_clear">Clear Checklist</string>
-    <string name="checklist_edit">Edit Checklist</string>
+    <string name="checklist_edit">Edit</string>
     <string name="checklist_add_divider">Add Divider</string>
     <string name="checklist_default_divider">Divider</string>
 
