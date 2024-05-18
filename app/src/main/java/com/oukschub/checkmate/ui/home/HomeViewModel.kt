@@ -26,6 +26,8 @@ class HomeViewModel @Inject constructor(
         private set
     var editChecklistIndex by mutableIntStateOf(-1)
         private set
+    var deleteChecklistIndex by mutableIntStateOf(-1)
+        private set
 
     init {
         isContentVisible = true
@@ -38,5 +40,18 @@ class HomeViewModel @Inject constructor(
 
     fun editChecklist(checklistIndex: Int) {
         editChecklistIndex = if (checklistIndex == editChecklistIndex) -1 else checklistIndex
+    }
+
+    fun promptDeleteChecklist(checklistIndex: Int) {
+        deleteChecklistIndex = checklistIndex
+    }
+
+    fun stopDeletingChecklist() {
+        deleteChecklistIndex = -1
+    }
+
+    fun deleteChecklist() {
+        super.deleteChecklist(deleteChecklistIndex)
+        deleteChecklistIndex = -1
     }
 }

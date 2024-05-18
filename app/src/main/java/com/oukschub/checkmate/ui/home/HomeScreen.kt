@@ -85,11 +85,15 @@ fun HomeScreen(
                 checklists = viewModel.checklists,
                 isContentVisible = viewModel.isContentVisible,
                 editChecklistIndex = viewModel.editChecklistIndex,
+                deleteChecklistIndex = viewModel.deleteChecklistIndex,
+                onDeleteDismiss = { viewModel.stopDeletingChecklist() },
+                onDeleteConfirm = { viewModel.deleteChecklist() },
                 onTitleFocus = { checklistIndex, title -> viewModel.focusTitle(checklistIndex, title) },
                 onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
                 onChecklistEdit = { checklistIndex -> viewModel.editChecklist(checklistIndex) },
                 onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
-                onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
+                onChecklistPromptDelete = { checklistIndex -> viewModel.promptDeleteChecklist(checklistIndex) },
+                onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
                 onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
                 onItemNameFocus = { checklistIndex, itemName -> viewModel.focusItem(checklistIndex, itemName) },
                 onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
@@ -97,8 +101,7 @@ fun HomeScreen(
                 onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                 onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
                 onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
-                onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) },
-                onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) }
+                onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) }
             )
         }
     }
@@ -109,11 +112,15 @@ private fun Content(
     checklists: ImmutableList<Checklist>,
     isContentVisible: Boolean,
     editChecklistIndex: Int,
+    deleteChecklistIndex: Int,
+    onDeleteDismiss: () -> Unit,
+    onDeleteConfirm: () -> Unit,
     onTitleFocus: (Int, String) -> Unit,
     onTitleSet: (Int, String) -> Unit,
     onChecklistEdit: (Int) -> Unit,
     onChecklistUnfavorite: (Int) -> Unit,
-    onChecklistDelete: (Int) -> Unit,
+    onChecklistPromptDelete: (Int) -> Unit,
+    onDividerAdd: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (Int, String) -> Unit,
     onItemNameChange: (Int, Int, String) -> Unit,
@@ -122,7 +129,6 @@ private fun Content(
     onItemDelete: (Int, Int) -> Unit,
     onItemMove: (Int, Int, Int) -> Unit,
     onItemMoveDone: (Int) -> Unit,
-    onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -158,15 +164,16 @@ private fun Content(
                     slideInVertically(tween(200, 80 * checklistIndex), initialOffsetY = { it / 2 })
             ) {
                 Checklist(
-                    header = {
+                    header = { backgroundColor ->
                         Header(
                             title = checklist.title,
                             isEditing = checklistIndex == editChecklistIndex,
+                            backgroundColor = backgroundColor,
                             onTitleFocus = { title -> onTitleFocus(checklistIndex, title) },
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
                             onChecklistEdit = { onChecklistEdit(checklistIndex) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
-                            onChecklistDelete = { onChecklistDelete(checklistIndex) },
+                            onChecklistPromptDelete = { onChecklistPromptDelete(checklistIndex) },
                             onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
@@ -179,7 +186,10 @@ private fun Content(
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
                     onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
                     onItemMoveDone = { onItemMoveDone(checklistIndex) },
-                    isEditing = checklistIndex == editChecklistIndex
+                    isEditing = checklistIndex == editChecklistIndex,
+                    isDeleting = checklistIndex == deleteChecklistIndex,
+                    onDeleteDismiss = onDeleteDismiss,
+                    onDeleteConfirm = onDeleteConfirm
                 )
             }
         }
@@ -190,11 +200,12 @@ private fun Content(
 private fun Header(
     title: String,
     isEditing: Boolean,
+    backgroundColor: Color,
     onTitleFocus: (String) -> Unit,
     onTitleSet: (String) -> Unit,
     onChecklistEdit: () -> Unit,
     onChecklistUnfavorite: () -> Unit,
-    onChecklistDelete: () -> Unit,
+    onChecklistPromptDelete: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     Row(
@@ -202,7 +213,7 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(backgroundColor)
             .padding(start = 20.dp, top = 5.dp, end = 5.dp)
     ) {
         var checklistTitle by remember { mutableStateOf(title) }
@@ -221,8 +232,8 @@ private fun Header(
             textStyle = TextStyle(fontSize = 18.sp),
             singleLine = true,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                focusedContainerColor = backgroundColor,
+                unfocusedContainerColor = backgroundColor,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
@@ -262,7 +273,7 @@ private fun Header(
                     text = { Text(stringResource(R.string.checklist_delete)) },
                     onClick = {
                         isMenuVisible = false
-                        onChecklistDelete()
+                        onChecklistPromptDelete()
                     }
                 )
 
