@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,64 +66,75 @@ fun ChecklistDetailScreen(
     val checklist = viewModel.getChecklist(checklistIndex)
     val focusManager = LocalFocusManager.current
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            val dividerText = stringResource(R.string.checklist_default_divider)
-            TopBar(
-                isEditing = viewModel.isEditingChecklist,
-                onBack = {
-                    focusManager.clearFocus()
-                    onBack()
-                },
-                onChecklistEdit = { viewModel.editChecklist() },
-                onChecklistPromptDelete = { viewModel.promptDeleteChecklist() },
-                onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (checklist != null) {
-                Checklist(
-                    header = {
-                        Header(
-                            title = checklist.title,
-                            onTitleFocus = { title -> viewModel.focusTitle(checklistIndex, title) },
-                            onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
-                        )
+    Column(modifier = modifier.fillMaxSize()) {
+        Scaffold(
+            Modifier.fillMaxSize(),
+            topBar = {
+                val dividerText = stringResource(R.string.checklist_default_divider)
+                TopBar(
+                    isEditing = viewModel.isEditingChecklist,
+                    onBack = {
+                        focusManager.clearFocus()
+                        onBack()
                     },
-                    items = ImmutableList.copyOf(checklist.items),
-                    onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
-                    onItemNameFocus = { itemName -> viewModel.focusItem(checklistIndex, itemName) },
-                    onItemNameChange = { itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
-                    onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
-                    onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
-                    onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-                    onItemMove = { fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
-                    onItemMoveDone = { viewModel.finishMovingItem(checklistIndex) },
-                    isEditing = viewModel.isEditingChecklist
+                    onChecklistEdit = { viewModel.editChecklist() },
+                    onChecklistPromptDelete = { viewModel.promptDeleteChecklist() },
+                    onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
                 )
             }
-        }
-    }
-
-    AnimatedVisibility(visible = viewModel.isDeletePromptVisible) {
-        DeleteChecklistDialog(
-            onDismiss = { viewModel.hideDeleteChecklistDialog() },
-            onConfirm = {
-                onDelete()
-                viewModel.hideDeleteChecklistDialog()
-                viewModel.deleteChecklist(checklistIndex)
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(paddingValues)
+                    .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .fillMaxSize(),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                ) {
+                    if (checklist != null) {
+                        Checklist(
+                            header = {
+                                Header(
+                                    title = checklist.title,
+                                    onTitleFocus = { title -> viewModel.focusTitle(checklistIndex, title) },
+                                    onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
+                                )
+                            },
+                            items = ImmutableList.copyOf(checklist.items),
+                            onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
+                            onItemNameFocus = { itemName -> viewModel.focusItem(checklistIndex, itemName) },
+                            onItemNameChange = { itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
+                            onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+                            onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
+                            onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
+                            onItemMove = { fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
+                            onItemMoveDone = { viewModel.finishMovingItem(checklistIndex) },
+                            modifier = Modifier.padding(vertical = 20.dp),
+                            isEditing = viewModel.isEditingChecklist
+                        )
+                    }
+                }
             }
-        )
+        }
+
+        AnimatedVisibility(visible = viewModel.isDeletePromptVisible) {
+            DeleteChecklistDialog(
+                onDismiss = { viewModel.hideDeleteChecklistDialog() },
+                onConfirm = {
+                    onDelete()
+                    viewModel.hideDeleteChecklistDialog()
+                    viewModel.deleteChecklist(checklistIndex)
+                }
+            )
+        }
     }
 }
 
@@ -182,7 +197,12 @@ private fun TopBar(
                     )
                 }
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        )
     )
 }
 

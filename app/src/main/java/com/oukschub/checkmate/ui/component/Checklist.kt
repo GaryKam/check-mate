@@ -10,10 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -50,6 +51,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -346,6 +348,7 @@ private fun InputField(
             }
         ),
         singleLine = true,
+        shape = RectangleShape,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = backgroundColor,
             unfocusedContainerColor = backgroundColor,
@@ -363,8 +366,8 @@ private fun DeleteChecklistDialog(
 ) {
     Card(
         modifier = modifier
-            .padding(24.dp)
-            .sizeIn(minWidth = 280.dp, maxWidth = 560.dp),
+            .width(350.dp)
+            .padding(24.dp),
         shape = AlertDialogDefaults.shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(6.dp)
@@ -387,6 +390,8 @@ private fun DeleteChecklistDialog(
                     style = MaterialTheme.typography.labelLarge
                 )
             }
+
+            Spacer(modifier = Modifier.padding(start = 6.dp))
 
             TextButton(
                 onClick = {
