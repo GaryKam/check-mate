@@ -39,7 +39,7 @@ fun CheckMateNavHost(
     modifier: Modifier = Modifier,
     startDestination: String = if (FirebaseUtil.isSignedIn()) Screen.Home.route else Screen.SignIn.route,
     navController: NavHostController = rememberNavController(),
-    checklistViewModel: ChecklistsViewModel = hiltViewModel(),
+    checklistsViewModel: ChecklistsViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
@@ -55,7 +55,7 @@ fun CheckMateNavHost(
                     navController.navigate(Screen.Home.route)
                 },
                 onForgotPassword = { navController.navigate(Screen.ForgotPassword.route) },
-                onFooterClick = { navController.navigate(Screen.SignUp.route) }
+                onFooterClick = { navController.navigate(Screen.SignUp.route) },
             )
         }
 
@@ -91,7 +91,7 @@ fun CheckMateNavHost(
             }
         ) {
             ChecklistsScreen(
-                viewModel = checklistViewModel,
+                viewModel = checklistsViewModel,
                 onChecklistClick = { checklistIndex ->
                     navController.navigate("${Screen.ChecklistDetail.route}/$checklistIndex")
                 }

@@ -76,10 +76,10 @@ fun Checklist(
     onItemAdd: (String) -> Unit,
     onItemDelete: (Int) -> Unit,
     onItemMove: (Int, Int) -> Unit,
+    onItemMoveDone: () -> Unit,
     onDividerCheck: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    isEditing: Boolean = false,
-    onItemMoveDone: () -> Unit = {}
+    isEditing: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -123,14 +123,14 @@ private fun Checkboxes(
 ) {
     val state = rememberReorderableLazyListState(
         onMove = { from, to -> onItemMove(from.index, to.index) },
-        onDragEnd = { fromIndex, toIndex -> onItemMoveDone() }
+        onDragEnd = { _, _ -> onItemMoveDone() }
     )
     LazyColumn(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .animateContentSize()
             .fillMaxWidth()
             .height(items.size * 44.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(horizontal = 20.dp)
             .reorderable(state),
         state = state.listState

@@ -52,7 +52,6 @@
 
     // Checklists
     <string name="checklists">Checklists</string>
-    <string name="checklists_search">Search</string>
     <string name="checklists_filter_private">Private</string>
     <string name="checklists_filter_shared">Shared</string>
     <string name="checklists_filter_favorite">Favorite</string>
@@ -85,6 +84,7 @@
     <string name="desc_favorite_checklist">Favorite checklist</string>
     <string name="desc_delete_checklist_item">Delete checklist item</string>
     <string name="desc_checklist_detail_menu">Checklist menu</string>
-    <string name="desc_checklist_backdrop">View more settings</string>
+    <string name="desc_checklists_backdrop">View more settings</string>
+    <string name="desc_checklists_search">Search for checklist</string>
 
 </resources>
