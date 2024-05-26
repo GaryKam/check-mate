@@ -96,13 +96,12 @@ private fun NavigationBar(
     AnimatedVisibility(
         visible = showNavBar,
         enter = expandVertically(),
-        exit = shrinkVertically(),
+        exit = shrinkVertically()
     ) {
         BottomAppBar(
             actions = {
                 for (screen in navBarItems) {
                     NavigationBarItem(
-                        modifier = Modifier.fillMaxWidth(),
                         selected = navBackStack.destinationEqualsTo(screen.route),
                         onClick = {
                             if (!navBackStack.destinationEqualsTo(screen.route)) {
@@ -115,7 +114,12 @@ private fun NavigationBar(
                                 contentDescription = stringResource(screen.resourceId)
                             )
                         },
-                        label = { Text(stringResource(screen.resourceId)) }
+                        label = {
+                            Text(
+                                stringResource(screen.resourceId),
+                                softWrap = false
+                            )
+                        }
                     )
                 }
             },

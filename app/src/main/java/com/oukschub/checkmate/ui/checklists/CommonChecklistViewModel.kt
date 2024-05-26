@@ -70,14 +70,6 @@ open class CommonChecklistViewModel(
         }
     }
 
-    fun setDividerChecked(
-        checklistIndex: Int,
-        dividerIndex: Int,
-        isChecked: Boolean
-    ) {
-        repository.updateChecklistDivider(checklistIndex, dividerIndex, isChecked)
-    }
-
     fun unfavoriteChecklist(checklistIndex: Int) {
         repository.updateChecklistFavorite(checklistIndex, false)
     }
@@ -92,10 +84,6 @@ open class CommonChecklistViewModel(
 
     fun finishMovingItem(checklistIndex: Int) {
         repository.updateChecklistItemPositions(checklistIndex)
-    }
-
-    fun clearChecklist(checklistIndex: Int) {
-        repository.updateChecklistItems(checklistIndex)
     }
 
     fun deleteItem(

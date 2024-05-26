@@ -1,15 +1,21 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -20,6 +26,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -28,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -42,6 +51,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -67,7 +77,7 @@ import org.burnoutcrew.reorderable.reorderable
  */
 @Composable
 fun Checklist(
-    header: @Composable () -> Unit,
+    header: @Composable (Color) -> Unit,
     items: ImmutableList<ChecklistItem>,
     onItemCheck: (Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
@@ -77,34 +87,54 @@ fun Checklist(
     onItemDelete: (Int) -> Unit,
     onItemMove: (Int, Int) -> Unit,
     onItemMoveDone: () -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    isEditing: Boolean = false
+    isEditing: Boolean = false,
+    isDeleting: Boolean = false,
+    onDeleteDismiss: () -> Unit = {},
+    onDeleteConfirm: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
+    val backgroundColor = if (isDeleting) Color.DarkGray else MaterialTheme.colorScheme.primaryContainer
 
-    ElevatedCard(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(10.dp)
-            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
+    Box(
+        modifier = Modifier.wrapContentSize(),
+        contentAlignment = Alignment.Center
     ) {
-        header()
-        Checkboxes(
-            items = items,
-            isEditing = isEditing,
-            onItemCheck = onItemCheck,
-            onItemNameFocus = onItemNameFocus,
-            onItemNameChange = onItemNameChange,
-            onItemNameSet = onItemNameSet,
-            onItemDelete = onItemDelete,
-            onItemMove = onItemMove,
-            onDividerCheck = onDividerCheck,
-            onItemMoveDone = onItemMoveDone
-        )
-        InputField(onItemAdd = onItemAdd)
+        ElevatedCard(
+            modifier = modifier
+                .animateContentSize()
+                .fillMaxWidth()
+                .padding(10.dp)
+                .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
+        ) {
+            header(backgroundColor)
+            Checkboxes(
+                items = items,
+                isEditing = isEditing,
+                backgroundColor = backgroundColor,
+                onItemCheck = onItemCheck,
+                onItemNameFocus = onItemNameFocus,
+                onItemNameChange = onItemNameChange,
+                onItemNameSet = onItemNameSet,
+                onItemDelete = onItemDelete,
+                onItemMove = onItemMove,
+                onItemMoveDone = onItemMoveDone
+            )
+            InputField(
+                backgroundColor = backgroundColor,
+                onItemAdd = onItemAdd
+            )
+        }
+
+        Column {
+            AnimatedVisibility(visible = isDeleting) {
+                DeleteChecklistDialog(
+                    onDismiss = onDeleteDismiss,
+                    onConfirm = onDeleteConfirm
+                )
+            }
+        }
     }
 }
 
@@ -112,13 +142,13 @@ fun Checklist(
 private fun Checkboxes(
     items: ImmutableList<ChecklistItem>,
     isEditing: Boolean,
+    backgroundColor: Color,
     onItemCheck: (Int, Boolean) -> Unit,
     onItemNameFocus: (String) -> Unit,
     onItemNameChange: (Int, String) -> Unit,
     onItemNameSet: (Int, String) -> Unit,
     onItemDelete: (Int) -> Unit,
     onItemMove: (Int, Int) -> Unit,
-    onDividerCheck: (Int, Boolean) -> Unit,
     onItemMoveDone: () -> Unit
 ) {
     val state = rememberReorderableLazyListState(
@@ -127,7 +157,7 @@ private fun Checkboxes(
     )
     LazyColumn(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(backgroundColor)
             .animateContentSize()
             .fillMaxWidth()
             .height(items.size * 44.dp)
@@ -146,7 +176,7 @@ private fun Checkboxes(
                         onDividerNameChange = { onItemNameChange(itemIndex, it) },
                         onDividerNameFocus = { onItemNameFocus(it) },
                         onDividerSet = { onItemNameSet(itemIndex, it) },
-                        onDividerCheck = { onDividerCheck(itemIndex, it) },
+                        onDividerCheck = { onItemCheck(itemIndex, it) },
                         onDividerDelete = { onItemDelete(itemIndex) },
                         modifier = Modifier.shadow(elevation.value),
                         isEditing = isEditing
@@ -274,7 +304,10 @@ private fun ChecklistDivider(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun InputField(onItemAdd: (String) -> Unit) {
+private fun InputField(
+    backgroundColor: Color,
+    onItemAdd: (String) -> Unit
+) {
     var text by remember { mutableStateOf("") }
     val couroutineScope = rememberCoroutineScope()
     val viewRequester = remember { BringIntoViewRequester() }
@@ -315,11 +348,62 @@ private fun InputField(onItemAdd: (String) -> Unit) {
             }
         ),
         singleLine = true,
+        shape = RectangleShape,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = backgroundColor,
+            unfocusedContainerColor = backgroundColor,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
     )
+}
+
+@Composable
+private fun DeleteChecklistDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .width(350.dp)
+            .padding(24.dp),
+        shape = AlertDialogDefaults.shape,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.checklist_delete_prompt),
+            modifier = Modifier.padding(24.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(start = 6.dp))
+
+            TextButton(
+                onClick = {
+                    onConfirm()
+                    onDismiss()
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.confirm),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
 }

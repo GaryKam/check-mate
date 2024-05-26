@@ -31,7 +31,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -85,11 +84,16 @@ fun HomeScreen(
             Content(
                 checklists = viewModel.checklists,
                 isContentVisible = viewModel.isContentVisible,
+                editChecklistIndex = viewModel.editChecklistIndex,
+                deleteChecklistIndex = viewModel.deleteChecklistIndex,
+                onDeleteDismiss = { viewModel.hideDeleteChecklistDialog() },
+                onDeleteConfirm = { viewModel.deleteChecklist() },
                 onTitleFocus = { checklistIndex, title -> viewModel.focusTitle(checklistIndex, title) },
                 onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
+                onChecklistEdit = { checklistIndex -> viewModel.editChecklist(checklistIndex) },
                 onChecklistUnfavorite = { checklistIndex -> viewModel.unfavoriteChecklist(checklistIndex) },
-                onChecklistDelete = { checklistIndex -> viewModel.deleteChecklist(checklistIndex) },
-                onChecklistClear = { checklistIndex -> viewModel.clearChecklist(checklistIndex) },
+                onChecklistPromptDelete = { checklistIndex -> viewModel.promptDeleteChecklist(checklistIndex) },
+                onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) },
                 onItemCheck = { checklistIndex, itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
                 onItemNameFocus = { checklistIndex, itemName -> viewModel.focusItem(checklistIndex, itemName) },
                 onItemNameChange = { checklistIndex, itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
@@ -97,9 +101,7 @@ fun HomeScreen(
                 onItemAdd = { checklistIndex, itemName -> viewModel.addItem(checklistIndex, itemName) },
                 onItemDelete = { checklistIndex, itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
                 onItemMove = { checklistIndex, fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
-                onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) },
-                onDividerCheck = { checklistIndex, dividerIndex, isChecked -> viewModel.setDividerChecked(checklistIndex, dividerIndex, isChecked) },
-                onDividerAdd = { checklistIndex -> viewModel.addItem(checklistIndex, dividerText, true) }
+                onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) }
             )
         }
     }
@@ -109,11 +111,16 @@ fun HomeScreen(
 private fun Content(
     checklists: ImmutableList<Checklist>,
     isContentVisible: Boolean,
+    editChecklistIndex: Int,
+    deleteChecklistIndex: Int,
+    onDeleteDismiss: () -> Unit,
+    onDeleteConfirm: () -> Unit,
     onTitleFocus: (Int, String) -> Unit,
     onTitleSet: (Int, String) -> Unit,
+    onChecklistEdit: (Int) -> Unit,
     onChecklistUnfavorite: (Int) -> Unit,
-    onChecklistDelete: (Int) -> Unit,
-    onChecklistClear: (Int) -> Unit,
+    onChecklistPromptDelete: (Int) -> Unit,
+    onDividerAdd: (Int) -> Unit,
     onItemCheck: (Int, Int, Boolean) -> Unit,
     onItemNameFocus: (Int, String) -> Unit,
     onItemNameChange: (Int, Int, String) -> Unit,
@@ -122,12 +129,9 @@ private fun Content(
     onItemDelete: (Int, Int) -> Unit,
     onItemMove: (Int, Int, Int) -> Unit,
     onItemMoveDone: (Int) -> Unit,
-    onDividerCheck: (Int, Int, Boolean) -> Unit,
-    onDividerAdd: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    var editIndex by remember { mutableIntStateOf(-1) }
 
     LazyColumn(
         modifier = modifier
@@ -160,15 +164,16 @@ private fun Content(
                     slideInVertically(tween(200, 80 * checklistIndex), initialOffsetY = { it / 2 })
             ) {
                 Checklist(
-                    header = {
+                    header = { backgroundColor ->
                         Header(
                             title = checklist.title,
+                            isEditing = checklistIndex == editChecklistIndex,
+                            backgroundColor = backgroundColor,
                             onTitleFocus = { title -> onTitleFocus(checklistIndex, title) },
                             onTitleSet = { title -> onTitleSet(checklistIndex, title) },
+                            onChecklistEdit = { onChecklistEdit(checklistIndex) },
                             onChecklistUnfavorite = { onChecklistUnfavorite(checklistIndex) },
-                            onChecklistDelete = { onChecklistDelete(checklistIndex) },
-                            onChecklistClear = { onChecklistClear(checklistIndex) },
-                            onChecklistEdit = { editIndex = checklistIndex },
+                            onChecklistPromptDelete = { onChecklistPromptDelete(checklistIndex) },
                             onDividerAdd = { onDividerAdd(checklistIndex) }
                         )
                     },
@@ -181,8 +186,10 @@ private fun Content(
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
                     onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
                     onItemMoveDone = { onItemMoveDone(checklistIndex) },
-                    onDividerCheck = { dividerIndex, isChecked -> onDividerCheck(checklistIndex, dividerIndex, isChecked) },
-                    isEditing = editIndex == checklistIndex
+                    isEditing = checklistIndex == editChecklistIndex,
+                    isDeleting = checklistIndex == deleteChecklistIndex,
+                    onDeleteDismiss = onDeleteDismiss,
+                    onDeleteConfirm = onDeleteConfirm
                 )
             }
         }
@@ -192,12 +199,13 @@ private fun Content(
 @Composable
 private fun Header(
     title: String,
+    isEditing: Boolean,
+    backgroundColor: Color,
     onTitleFocus: (String) -> Unit,
     onTitleSet: (String) -> Unit,
-    onChecklistUnfavorite: () -> Unit,
-    onChecklistDelete: () -> Unit,
-    onChecklistClear: () -> Unit,
     onChecklistEdit: () -> Unit,
+    onChecklistUnfavorite: () -> Unit,
+    onChecklistPromptDelete: () -> Unit,
     onDividerAdd: () -> Unit
 ) {
     Row(
@@ -205,7 +213,7 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(backgroundColor)
             .padding(start = 20.dp, top = 5.dp, end = 5.dp)
     ) {
         var checklistTitle by remember { mutableStateOf(title) }
@@ -224,8 +232,8 @@ private fun Header(
             textStyle = TextStyle(fontSize = 18.sp),
             singleLine = true,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                focusedContainerColor = backgroundColor,
+                unfocusedContainerColor = backgroundColor,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
@@ -246,6 +254,14 @@ private fun Header(
                 onDismissRequest = { isMenuVisible = false }
             ) {
                 DropdownMenuItem(
+                    text = { Text(stringResource(if (isEditing) R.string.checklist_edit_stop else R.string.checklist_edit)) },
+                    onClick = {
+                        isMenuVisible = false
+                        onChecklistEdit()
+                    }
+                )
+
+                DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_unfavorite)) },
                     onClick = {
                         isMenuVisible = false
@@ -257,23 +273,7 @@ private fun Header(
                     text = { Text(stringResource(R.string.checklist_delete)) },
                     onClick = {
                         isMenuVisible = false
-                        onChecklistDelete()
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.checklist_clear)) },
-                    onClick = {
-                        isMenuVisible = false
-                        onChecklistClear()
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.checklist_edit)) },
-                    onClick = {
-                        isMenuVisible = false
-                        onChecklistEdit()
+                        onChecklistPromptDelete()
                     }
                 )
 
