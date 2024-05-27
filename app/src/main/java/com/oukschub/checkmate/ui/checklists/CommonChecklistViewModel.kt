@@ -2,6 +2,7 @@ package com.oukschub.checkmate.ui.checklists
 
 import androidx.lifecycle.ViewModel
 import com.oukschub.checkmate.data.repository.ChecklistRepository
+import timber.log.Timber
 
 open class CommonChecklistViewModel(
     private val repository: ChecklistRepository
@@ -95,8 +96,10 @@ open class CommonChecklistViewModel(
     }
 
     open fun deleteChecklist(checklistIndex: Int) {
+        Timber.d("index before common viewmodel: $checklistIndex")
         initialTitle = null
         initialItemName = null
         repository.deleteChecklist(checklistIndex)
+        Timber.d("index after common viewmodel: $checklistIndex")
     }
 }

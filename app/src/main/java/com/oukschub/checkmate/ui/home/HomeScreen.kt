@@ -53,6 +53,7 @@ import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.Checklist
 import com.oukschub.checkmate.ui.component.Checklist
+import com.oukschub.checkmate.ui.component.DeleteChecklistDialog
 import com.oukschub.checkmate.ui.component.Logo
 
 /**
@@ -85,9 +86,6 @@ fun HomeScreen(
                 checklists = viewModel.checklists,
                 isContentVisible = viewModel.isContentVisible,
                 editChecklistIndex = viewModel.editChecklistIndex,
-                deleteChecklistIndex = viewModel.deleteChecklistIndex,
-                onDeleteDismiss = { viewModel.hideDeleteChecklistDialog() },
-                onDeleteConfirm = { viewModel.deleteChecklist() },
                 onTitleFocus = { checklistIndex, title -> viewModel.focusTitle(checklistIndex, title) },
                 onTitleSet = { checklistIndex, title -> viewModel.setTitle(checklistIndex, title) },
                 onChecklistEdit = { checklistIndex -> viewModel.editChecklist(checklistIndex) },
@@ -104,6 +102,14 @@ fun HomeScreen(
                 onItemMoveDone = { checklistIndex -> viewModel.finishMovingItem(checklistIndex) }
             )
         }
+        AnimatedVisibility(visible = viewModel.deleteChecklistIndex != -1) {
+            DeleteChecklistDialog(
+                onDismiss = { viewModel.hideDeleteChecklistDialog() },
+                onConfirm = {
+                    viewModel.deleteChecklist()
+                }
+            )
+        }
     }
 }
 
@@ -112,9 +118,6 @@ private fun Content(
     checklists: ImmutableList<Checklist>,
     isContentVisible: Boolean,
     editChecklistIndex: Int,
-    deleteChecklistIndex: Int,
-    onDeleteDismiss: () -> Unit,
-    onDeleteConfirm: () -> Unit,
     onTitleFocus: (Int, String) -> Unit,
     onTitleSet: (Int, String) -> Unit,
     onChecklistEdit: (Int) -> Unit,
@@ -186,10 +189,7 @@ private fun Content(
                     onItemDelete = { itemIndex -> onItemDelete(checklistIndex, itemIndex) },
                     onItemMove = { fromIndex, toIndex -> onItemMove(checklistIndex, fromIndex, toIndex) },
                     onItemMoveDone = { onItemMoveDone(checklistIndex) },
-                    isEditing = checklistIndex == editChecklistIndex,
-                    isDeleting = checklistIndex == deleteChecklistIndex,
-                    onDeleteDismiss = onDeleteDismiss,
-                    onDeleteConfirm = onDeleteConfirm
+                    isEditing = checklistIndex == editChecklistIndex
                 )
             }
         }

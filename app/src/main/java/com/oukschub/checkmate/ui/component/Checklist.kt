@@ -1,20 +1,16 @@
 package com.oukschub.checkmate.ui.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -26,8 +22,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -36,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -88,13 +81,10 @@ fun Checklist(
     onItemMove: (Int, Int) -> Unit,
     onItemMoveDone: () -> Unit,
     modifier: Modifier = Modifier,
-    isEditing: Boolean = false,
-    isDeleting: Boolean = false,
-    onDeleteDismiss: () -> Unit = {},
-    onDeleteConfirm: () -> Unit = {}
+    isEditing: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
-    val backgroundColor = if (isDeleting) Color.DarkGray else MaterialTheme.colorScheme.primaryContainer
+    val backgroundColor = MaterialTheme.colorScheme.primaryContainer
 
     Box(
         modifier = Modifier.wrapContentSize(),
@@ -125,15 +115,6 @@ fun Checklist(
                 backgroundColor = backgroundColor,
                 onItemAdd = onItemAdd
             )
-        }
-
-        Column {
-            AnimatedVisibility(visible = isDeleting) {
-                DeleteChecklistDialog(
-                    onDismiss = onDeleteDismiss,
-                    onConfirm = onDeleteConfirm
-                )
-            }
         }
     }
 }
@@ -167,7 +148,8 @@ private fun Checkboxes(
     ) {
         itemsIndexed(items = items) { itemIndex, item ->
             ReorderableItem(state = state, index = itemIndex, key = item) { isDragging ->
-                val elevation = animateDpAsState(if (isDragging) 3.dp else 0.dp, label = "ElevationAnimation")
+                val elevation =
+                    animateDpAsState(if (isDragging) 3.dp else 0.dp, label = "ElevationAnimation")
 
                 if (item.isDivider) {
                     ChecklistDivider(
@@ -356,54 +338,4 @@ private fun InputField(
             unfocusedIndicatorColor = Color.Transparent
         )
     )
-}
-
-@Composable
-private fun DeleteChecklistDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .width(350.dp)
-            .padding(24.dp),
-        shape = AlertDialogDefaults.shape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        elevation = CardDefaults.cardElevation(6.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.checklist_delete_prompt),
-            modifier = Modifier.padding(24.dp),
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-
-            Spacer(modifier = Modifier.padding(start = 6.dp))
-
-            TextButton(
-                onClick = {
-                    onConfirm()
-                    onDismiss()
-                }
-            ) {
-                Text(
-                    text = stringResource(R.string.confirm),
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-        }
-    }
 }

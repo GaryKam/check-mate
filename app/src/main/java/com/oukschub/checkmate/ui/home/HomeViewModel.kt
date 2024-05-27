@@ -12,6 +12,7 @@ import com.oukschub.checkmate.ui.checklists.CommonChecklistViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,7 +52,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun deleteChecklist() {
+        Timber.d("Index homeviewmodel: $deleteChecklistIndex")
         super.deleteChecklist(deleteChecklistIndex)
-        deleteChecklistIndex = -1
     }
 }
