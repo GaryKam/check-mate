@@ -170,6 +170,7 @@ fun ChecklistDetailScreen(
 
         AnimatedVisibility(visible = viewModel.isDeletePromptVisible) {
             DeleteChecklistDialog(
+                title = checklist?.title ?: "",
                 onDismiss = { viewModel.hideDeleteChecklistDialog() },
                 onConfirm = {
                     onDelete()

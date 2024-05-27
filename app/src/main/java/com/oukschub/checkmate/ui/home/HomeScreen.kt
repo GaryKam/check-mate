@@ -104,6 +104,7 @@ fun HomeScreen(
         }
         AnimatedVisibility(visible = viewModel.deleteChecklistIndex != -1) {
             DeleteChecklistDialog(
+                title = viewModel.deleteChecklistTitle,
                 onDismiss = { viewModel.hideDeleteChecklistDialog() },
                 onConfirm = {
                     viewModel.deleteChecklist()

@@ -1,5 +1,6 @@
 package com.oukschub.checkmate.ui.component
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -9,6 +10,7 @@ import com.oukschub.checkmate.R
 
 @Composable
 fun DeleteChecklistDialog(
+    title: String,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -29,6 +31,11 @@ fun DeleteChecklistDialog(
                 Text(stringResource(R.string.cancel))
             }
         },
-        text = { Text(stringResource(R.string.checklist_delete_prompt)) }
+        text = {
+            Column {
+                Text(stringResource(R.string.checklist_delete_prompt))
+                Text(title)
+            }
+        }
     )
 }
