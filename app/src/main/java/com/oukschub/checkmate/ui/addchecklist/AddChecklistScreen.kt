@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,61 +53,63 @@ fun AddChecklistScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(modifier = modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    onBack = {
-                        focusManager.clearFocus()
-                        onBack()
-                    },
-                    onChecklistAdd = {
-                        focusManager.clearFocus()
-                        viewModel.addChecklist(onSuccess = { onSuccess() })
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(paddingValues)
-                    .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Card(
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .fillMaxSize(),
-                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                ) {
-                    Checklist(
-                        header = {
-                            Header(
-                                title = viewModel.title,
-                                onTitleSet = { title -> viewModel.title = title }
-                            )
+    Box(contentAlignment = Alignment.Center) {
+        Column(modifier = modifier.fillMaxSize()) {
+            Scaffold(
+                topBar = {
+                    TopBar(
+                        onBack = {
+                            focusManager.clearFocus()
+                            onBack()
                         },
-                        items = viewModel.items,
-                        onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(itemIndex, isChecked) },
-                        onItemNameFocus = {},
-                        onItemNameChange = { itemIndex, itemName -> viewModel.setItemName(itemIndex, itemName) },
-                        onItemNameSet = { _, _ -> },
-                        onItemAdd = { itemName -> viewModel.addItem(itemName) },
-                        onItemDelete = { itemIndex -> viewModel.deleteItem(itemIndex) },
-                        onItemMove = { _, _ -> },
-                        onItemMoveDone = {},
-                        modifier = Modifier.padding(vertical = 20.dp)
+                        onChecklistAdd = {
+                            focusManager.clearFocus()
+                            viewModel.addChecklist(onSuccess = { onSuccess() })
+                        }
                     )
-
-                    AnimatedVisibility(visible = viewModel.isAddingChecklist) {
-                        CircularProgressIndicator(modifier = Modifier.padding(80.dp))
+                }
+            ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(paddingValues)
+                        .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .fillMaxSize(),
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                    ) {
+                        Checklist(
+                            header = {
+                                Header(
+                                    title = viewModel.title,
+                                    onTitleSet = { title -> viewModel.title = title }
+                                )
+                            },
+                            items = viewModel.items,
+                            onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(itemIndex, isChecked) },
+                            onItemNameFocus = {},
+                            onItemNameChange = { itemIndex, itemName -> viewModel.setItemName(itemIndex, itemName) },
+                            onItemNameSet = { _, _ -> },
+                            onItemAdd = { itemName -> viewModel.addItem(itemName) },
+                            onItemDelete = { itemIndex -> viewModel.deleteItem(itemIndex) },
+                            onItemMove = { _, _ -> },
+                            onItemMoveDone = {},
+                            modifier = Modifier.padding(vertical = 20.dp)
+                        )
                     }
                 }
             }
+        }
+
+        AnimatedVisibility(visible = viewModel.isAddingChecklist) {
+            CircularProgressIndicator(modifier = Modifier.padding(80.dp))
         }
     }
 }
