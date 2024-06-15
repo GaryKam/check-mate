@@ -79,6 +79,7 @@ open class CommonChecklistViewModel(
         fromIndex: Int,
         toIndex: Int
     ) {
+        initialItemName = null
         repository.moveChecklistItem(checklistIndex, fromIndex, toIndex)
     }
 
