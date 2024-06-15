@@ -103,7 +103,12 @@ class Database {
                     .document(id)
                     .get()
                     .await()
-                    .toObject<Checklist>()!!
+                    .toObject<Checklist>()
+
+                if (checklist == null) {
+                    Timber.d("Failed to read checklist: $id")
+                    continue
+                }
 
                 when (checklistType) {
                     ChecklistType.DEFAULT -> checklists.add(checklist)
