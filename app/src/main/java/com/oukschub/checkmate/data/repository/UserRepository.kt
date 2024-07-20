@@ -30,7 +30,7 @@ class UserRepository @Inject constructor(
     fun fetchDisplayName() {
         _displayName = FirebaseUtil.getDisplayName()
         Timber.d("Name: $_displayName")
-        Timber.d("Id: ${FirebaseAuth.getInstance().currentUser!!.uid}")
+        Timber.d("User Id: ${FirebaseAuth.getInstance().currentUser!!.uid}")
     }
 
     fun setNewDisplayName(displayName: String) {
