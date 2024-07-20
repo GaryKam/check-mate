@@ -28,6 +28,12 @@ class HomeViewModel @Inject constructor(
         private set
     var deleteChecklistIndex by mutableIntStateOf(-1)
         private set
+    val deleteChecklistTitle: String
+        get() = if (deleteChecklistIndex != -1) {
+            checklists[deleteChecklistIndex].title
+        } else {
+            ""
+        }
 
     init {
         isContentVisible = true
@@ -44,6 +50,7 @@ class HomeViewModel @Inject constructor(
 
     fun promptDeleteChecklist(checklistIndex: Int) {
         deleteChecklistIndex = checklistIndex
+        checklists[checklistIndex].title
     }
 
     fun hideDeleteChecklistDialog() {
@@ -52,6 +59,5 @@ class HomeViewModel @Inject constructor(
 
     fun deleteChecklist() {
         super.deleteChecklist(deleteChecklistIndex)
-        deleteChecklistIndex = -1
     }
 }

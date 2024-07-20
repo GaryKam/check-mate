@@ -11,7 +11,7 @@
 # Setup
 ## Linter
 [Ktlint](https://github.com/JLLeitschuh/ktlint-gradle) is used to check code formatting before making a commit.<br/>
-Add the following code to a file titled `pre-commit` in `<project-directory>/git/hooks/`:
+Add the following code to a file titled `pre-commit` in `<project-directory>/.git/hooks/`:
 ```
 #!/bin/sh
 

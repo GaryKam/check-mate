@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -27,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -51,6 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.common.collect.ImmutableList
 import com.oukschub.checkmate.R
 import com.oukschub.checkmate.ui.component.Checklist
+import com.oukschub.checkmate.ui.component.DeleteChecklistDialog
 
 /**
  * The screen that displays all details related to an individual checklist.
@@ -104,18 +103,62 @@ fun ChecklistDetailScreen(
                             header = {
                                 Header(
                                     title = checklist.title,
-                                    onTitleFocus = { title -> viewModel.focusTitle(checklistIndex, title) },
-                                    onTitleSet = { title -> viewModel.setTitle(checklistIndex, title) },
+                                    onTitleFocus = { title ->
+                                        viewModel.focusTitle(
+                                            checklistIndex,
+                                            title
+                                        )
+                                    },
+                                    onTitleSet = { title ->
+                                        viewModel.setTitle(
+                                            checklistIndex,
+                                            title
+                                        )
+                                    },
                                 )
                             },
                             items = ImmutableList.copyOf(checklist.items),
-                            onItemCheck = { itemIndex, isChecked -> viewModel.setItemChecked(checklistIndex, itemIndex, isChecked) },
-                            onItemNameFocus = { itemName -> viewModel.focusItem(checklistIndex, itemName) },
-                            onItemNameChange = { itemIndex, itemName -> viewModel.changeItemName(checklistIndex, itemIndex, itemName) },
-                            onItemNameSet = { itemIndex, itemName -> viewModel.setItemName(checklistIndex, itemIndex, itemName) },
+                            onItemCheck = { itemIndex, isChecked ->
+                                viewModel.setItemChecked(
+                                    checklistIndex,
+                                    itemIndex,
+                                    isChecked
+                                )
+                            },
+                            onItemNameFocus = { itemName ->
+                                viewModel.focusItem(
+                                    checklistIndex,
+                                    itemName
+                                )
+                            },
+                            onItemNameChange = { itemIndex, itemName ->
+                                viewModel.changeItemName(
+                                    checklistIndex,
+                                    itemIndex,
+                                    itemName
+                                )
+                            },
+                            onItemNameSet = { itemIndex, itemName ->
+                                viewModel.setItemName(
+                                    checklistIndex,
+                                    itemIndex,
+                                    itemName
+                                )
+                            },
                             onItemAdd = { itemName -> viewModel.addItem(checklistIndex, itemName) },
-                            onItemDelete = { itemIndex -> viewModel.deleteItem(checklistIndex, itemIndex) },
-                            onItemMove = { fromIndex, toIndex -> viewModel.moveItem(checklistIndex, fromIndex, toIndex) },
+                            onItemDelete = { itemIndex ->
+                                viewModel.deleteItem(
+                                    checklistIndex,
+                                    itemIndex
+                                )
+                            },
+                            onItemMove = { fromIndex, toIndex ->
+                                viewModel.moveItem(
+                                    checklistIndex,
+                                    fromIndex,
+                                    toIndex
+                                )
+                            },
                             onItemMoveDone = { viewModel.finishMovingItem(checklistIndex) },
                             modifier = Modifier.padding(vertical = 20.dp),
                             isEditing = viewModel.isEditingChecklist
@@ -127,6 +170,7 @@ fun ChecklistDetailScreen(
 
         AnimatedVisibility(visible = viewModel.isDeletePromptVisible) {
             DeleteChecklistDialog(
+                title = checklist?.title ?: "",
                 onDismiss = { viewModel.hideDeleteChecklistDialog() },
                 onConfirm = {
                     onDelete()
@@ -240,30 +284,4 @@ private fun Header(
             }
         )
     }
-}
-
-@Composable
-private fun DeleteChecklistDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onDismiss()
-                    onConfirm()
-                }
-            ) {
-                Text(stringResource(R.string.confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        text = { Text(stringResource(R.string.checklist_delete_prompt)) }
-    )
 }
