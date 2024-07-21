@@ -44,6 +44,7 @@ fun SignUpScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -78,8 +79,6 @@ fun SignUpScreen(
                 onImeAction = { focusManager.moveFocus(FocusDirection.Down) },
                 modifier = Modifier.fillMaxWidth()
             )
-
-            val context = LocalContext.current
 
             PasswordTextField(
                 password = viewModel.passwordMatch,

@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.collect.ImmutableList
+import com.oukschub.checkmate.R
 import com.oukschub.checkmate.data.model.ChecklistItem
 import com.oukschub.checkmate.data.repository.ChecklistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,17 @@ class AddChecklistViewModel @Inject constructor(
     private val _items = mutableStateListOf<ChecklistItem>()
     val items: ImmutableList<ChecklistItem>
         get() = ImmutableList.copyOf(_items)
+    var isCreatingNewChecklist by mutableStateOf(true)
+        private set
+    var sharedChecklistCode by mutableStateOf("")
+        private set
+
+    fun setCreationType(type: Int) {
+        when (type) {
+            0 -> isCreatingNewChecklist = true
+            1 -> isCreatingNewChecklist = false
+        }
+    }
 
     fun setItemChecked(
         itemIndex: Int,
@@ -44,6 +56,12 @@ class AddChecklistViewModel @Inject constructor(
         }
     }
 
+    fun setShareCode(shareCode: String) {
+        if (shareCode.matches(Regex("^[A-Z0-9]{0,6}\$"))) {
+            sharedChecklistCode = shareCode
+        }
+    }
+
     fun addChecklist(onSuccess: () -> Unit) {
         if (isAddingChecklist) {
             return
@@ -57,6 +75,19 @@ class AddChecklistViewModel @Inject constructor(
             }
 
             isAddingChecklist = false
+        }
+    }
+
+    fun addSharedChecklist(
+        onSuccess: () -> Unit,
+        onFailure: (Int) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (repository.createChecklist(sharedChecklistCode)) {
+                onSuccess()
+            } else {
+                onFailure(R.string.add_checklist_shared_fail)
+            }
         }
     }
 

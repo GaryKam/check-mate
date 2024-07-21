@@ -74,6 +74,15 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
+     * Adds an existing checklist created by another user.
+     */
+    suspend fun createChecklist(shareCode: String): Boolean {
+        val sharedChecklist = database.createSharedChecklist(shareCode)
+        sharedChecklist?.let { _checklists.add(it) }
+        return sharedChecklist != null
+    }
+
+    /**
      * Adds a new checklist item.
      */
     fun createChecklistItem(

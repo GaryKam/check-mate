@@ -43,6 +43,7 @@ fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -62,8 +63,6 @@ fun SignInScreen(
                     .padding(30.dp)
                     .size(200.dp)
             )
-
-            val context = LocalContext.current
 
             InputFields(
                 email = viewModel.email,
@@ -97,7 +96,7 @@ fun SignInScreen(
                         append(stringResource(R.string.sign_in_forgot_password))
                         append(" ")
                         pushStyle(SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold))
-                        append(stringResource(R.string.sign_in_click_here))
+                        append(stringResource(R.string.click_here))
                     }
                 )
             }

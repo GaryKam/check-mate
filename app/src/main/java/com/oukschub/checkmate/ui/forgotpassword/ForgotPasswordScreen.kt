@@ -31,6 +31,7 @@ fun ForgotPasswordScreen(
     modifier: Modifier = Modifier,
     viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -64,7 +65,6 @@ fun ForgotPasswordScreen(
                         .padding(top = 15.dp)
                 )
 
-                val context = LocalContext.current
                 Button(
                     onClick = {
                         focusManager.clearFocus()

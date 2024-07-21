@@ -8,6 +8,7 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="done">Done</string>
+    <string name="click_here">Click Here</string>
 
     // Sign In
     <string name="sign_in">Sign In</string>
@@ -16,7 +17,6 @@
     <string name="sign_in_email_error">"Email is invalid"</string>
     <string name="sign_in_password_error">"Password is invalid"</string>
     <string name="sign_in_forgot_password">"Forgot your password?</string>
-    <string name="sign_in_click_here">Click Here</string>
 
     // Forgot Password
     <string name="forgot_password_email_error">"Email is invalid"</string>
@@ -73,15 +73,16 @@
     <string name="profile_prompt_sign_out">Are you sure you want to sign out?</string>
 
     // Add Checklist
-    <string name="add_checklist_create">Create</string>
-    <string name="add_checklist_shared">Shared</string>
-    <string name="add_checklist_shared_id">Shared Checklist Code</string>
+    <string name="add_checklist_create_checklist">Create New Checklist</string>
+    <string name="add_checklist_share_prompt">Have a checklist share code? </string>
+    <string name="add_checklist_shared_checklist">Add Shared Checklist</string>
+    <string name="add_checklist_shared_code">Code</string>
+    <string name="add_checklist_shared_fail">Failed to add checklist</string>
+
 
     // Checklist Detail
     <string name="checklist_detail_share">Share</string>
-    <string name="checklist_detail_share_info">
-        Use the code above to share the checklist. Keep this window open until you are done.
-    </string>
+    <string name="checklist_detail_share_info">Use the code above to share the checklist. Keep this window open until you are done.</string>
 
     // Content Description
     <string name="desc_back">Back</string>

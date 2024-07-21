@@ -61,6 +61,45 @@ class Database {
         }
     }
 
+    suspend fun createSharedChecklist(shareCode: String): Checklist? {
+        val documents = firestore.collection(CHECKLISTS_COLLECTION)
+            .whereEqualTo(CHECKLIST_SHARE_CODE, shareCode)
+            .get()
+            .await()
+
+        val sharedChecklist = documents.firstOrNull()?.toObject(Checklist::class.java)
+
+        if (sharedChecklist == null) {
+            Timber.d("Failed to find shared checklist with code: $shareCode")
+            return null
+        }
+
+        val checklistIds = firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .get()
+            .await()
+            .data
+            ?.get(USER_CHECKLIST_IDS_FIELD) as ArrayList<*>
+
+        if (checklistIds.contains(sharedChecklist.id)) {
+            Timber.d("Checklist is already shared: ${sharedChecklist.title}")
+            return null
+        }
+
+        val task = firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(sharedChecklist.id))
+            .also { it.await() }
+
+        return if (task.isSuccessful) {
+            Timber.d("Shared checklist: ${sharedChecklist.title}")
+            sharedChecklist
+        } else {
+            Timber.d("Failed to share checklist: ${sharedChecklist.title}")
+            null
+        }
+    }
+
     fun createChecklistItem(
         checklistId: String,
         item: ChecklistItem
@@ -166,7 +205,7 @@ class Database {
     ) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(checklistId)
-            .update("shareCode", shareCode)
+            .update(CHECKLIST_SHARE_CODE, shareCode)
     }
 
     fun deleteChecklist(checklistId: String) {
@@ -212,6 +251,7 @@ class Database {
         private const val CHECKLISTS_COLLECTION = "checklists"
         private const val CHECKLIST_TITLE_FIELD = "title"
         private const val CHECKLIST_ITEMS_FIELD = "items"
+        private const val CHECKLIST_SHARE_CODE = "shareCode"
 
         private const val USERS_COLLECTION = "users"
         private const val USER_CHECKLIST_IDS_FIELD = "checklistIds"
