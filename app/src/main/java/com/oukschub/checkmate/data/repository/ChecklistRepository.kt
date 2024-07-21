@@ -200,6 +200,16 @@ class ChecklistRepository @Inject constructor(
     }
 
     /**
+     * Sets the checklist items upon pausing the application.
+     */
+    fun updateChecklistOnPause() {
+        if (currentChecklist != -1) {
+            val checklist = _checklists[currentChecklist]
+            database.updateChecklistItems(checklist.id, checklist.items)
+        }
+    }
+
+    /**
      * Sets a checklist to be a favorite.
      */
     fun updateChecklistFavorite(
@@ -208,6 +218,16 @@ class ChecklistRepository @Inject constructor(
     ) {
         _checklists[checklistIndex] = _checklists[checklistIndex].copy(isFavorite = isFavorite)
         database.updateChecklistFavorite(_checklists[checklistIndex].id, isFavorite)
+    }
+
+    /**
+     * Sets a code to give other users access to the checklist.
+     */
+    fun updateChecklistShare(
+        checklistIndex: Int,
+        shareCode: String
+    ) {
+        database.updateChecklistShareCode(_checklists[checklistIndex].id, shareCode)
     }
 
     /**
@@ -236,16 +256,6 @@ class ChecklistRepository @Inject constructor(
         }
 
         updateChecklistDividers(checklistIndex)
-    }
-
-    /**
-     * Sets the checklist items upon pausing the application.
-     */
-    fun updateChecklistOnPause() {
-        if (currentChecklist != -1) {
-            val checklist = _checklists[currentChecklist]
-            database.updateChecklistItems(checklist.id, checklist.items)
-        }
     }
 
     /**

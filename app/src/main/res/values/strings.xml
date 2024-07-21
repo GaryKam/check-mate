@@ -7,6 +7,7 @@
     <string name="blank" />
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="done">Done</string>
 
     // Sign In
     <string name="sign_in">Sign In</string>
@@ -72,9 +73,15 @@
     <string name="profile_prompt_sign_out">Are you sure you want to sign out?</string>
 
     // Add Checklist
-    <string name="add_checklist">New Checklist</string>
+    <string name="add_checklist_create">Create</string>
+    <string name="add_checklist_shared">Shared</string>
+    <string name="add_checklist_shared_id">Shared Checklist Code</string>
 
     // Checklist Detail
+    <string name="checklist_detail_share">Share</string>
+    <string name="checklist_detail_share_info">
+        Use the code above to share the checklist. Keep this window open until you are done.
+    </string>
 
     // Content Description
     <string name="desc_back">Back</string>

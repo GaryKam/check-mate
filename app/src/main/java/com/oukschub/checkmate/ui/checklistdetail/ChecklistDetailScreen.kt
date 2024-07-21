@@ -16,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -67,7 +69,6 @@ fun ChecklistDetailScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         Scaffold(
-            Modifier.fillMaxSize(),
             topBar = {
                 val dividerText = stringResource(R.string.checklist_default_divider)
                 TopBar(
@@ -76,6 +77,7 @@ fun ChecklistDetailScreen(
                         focusManager.clearFocus()
                         onBack()
                     },
+                    onChecklistShare = { viewModel.shareChecklist(checklistIndex) },
                     onChecklistEdit = { viewModel.editChecklist() },
                     onChecklistPromptDelete = { viewModel.promptDeleteChecklist() },
                     onDividerAdd = { viewModel.addItem(checklistIndex, dividerText, true) }
@@ -179,6 +181,13 @@ fun ChecklistDetailScreen(
                 }
             )
         }
+
+        AnimatedVisibility(visible = viewModel.shareCode.isNotEmpty()) {
+            ShareChecklistDialog(
+                shareCode = viewModel.shareCode,
+                onDismiss = { viewModel.stopSharingChecklist(checklistIndex) }
+            )
+        }
     }
 }
 
@@ -187,6 +196,7 @@ fun ChecklistDetailScreen(
 private fun TopBar(
     isEditing: Boolean,
     onBack: () -> Unit,
+    onChecklistShare: () -> Unit,
     onChecklistEdit: () -> Unit,
     onChecklistPromptDelete: () -> Unit,
     onDividerAdd: () -> Unit
@@ -216,6 +226,14 @@ private fun TopBar(
                     expanded = isMenuVisible,
                     onDismissRequest = { isMenuVisible = false }
                 ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.checklist_detail_share)) },
+                        onClick = {
+                            isMenuVisible = false
+                            onChecklistShare()
+                        }
+                    )
+
                     DropdownMenuItem(
                         text = { Text(stringResource(if (isEditing) R.string.checklist_edit_stop else R.string.checklist_edit)) },
                         onClick = {
@@ -284,4 +302,32 @@ private fun Header(
             }
         )
     }
+}
+
+@Composable
+private fun ShareChecklistDialog(
+    shareCode: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {},
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(stringResource(R.string.done))
+            }
+        },
+        title = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = shareCode,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
+        },
+        text = { Text(stringResource(R.string.checklist_detail_share_info)) }
+    )
 }

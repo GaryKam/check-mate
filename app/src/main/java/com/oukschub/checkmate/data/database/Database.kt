@@ -160,6 +160,15 @@ class Database {
             .addOnFailureListener { Timber.d("Failed to update favorite status: $checklistId") }
     }
 
+    fun updateChecklistShareCode(
+        checklistId: String,
+        shareCode: String
+    ) {
+        firestore.collection(CHECKLISTS_COLLECTION)
+            .document(checklistId)
+            .update("shareCode", shareCode)
+    }
+
     fun deleteChecklist(checklistId: String) {
         firestore.collection(CHECKLISTS_COLLECTION)
             .document(checklistId)

@@ -18,9 +18,23 @@ class ChecklistDetailViewModel @Inject constructor(
     var isEditingChecklist by mutableStateOf(false)
         private set
     private var isDeletingChecklist = false
+    var shareCode by mutableStateOf("")
+        private set
 
     fun getChecklist(checklistIndex: Int): Checklist? {
         return if (isDeletingChecklist) null else repository.checklists[checklistIndex]
+    }
+
+    fun shareChecklist(checklistIndex: Int) {
+        val charPool = ('A'..'Z') + ('0'..'9')
+        val code = List(6) { charPool.random() }.joinToString("")
+        shareCode = code
+        repository.updateChecklistShare(checklistIndex, shareCode)
+    }
+
+    fun stopSharingChecklist(checklistIndex: Int) {
+        shareCode = ""
+        repository.updateChecklistShare(checklistIndex, shareCode)
     }
 
     fun editChecklist() {
