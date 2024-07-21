@@ -3,6 +3,7 @@ package com.oukschub.checkmate.ui.main
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -45,6 +46,8 @@ class MainActivity : ComponentActivity() {
 
         val content = findViewById<View>(android.R.id.content)
         content.viewTreeObserver.addOnPreDrawListener { viewModel.isAppReady }
+
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     override fun onPause() {
