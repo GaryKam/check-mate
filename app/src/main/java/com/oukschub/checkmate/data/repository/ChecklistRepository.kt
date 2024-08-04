@@ -101,6 +101,14 @@ class ChecklistRepository @Inject constructor(
         updateChecklistDividers(checklistIndex)
     }
 
+    suspend fun fetchSharedChecklists() {
+        Timber.d("Start fetching shared checklists from database")
+        val startTime = System.currentTimeMillis()
+        database.readChecklists(ChecklistType.SHARED)
+        val endTime = (System.currentTimeMillis() - startTime) / 1000.0
+        Timber.d("Finish fetching shared checklists from database: $endTime")
+    }
+
     /**
      * Gets all favorite checklists.
      */

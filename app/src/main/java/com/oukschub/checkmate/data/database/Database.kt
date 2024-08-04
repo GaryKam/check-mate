@@ -20,6 +20,7 @@ class Database {
     private val userId: String
         get() = FirebaseAuth.getInstance().currentUser!!.uid
     private val favoriteChecklistIds = mutableListOf<String>()
+    private val sharedChecklistIds = mutableListOf<String>()
 
     suspend fun createUser(): Boolean {
         val task = firestore.collection(USERS_COLLECTION)
@@ -27,7 +28,8 @@ class Database {
             .set(
                 mapOf<String, List<DocumentReference>>(
                     USER_CHECKLIST_IDS_FIELD to emptyList(),
-                    USER_CHECKLIST_FAVORITES_FIELD to emptyList()
+                    USER_CHECKLIST_FAVORITES_FIELD to emptyList(),
+                    USER_CHECKLIST_SHARED_FIELD to emptyList()
                 )
             )
             .also { it.await() }
@@ -62,12 +64,12 @@ class Database {
     }
 
     suspend fun createSharedChecklist(shareCode: String): Checklist? {
-        val documents = firestore.collection(CHECKLISTS_COLLECTION)
+        val checklists = firestore.collection(CHECKLISTS_COLLECTION)
             .whereEqualTo(CHECKLIST_SHARE_CODE, shareCode)
             .get()
             .await()
 
-        val sharedChecklist = documents.firstOrNull()?.toObject(Checklist::class.java)
+        val sharedChecklist = checklists.firstOrNull()?.toObject(Checklist::class.java)
 
         if (sharedChecklist == null) {
             Timber.d("Failed to find shared checklist with code: $shareCode")
@@ -79,19 +81,24 @@ class Database {
             .get()
             .await()
             .data
-            ?.get(USER_CHECKLIST_IDS_FIELD) as ArrayList<*>
+            ?.get(USER_CHECKLIST_SHARED_FIELD) as ArrayList<*>
 
         if (checklistIds.contains(sharedChecklist.id)) {
             Timber.d("Checklist is already shared: ${sharedChecklist.title}")
             return null
         }
 
-        val task = firestore.collection(USERS_COLLECTION)
+        val task1 = firestore.collection(USERS_COLLECTION)
             .document(userId)
             .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayUnion(sharedChecklist.id))
             .also { it.await() }
 
-        return if (task.isSuccessful) {
+        val task2 = firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(USER_CHECKLIST_SHARED_FIELD, FieldValue.arrayUnion(sharedChecklist.id))
+            .also { it.await() }
+
+        return if (task1.isSuccessful && task2.isSuccessful) {
             Timber.d("Shared checklist: ${sharedChecklist.title}")
             sharedChecklist
         } else {
@@ -134,6 +141,14 @@ class Database {
                 favoriteChecklistIds.addAll(ids)
                 ids
             }
+
+            ChecklistType.SHARED -> {
+                @Suppress("UNCHECKED_CAST")
+                val ids = result.data?.get(USER_CHECKLIST_SHARED_FIELD) as ArrayList<String>
+                sharedChecklistIds.clear()
+                sharedChecklistIds.addAll(ids)
+                emptyList()
+            }
         }
 
         checklistIds.let { ids ->
@@ -151,7 +166,16 @@ class Database {
 
                 when (checklistType) {
                     ChecklistType.DEFAULT -> checklists.add(checklist)
-                    ChecklistType.FAVORITE -> checklists.add(checklist.copy(isFavorite = true))
+                    ChecklistType.FAVORITE -> {
+                        checklists.add(
+                            checklist.copy(
+                                isFavorite = true,
+                                isShared = sharedChecklistIds.contains(checklist.id)
+                            )
+                        )
+                    }
+
+                    else -> {}
                 }
             }
         }
@@ -214,6 +238,7 @@ class Database {
             .delete()
             .addOnSuccessListener {
                 Timber.d("Deleted checklist from database: $checklistId")
+
                 firestore.collection(USERS_COLLECTION)
                     .document(userId)
                     .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(checklistId))
@@ -225,8 +250,14 @@ class Database {
                     .update(USER_CHECKLIST_FAVORITES_FIELD, FieldValue.arrayRemove(checklistId))
                     .addOnSuccessListener { Timber.d("Deleted checklist from user favorites: $checklistId") }
                     .addOnFailureListener { Timber.d("Failed to delete checklist from user favorites: $checklistId") }
+
+                firestore.collection(USERS_COLLECTION)
+                    .document(userId)
+                    .update(USER_CHECKLIST_SHARED_FIELD, FieldValue.arrayRemove(checklistId))
+                    .addOnSuccessListener { Timber.d("Deleted checklist from user shared: $checklistId") }
+                    .addOnFailureListener { Timber.d("Failed to delete checklist from user shared: $checklistId") }
             }
-            .addOnFailureListener { Timber.d("Failed to delete checklist: $checklistId") }
+            .addOnFailureListener { Timber.d("Failed to delete checklist from database: $checklistId") }
     }
 
     fun deleteChecklistItem(
@@ -256,5 +287,6 @@ class Database {
         private const val USERS_COLLECTION = "users"
         private const val USER_CHECKLIST_IDS_FIELD = "checklistIds"
         private const val USER_CHECKLIST_FAVORITES_FIELD = "favoriteIds"
+        private const val USER_CHECKLIST_SHARED_FIELD = "sharedIds"
     }
 }

@@ -20,11 +20,10 @@ class MainViewModel @Inject constructor(
     fun loadData() {
         if (FirebaseUtil.isSignedIn()) {
             viewModelScope.launch {
+                checklistRepository.fetchSharedChecklists()
                 checklistRepository.fetchFavoriteChecklists()
                 isAppReady = true
-            }
 
-            viewModelScope.launch {
                 userRepository.fetchDisplayName()
                 checklistRepository.fetchChecklists()
             }
