@@ -104,6 +104,8 @@ open class CommonChecklistViewModel(
     open fun deleteChecklist(checklistIndex: Int) {
         initialTitle = null
         initialItemName = null
-        repository.deleteChecklist(checklistIndex)
+
+        val isShared = repository.checklists[checklistIndex].isShared
+        repository.deleteChecklist(checklistIndex, isShared)
     }
 }

@@ -62,7 +62,7 @@ class AddChecklistViewModel @Inject constructor(
         }
     }
 
-    fun addChecklist(onSuccess: () -> Unit) {
+    fun addChecklist(onSuccess: (Int) -> Unit) {
         if (isAddingChecklist) {
             return
         }
@@ -71,7 +71,7 @@ class AddChecklistViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (repository.createChecklist(title, _items)) {
-                onSuccess()
+                onSuccess(R.string.add_checklist_create_success)
             }
 
             isAddingChecklist = false
@@ -79,15 +79,19 @@ class AddChecklistViewModel @Inject constructor(
     }
 
     fun addSharedChecklist(
-        onSuccess: () -> Unit,
+        onSuccess: (Int) -> Unit,
         onFailure: (Int) -> Unit
     ) {
+        isAddingChecklist = true
+
         viewModelScope.launch {
             if (repository.createChecklist(sharedChecklistCode)) {
-                onSuccess()
+                onSuccess(R.string.add_checklist_shared_success)
             } else {
                 onFailure(R.string.add_checklist_shared_fail)
             }
+
+            isAddingChecklist = false
         }
     }
 

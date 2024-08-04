@@ -34,7 +34,6 @@ class ChecklistsViewModel @Inject constructor(
         }
     var query by mutableStateOf("")
     private val _filters = mutableStateListOf<Triple<Int, Boolean, (Checklist) -> Boolean>>(
-        Triple(R.string.checklists_filter_private, false) { it.isPrivate },
         Triple(R.string.checklists_filter_shared, false) { it.isShared },
         Triple(R.string.checklists_filter_favorite, false) { it.isFavorite }
     )

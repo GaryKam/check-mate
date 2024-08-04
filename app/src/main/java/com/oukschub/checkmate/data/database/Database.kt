@@ -69,7 +69,10 @@ class Database {
             .get()
             .await()
 
-        val sharedChecklist = checklists.firstOrNull()?.toObject(Checklist::class.java)
+        val sharedChecklist = checklists
+            .firstOrNull()
+            ?.toObject(Checklist::class.java)
+            ?.copy(isShared = true)
 
         if (sharedChecklist == null) {
             Timber.d("Failed to find shared checklist with code: $shareCode")
@@ -161,11 +164,17 @@ class Database {
 
                 if (checklist == null) {
                     Timber.d("Failed to read checklist: $id")
+                    deleteChecklistFromUser(id)
                     continue
                 }
 
                 when (checklistType) {
-                    ChecklistType.DEFAULT -> checklists.add(checklist)
+                    ChecklistType.DEFAULT -> {
+                        checklists.add(
+                            checklist.copy(isShared = sharedChecklistIds.contains(checklist.id))
+                        )
+                    }
+
                     ChecklistType.FAVORITE -> {
                         checklists.add(
                             checklist.copy(
@@ -239,25 +248,29 @@ class Database {
             .addOnSuccessListener {
                 Timber.d("Deleted checklist from database: $checklistId")
 
-                firestore.collection(USERS_COLLECTION)
-                    .document(userId)
-                    .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(checklistId))
-                    .addOnSuccessListener { Timber.d("Deleted checklist from user: $checklistId") }
-                    .addOnFailureListener { Timber.d("Failed to delete checklist from user: $checklistId") }
-
-                firestore.collection(USERS_COLLECTION)
-                    .document(userId)
-                    .update(USER_CHECKLIST_FAVORITES_FIELD, FieldValue.arrayRemove(checklistId))
-                    .addOnSuccessListener { Timber.d("Deleted checklist from user favorites: $checklistId") }
-                    .addOnFailureListener { Timber.d("Failed to delete checklist from user favorites: $checklistId") }
-
-                firestore.collection(USERS_COLLECTION)
-                    .document(userId)
-                    .update(USER_CHECKLIST_SHARED_FIELD, FieldValue.arrayRemove(checklistId))
-                    .addOnSuccessListener { Timber.d("Deleted checklist from user shared: $checklistId") }
-                    .addOnFailureListener { Timber.d("Failed to delete checklist from user shared: $checklistId") }
+                deleteChecklistFromUser(checklistId)
             }
             .addOnFailureListener { Timber.d("Failed to delete checklist from database: $checklistId") }
+    }
+
+    fun deleteChecklistFromUser(checklistId: String) {
+        firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(USER_CHECKLIST_IDS_FIELD, FieldValue.arrayRemove(checklistId))
+            .addOnSuccessListener { Timber.d("Deleted checklist from user: $checklistId") }
+            .addOnFailureListener { Timber.d("Failed to delete checklist from user: $checklistId") }
+
+        firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(USER_CHECKLIST_FAVORITES_FIELD, FieldValue.arrayRemove(checklistId))
+            .addOnSuccessListener { Timber.d("Deleted checklist from user favorites: $checklistId") }
+            .addOnFailureListener { Timber.d("Failed to delete checklist from user favorites: $checklistId") }
+
+        firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update(USER_CHECKLIST_SHARED_FIELD, FieldValue.arrayRemove(checklistId))
+            .addOnSuccessListener { Timber.d("Deleted checklist from user shared: $checklistId") }
+            .addOnFailureListener { Timber.d("Failed to delete checklist from user shared: $checklistId") }
     }
 
     fun deleteChecklistItem(

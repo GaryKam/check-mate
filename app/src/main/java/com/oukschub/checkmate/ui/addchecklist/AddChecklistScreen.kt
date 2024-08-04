@@ -123,7 +123,12 @@ fun AddChecklistScreen(
                                 Button(
                                     onClick = {
                                         focusManager.clearFocus()
-                                        viewModel.addChecklist(onSuccess = onSuccess)
+                                        viewModel.addChecklist(
+                                            onSuccess = {
+                                                onSuccess()
+                                                MessageUtil.displayToast(context, it)
+                                            }
+                                        )
                                     }
                                 ) {
                                     Text(stringResource(R.string.add_checklist_create_checklist))
@@ -158,7 +163,10 @@ fun AddChecklistScreen(
                                     onClick = {
                                         focusManager.clearFocus()
                                         viewModel.addSharedChecklist(
-                                            onSuccess = onSuccess,
+                                            onSuccess = {
+                                                onSuccess()
+                                                MessageUtil.displayToast(context, it)
+                                            },
                                             onFailure = { MessageUtil.displayToast(context, it) }
                                         )
                                     },

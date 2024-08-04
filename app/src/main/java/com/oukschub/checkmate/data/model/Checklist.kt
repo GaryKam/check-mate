@@ -11,7 +11,6 @@ data class Checklist(
     val id: String = "",
     val title: String = "",
     val items: List<ChecklistItem> = emptyList(),
-    @get:Exclude val isPrivate: Boolean = false,
     @get:Exclude val isShared: Boolean = false,
     @get:Exclude val isFavorite: Boolean = false
 )

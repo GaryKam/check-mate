@@ -50,7 +50,6 @@ class HomeViewModel @Inject constructor(
 
     fun promptDeleteChecklist(checklistIndex: Int) {
         deleteChecklistIndex = checklistIndex
-        checklists[checklistIndex].title
     }
 
     fun hideDeleteChecklistDialog() {

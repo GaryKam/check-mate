@@ -74,11 +74,12 @@
 
     // Add Checklist
     <string name="add_checklist_create_checklist">Create New Checklist</string>
+    <string name="add_checklist_create_success">Created a new checklist</string>
     <string name="add_checklist_share_prompt">Have a checklist share code? </string>
     <string name="add_checklist_shared_checklist">Add Shared Checklist</string>
     <string name="add_checklist_shared_code">Code</string>
+    <string name="add_checklist_shared_success">Added a shared checklist</string>
     <string name="add_checklist_shared_fail">Failed to add checklist</string>
-
 
     // Checklist Detail
     <string name="checklist_detail_share">Share</string>

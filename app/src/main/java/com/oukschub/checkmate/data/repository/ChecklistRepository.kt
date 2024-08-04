@@ -250,10 +250,18 @@ class ChecklistRepository @Inject constructor(
     /**
      * Removes a checklist.
      */
-    fun deleteChecklist(checklistIndex: Int) {
+    fun deleteChecklist(
+        checklistIndex: Int,
+        isShared: Boolean
+    ) {
         _checklists[checklistIndex].run {
             _checklists.remove(this)
-            database.deleteChecklist(id)
+
+            if (isShared) {
+                database.deleteChecklistFromUser(id)
+            } else {
+                database.deleteChecklist(id)
+            }
         }
     }
 

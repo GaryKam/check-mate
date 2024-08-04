@@ -106,9 +106,7 @@ fun HomeScreen(
             DeleteChecklistDialog(
                 title = viewModel.deleteChecklistTitle,
                 onDismiss = { viewModel.hideDeleteChecklistDialog() },
-                onConfirm = {
-                    viewModel.deleteChecklist()
-                }
+                onConfirm = { viewModel.deleteChecklist() }
             )
         }
     }
@@ -255,18 +253,18 @@ private fun Header(
                 onDismissRequest = { isMenuVisible = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(if (isEditing) R.string.checklist_edit_stop else R.string.checklist_edit)) },
-                    onClick = {
-                        isMenuVisible = false
-                        onChecklistEdit()
-                    }
-                )
-
-                DropdownMenuItem(
                     text = { Text(stringResource(R.string.checklist_unfavorite)) },
                     onClick = {
                         isMenuVisible = false
                         onChecklistUnfavorite()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(if (isEditing) R.string.checklist_edit_stop else R.string.checklist_edit)) },
+                    onClick = {
+                        isMenuVisible = false
+                        onChecklistEdit()
                     }
                 )
 
