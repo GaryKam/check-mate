@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -72,11 +74,13 @@ fun ChecklistDetailScreen(
             topBar = {
                 val dividerText = stringResource(R.string.checklist_default_divider)
                 TopBar(
+                    isFavorite = checklist?.isFavorite ?: false,
                     isEditing = viewModel.isEditingChecklist,
                     onBack = {
                         focusManager.clearFocus()
                         onBack()
                     },
+                    onChecklistFavorite = { viewModel.favoriteChecklist(checklistIndex) },
                     onChecklistShare = { viewModel.shareChecklist(checklistIndex) },
                     onChecklistEdit = { viewModel.editChecklist() },
                     onChecklistPromptDelete = { viewModel.promptDeleteChecklist() },
@@ -194,8 +198,10 @@ fun ChecklistDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    isFavorite: Boolean,
     isEditing: Boolean,
     onBack: () -> Unit,
+    onChecklistFavorite: () -> Unit,
     onChecklistShare: () -> Unit,
     onChecklistEdit: () -> Unit,
     onChecklistPromptDelete: () -> Unit,
@@ -212,6 +218,18 @@ private fun TopBar(
             }
         },
         actions = {
+            IconButton(onClick = onChecklistFavorite) {
+                Icon(
+                    imageVector = if (isFavorite) {
+                        Icons.Default.Favorite
+                    } else {
+                        Icons.Default.FavoriteBorder
+                    },
+                    contentDescription = stringResource(R.string.desc_favorite_checklist),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
             Box {
                 var isMenuVisible by remember { mutableStateOf(false) }
 

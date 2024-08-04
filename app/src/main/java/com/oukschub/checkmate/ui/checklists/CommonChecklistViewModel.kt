@@ -70,6 +70,12 @@ open class CommonChecklistViewModel(
         }
     }
 
+    open fun favoriteChecklist(checklistIndex: Int) {
+        val checklist = repository.checklists[checklistIndex]
+        val isFavorite = !checklist.isFavorite
+        repository.updateChecklistFavorite(checklistIndex, isFavorite)
+    }
+
     fun unfavoriteChecklist(checklistIndex: Int) {
         repository.updateChecklistFavorite(checklistIndex, false)
     }
